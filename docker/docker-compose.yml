@@ -26,7 +26,7 @@ services:
       - NODE_ENV=production
       - MINO_DATA_DIR=/data
       - MINO_CONNECTION_MODE=${MINO_CONNECTION_MODE:-relay}
-      - MINO_RELAY_URL=${MINO_RELAY_URL:-http://relay.mino.ink}
+      - MINO_RELAY_URL=${MINO_RELAY_URL:-https://relay.mino.ink}
       - MINO_PUBLIC_SERVER_URL=${MINO_PUBLIC_SERVER_URL:-}
       # Optional overrides (set in Portainer env vars):
       # - MINO_PORT=3000

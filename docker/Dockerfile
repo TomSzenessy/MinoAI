@@ -65,6 +65,9 @@ LABEL org.opencontainers.image.description="Agent-first, markdown-based knowledg
 LABEL org.opencontainers.image.source="https://github.com/TomSzenessy/MinoAI"
 LABEL org.opencontainers.image.url="https://mino.ink"
 
+# Ensure TLS works for outbound HTTPS (slim images may lack CA certs)
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 # Copy only what's needed to run

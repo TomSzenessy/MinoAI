@@ -70,6 +70,29 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+async function buildRelayRequestError(
+  operation: string,
+  response: Response,
+  baseUrl: string,
+): Promise<Error> {
+  const endpointHint =
+    response.status === 404 && baseUrl.startsWith("http://")
+      ? " (hint: use https:// for public relays; http redirects can change POST to GET)"
+      : "";
+
+  let bodyHint = "";
+  try {
+    const text = (await response.text()).trim();
+    if (text) {
+      bodyHint = ` — ${text.slice(0, 160)}`;
+    }
+  } catch {
+    // ignore body read failures
+  }
+
+  return new Error(`${operation} failed (${response.status})${endpointHint}${bodyHint}`);
+}
+
 function stripForwardedHeaders(headers: Record<string, string>): Headers {
   const next = new Headers();
   for (const [key, value] of Object.entries(headers)) {
@@ -96,7 +119,7 @@ async function registerServer(baseUrl: string, options: RelayConnectorOptions): 
   });
 
   if (!response.ok) {
-    throw new Error(`Relay register failed (${response.status})`);
+    throw await buildRelayRequestError("Relay register", response, baseUrl);
   }
 }
 
@@ -119,7 +142,7 @@ async function pullRequest(
   }
 
   if (!response.ok) {
-    throw new Error(`Relay pull failed (${response.status})`);
+    throw await buildRelayRequestError("Relay pull", response, baseUrl);
   }
 
   const body = await response.json() as { success: true; data: RelayPullResult };
@@ -144,7 +167,7 @@ async function sendResponse(
   });
 
   if (!relayResponse.ok) {
-    throw new Error(`Relay respond failed (${relayResponse.status})`);
+    throw await buildRelayRequestError("Relay respond", relayResponse, baseUrl);
   }
 }
 
