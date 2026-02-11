@@ -1,0 +1,25 @@
+{
+  "name": "@mino-ink/server",
+  "version": "0.1.0",
+  "description": "Mino server — Bun + Hono API server with auto-bootstrap",
+  "type": "module",
+  "main": "./src/index.ts",
+  "scripts": {
+    "dev": "bun run --watch src/index.ts",
+    "start": "bun run src/index.ts",
+    "build": "bun build src/index.ts --outdir dist --target bun",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@mino-ink/shared": "workspace:*",
+    "hono": "^4.7.0",
+    "zod": "^3.24.0",
+    "gray-matter": "^4.0.3"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.0",
+    "typescript": "^5.7.0"
+  }
+}

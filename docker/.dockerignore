@@ -1,0 +1,15 @@
+node_modules
+.git
+.turbo
+coverage
+dist
+build
+*.log
+.DS_Store
+.env
+.env.*
+openclaw
+prototype
+docs
+docker/data
+.github

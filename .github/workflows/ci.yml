@@ -1,0 +1,43 @@
+# =============================================================================
+# CI — Lint, Typecheck, Test, Build
+#
+# Runs on every push to main and on all pull requests.
+# Uses Bun for fast installs and test execution.
+# =============================================================================
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ci:
+    name: Lint, Typecheck, Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Build shared package
+        run: cd packages/shared && bun run build
+
+      - name: Typecheck server
+        run: cd apps/server && bun run typecheck
+
+      - name: Run tests
+        run: cd apps/server && bun test
+
+      - name: Build server
+        run: cd apps/server && bun run build

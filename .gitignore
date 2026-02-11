@@ -42,6 +42,17 @@ out/
 coverage/
 .nyc_output/
 
+# === Mino Server Data ===
+data/
+*.db
+credentials.json
+
+# === Docker ===
+docker/data/
+
+# === Bun ===
+bun.lock
+
 # === Misc ===
 *.log
 *.pid
