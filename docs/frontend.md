@@ -86,7 +86,7 @@ Use two Pages projects (test + production) with the same build pipeline.
 #### Test project (`test.mino.ink`)
 
 - Framework preset: `None`
-- Build command: `pnpm install --frozen-lockfile && pnpm --filter @mino-ink/web build`
+- Build command: `pnpm install --no-frozen-lockfile && pnpm --filter @mino-ink/web build`
 - Build output directory: `apps/web/out`
 - Root directory: `/`
 - Environment variables:

@@ -57,7 +57,7 @@ Use two projects: one for testing, one for production.
 
 ### Test project (`test.mino.ink`) — use now
 - Framework preset: `None`
-- Build command: `pnpm install --frozen-lockfile && pnpm --filter @mino-ink/web build`
+- Build command: `pnpm install --no-frozen-lockfile && pnpm --filter @mino-ink/web build`
 - Build output directory: `apps/web/out`
 - Root directory: `/`
 - Environment variables:
