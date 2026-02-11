@@ -60,10 +60,14 @@ If you do not want open host ports, use tunnel mode:
 4. Cloudflare shows a command like:
    `docker run cloudflare/cloudflared:latest tunnel --no-autoupdate run --token eyJ...`
 5. Copy only the token value after `--token`.
-6. In Portainer stack environment vars set:
+6. In that tunnel, add a Public Hostname:
+   - Hostname: `test.mino.ink` (or your chosen domain)
+   - Service type: `HTTP`
+   - URL: `http://mino:3000`
+7. In Portainer stack environment vars set:
    - `CF_TUNNEL_TOKEN=<copied token>`
    - `MINO_PORT_BIND=127.0.0.1`
-7. Redeploy the stack.
+8. Redeploy the stack.
 
 Image tag note:
 - default compose image tag is `main` (most reliable after pushes)

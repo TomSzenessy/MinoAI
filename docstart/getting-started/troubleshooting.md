@@ -45,6 +45,18 @@ Fix:
 Note:
 - Tunnel is optional. If you do not set `CF_TUNNEL_TOKEN`, Mino still runs in open-port mode.
 
+## Tunnel Runs But Domain Does Not Reach Mino
+
+Cause:
+- tunnel has no Public Hostname route to the Mino container
+
+Fix:
+- open Cloudflare Tunnel dashboard for your tunnel
+- add Public Hostname with:
+  - Service type `HTTP`
+  - URL `http://mino:3000`
+- redeploy stack after saving tunnel changes
+
 ## `manifest unknown` During Stack Deploy
 
 Cause:

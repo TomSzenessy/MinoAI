@@ -58,9 +58,13 @@ Expected health response status is `200`.
 6. Cloudflare will show a command like:
    `docker run cloudflare/cloudflared:latest tunnel --no-autoupdate run --token eyJ...`
 7. Copy only the token value after `--token`.
-8. Paste that token into Portainer env var: `CF_TUNNEL_TOKEN`.
-9. Set `MINO_PORT_BIND=127.0.0.1`.
-10. Redeploy stack.
+8. In the same tunnel, add a Public Hostname:
+   - Hostname: your subdomain (example: `test.mino.ink`)
+   - Service type: `HTTP`
+   - URL: `http://mino:3000`
+9. Paste token into Portainer env var: `CF_TUNNEL_TOKEN`.
+10. Set `MINO_PORT_BIND=127.0.0.1`.
+11. Redeploy stack.
 
 ## Persistent Data
 
