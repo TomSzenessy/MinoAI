@@ -61,10 +61,78 @@ async function main(): Promise<void> {
   const { port, host } = config.server;
   const localBaseUrl = `http://${host === "0.0.0.0" ? "localhost" : host}:${port}`;
 
-  logger.info(`Server listening on http://${host}:${port}`);
-  logger.info(`Web UI: ${webDistDir ? `enabled (${webDistDir})` : "not bundled"}`);
-  logger.info(`Connection mode: ${config.connection.mode}`);
+  // --- Startup banner (plain console.log — no timestamps, clickable links) ---
+  const b = (s: string) => console.log(s);
+  const hr = "━".repeat(62);
 
+  b("");
+  b(`  ┏${hr}┓`);
+  b(`  ┃  Mino Server v${SERVER_VERSION.padEnd(47)}┃`);
+  b(`  ┣${hr}┫`);
+  b(`  ┃  Data:       ${dataDir.padEnd(47)}┃`);
+  b(`  ┃  Listening:  http://${host}:${port}${"".padEnd(Math.max(0, 39 - `http://${host}:${port}`.length))}┃`);
+  b(`  ┃  Web UI:     ${(webDistDir ? "enabled" : "not bundled").padEnd(47)}┃`);
+  b(`  ┃  Mode:       ${config.connection.mode.padEnd(47)}┃`);
+
+  if (config.connection.mode === "relay") {
+    b(`  ┃  Relay:      ${config.connection.relayUrl.padEnd(47)}┃`);
+  }
+
+  if (!credentials.setupComplete) {
+    const relayLinkParams = new URLSearchParams({
+      relayCode: credentials.relayPairCode,
+      relayUrl: config.connection.relayUrl.replace(/\/+$/, ""),
+    });
+    const directLinkParams = new URLSearchParams({
+      serverUrl: localBaseUrl,
+      apiKey: credentials.adminApiKey,
+    });
+
+    b(`  ┣${hr}┫`);
+    b(`  ┃  🟣 FIRST RUN — Setup credentials${"".padEnd(28)}┃`);
+    b(`  ┣${hr}┫`);
+    b(`  ┃  API Key:    ${credentials.adminApiKey.padEnd(47)}┃`);
+    b(`  ┃  Server ID:  ${credentials.serverId.padEnd(47)}┃`);
+
+    if (config.connection.mode === "relay") {
+      b(`  ┃  Pair Code:  ${credentials.relayPairCode.padEnd(47)}┃`);
+    }
+
+    b(`  ┣${hr}┫`);
+    b(`  ┃  Quick-connect links:${"".padEnd(40)}┃`);
+    b(`  ┣${hr}┫`);
+
+    if (config.connection.mode === "relay") {
+      const testLink = `https://test.mino.ink/link?${relayLinkParams.toString()}`;
+      const prodLink = `https://mino.ink/link?${relayLinkParams.toString()}`;
+      b(`  ┃${"".padEnd(62)}┃`);
+      b(`  ┃  test.mino.ink:${"".padEnd(46)}┃`);
+      b(`  ┃  ${testLink.padEnd(60)}┃`);
+      b(`  ┃${"".padEnd(62)}┃`);
+      b(`  ┃  mino.ink:${"".padEnd(52)}┃`);
+      b(`  ┃  ${prodLink.padEnd(60)}┃`);
+      b(`  ┃${"".padEnd(62)}┃`);
+    } else {
+      const testLink = `https://test.mino.ink/link?${directLinkParams.toString()}`;
+      const prodLink = `https://mino.ink/link?${directLinkParams.toString()}`;
+      const builtinLink = `${localBaseUrl}/link?${directLinkParams.toString()}`;
+      b(`  ┃${"".padEnd(62)}┃`);
+      b(`  ┃  test.mino.ink:${"".padEnd(46)}┃`);
+      b(`  ┃  ${testLink.padEnd(60)}┃`);
+      b(`  ┃${"".padEnd(62)}┃`);
+      b(`  ┃  mino.ink:${"".padEnd(52)}┃`);
+      b(`  ┃  ${prodLink.padEnd(60)}┃`);
+      b(`  ┃${"".padEnd(62)}┃`);
+      b(`  ┃  Built-in UI:${"".padEnd(49)}┃`);
+      b(`  ┃  ${builtinLink.padEnd(60)}┃`);
+      b(`  ┃${"".padEnd(62)}┃`);
+    }
+  }
+
+  b(`  ┗${hr}┛`);
+  b("");
+
+  // Step 5: Start relay connector (must be AFTER banner, BEFORE serve)
   if (config.connection.mode === "relay") {
     startRelayConnector({
       relayUrl: config.connection.relayUrl,
@@ -75,35 +143,6 @@ async function main(): Promise<void> {
       localBaseUrl: `http://127.0.0.1:${port}`,
       waitMs: 20000,
     });
-  }
-
-  if (!credentials.setupComplete) {
-    const directLinkParams = new URLSearchParams({ serverUrl: localBaseUrl });
-    directLinkParams.set("apiKey", credentials.adminApiKey);
-    const relayLinkParams = new URLSearchParams({
-      relayCode: credentials.relayPairCode,
-    });
-    const relayBaseUrl = config.connection.relayUrl.replace(/\/+$/, "");
-    relayLinkParams.set("relayUrl", relayBaseUrl);
-
-    logger.info("─".repeat(60));
-    logger.info("🟣 FIRST RUN — Setup credentials:");
-    logger.info(`   Admin API Key: ${credentials.adminApiKey}`);
-    logger.info(`   Relay Pair Code:${credentials.relayPairCode}`);
-    logger.info(`   Server ID:     ${credentials.serverId}`);
-    logger.info(`   Auth header:   X-Mino-Key: ${credentials.adminApiKey}`);
-    logger.info(`   Setup API:     ${localBaseUrl}/api/v1/system/setup`);
-    if (config.connection.mode === "relay") {
-      logger.info(`   test.mino.ink: https://test.mino.ink/link?${relayLinkParams.toString()}`);
-      logger.info(`   mino.ink:      https://mino.ink/link?${relayLinkParams.toString()}`);
-      logger.info("   Local links:   disabled in relay mode");
-    } else {
-      logger.info(`   test.mino.ink: https://test.mino.ink/link?${directLinkParams.toString()}`);
-      logger.info(`   mino.ink:      https://mino.ink/link?${directLinkParams.toString()}`);
-      logger.info(`   Built-in UI:   ${localBaseUrl}/link?${directLinkParams.toString()}`);
-      logger.info(`   Local dev UI:  http://localhost:5173/link?${directLinkParams.toString()}`);
-    }
-    logger.info("─".repeat(60));
   }
 
   Bun.serve({
