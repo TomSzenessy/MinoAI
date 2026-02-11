@@ -2,8 +2,8 @@
 # Docker Publish — Build multi-arch image and push to GHCR
 #
 # Triggers:
-#   - Push to main → pushes :latest tag
-#   - Git tag v*.*.* → pushes :vX.Y.Z + :latest
+#   - Push to main → pushes :main + :latest
+#   - Git tag v*.*.* → pushes :vX.Y.Z + :X.Y
 #
 # The image is published to: ghcr.io/tomszenessy/mino-server
 # =============================================================================
@@ -55,6 +55,7 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=sha,prefix=
+            type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6

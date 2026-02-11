@@ -113,7 +113,7 @@ For servers behind NAT / closed ports, Cloudflare Tunnel provides **free, zero-p
 1. User creates a free Cloudflare Tunnel in their dashboard
 2. Gets a tunnel token
 3. Adds it to docker-compose: `CF_TUNNEL_TOKEN=xxx`
-4. Starts `cloudflared` sidecar with `--profile tunnel`
+4. Redeploys stack (cloudflared auto-starts when token is present)
 5. Server is accessible at `https://slug.cfargotunnel.com`
 
 **Security properties:**
@@ -209,7 +209,7 @@ jobs:
   docker:
     # Build multi-arch Docker image (amd64 + arm64)
     # Embed Next.js static export into server image
-    # Push to ghcr.io/tomszenessy/mino-server:latest + :vX.Y.Z
+    # Push to ghcr.io/tomszenessy/mino-server:main + :latest + :vX.Y.Z
 
   deploy-web:
     # Cloudflare Pages auto-deploy (mino.ink frontend)

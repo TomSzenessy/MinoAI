@@ -69,7 +69,7 @@
             └──────────────┬──────────────┘
                            ▼
 ┌─ User's Server (Docker, self-hosted) ───────────────────────┐
-│  ghcr.io/tomszenessy/mino-server:latest                      │
+│  ghcr.io/tomszenessy/mino-server:main (default)              │
 │                                                              │
 │  ├─ Hono API server (:3000)                                  │
 │  ├─ Built-in Web UI (same as mino.ink, served at /)          │
@@ -90,24 +90,30 @@
 ```yaml
 services:
   mino:
-    image: ghcr.io/tomszenessy/mino-server:latest
+    image: ghcr.io/tomszenessy/mino-server:${MINO_IMAGE_TAG:-main}
     volumes:
       - mino-data:/data
     ports:
-      - "3000:3000"
+      - "${MINO_PORT_BIND:-0.0.0.0}:${MINO_PORT:-3000}:3000"
     restart: unless-stopped
     # No environment variables needed — auto-bootstraps on first run
 
   # Optional: Cloudflare Tunnel for remote access (free, no open ports)
   cloudflared:
     image: cloudflare/cloudflared:latest
-    command: tunnel --no-autoupdate run
+    entrypoint: ["/bin/sh"]
+    command:
+      - -c
+      - |
+        if [ -n "$${TUNNEL_TOKEN:-}" ]; then
+          exec cloudflared tunnel --no-autoupdate run --token "$${TUNNEL_TOKEN}"
+        fi
+        exec tail -f /dev/null
     environment:
       - TUNNEL_TOKEN=${CF_TUNNEL_TOKEN:-}
     depends_on:
       - mino
     restart: unless-stopped
-    profiles: ["tunnel"]    # Only starts if explicitly enabled
 
   # Optional: auto-updates from GHCR
   watchtower:
@@ -198,7 +204,7 @@ For users whose server ports are closed (behind NAT, no port forwarding):
 1. User creates a free Cloudflare Tunnel in their dashboard
 2. Gets a tunnel token
 3. Adds `CF_TUNNEL_TOKEN=xxx` to docker-compose environment
-4. Starts the `cloudflared` sidecar with `--profile tunnel`
+4. Redeploys stack (cloudflared auto-starts when token is present)
 5. Server is accessible at `https://random-slug.cfargotunnel.com`
 6. Zero ports exposed, traffic encrypted end-to-end
 
@@ -213,7 +219,7 @@ GitHub repo (TomSzenessy/MinoAI)
   │   │   ├─ Lint + typecheck + test
   │   │   ├─ Build multi-arch Docker image (amd64 + arm64)
   │   │   ├─ Build Next.js static export → embed in Docker image
-  │   │   └─ Push to ghcr.io/tomszenessy/mino-server:latest + :vX.Y.Z
+  │   │   └─ Push to ghcr.io/tomszenessy/mino-server:main + :latest + :vX.Y.Z
   │   │
   │   └─ Cloudflare Pages (auto-deploy)
   │       └─ Builds + deploys mino.ink frontend (static site)

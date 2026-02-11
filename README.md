@@ -14,14 +14,9 @@ You do **not** need to clone this repo to deploy.
 Default service:
 - `mino-server` on port `3000`
 
-Optional profiles:
-- `tunnel` (Cloudflare Tunnel)
-- `autoupdate` (Watchtower)
-- `full` (all sidecars)
-
 Access modes:
 - Open mode (default): published host port
-- Tunnel mode (safer): set `COMPOSE_PROFILES=tunnel` + `MINO_PORT_BIND=127.0.0.1`
+- Tunnel mode (safer): set `CF_TUNNEL_TOKEN` + `MINO_PORT_BIND=127.0.0.1`
 
 ## 2. First Run: Get Auth + Links
 
@@ -66,10 +61,13 @@ If you do not want open host ports, use tunnel mode:
    `docker run cloudflare/cloudflared:latest tunnel --no-autoupdate run --token eyJ...`
 5. Copy only the token value after `--token`.
 6. In Portainer stack environment vars set:
-   - `COMPOSE_PROFILES=tunnel`
    - `CF_TUNNEL_TOKEN=<copied token>`
    - `MINO_PORT_BIND=127.0.0.1`
 7. Redeploy the stack.
+
+Image tag note:
+- default compose image tag is `main` (most reliable after pushes)
+- optional override: `MINO_IMAGE_TAG=latest` or a pinned version tag
 
 ## 4. Cloudflare Pages Settings
 

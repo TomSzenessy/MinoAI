@@ -10,9 +10,8 @@ Copy everything inside the code block into Portainer -> Stacks -> Add stack.
 #
 # Usage:
 #   docker compose up -d                           — Open mode (default, published port)
-#   docker compose --profile tunnel up -d          — Tunnel mode (recommended safer mode)
+#   CF_TUNNEL_TOKEN=<token> docker compose up -d   — Tunnel enabled (no tunnel profile needed)
 #   docker compose --profile autoupdate up -d      — Start server + Watchtower
-#   docker compose --profile full up -d            — Start everything
 #
 # Copy-paste this file into Portainer → Stacks → "Add Stack" → Paste YAML.
 # =============================================================================
@@ -22,7 +21,9 @@ services:
   # Mino Server — The core API + built-in web UI
   # -------------------------------------------------------------------------
   mino:
-    image: ghcr.io/tomszenessy/mino-server:latest
+    # Default to :main so fresh pushes are always pullable.
+    # Override with MINO_IMAGE_TAG=latest (or a pinned version tag) if desired.
+    image: ghcr.io/tomszenessy/mino-server:${MINO_IMAGE_TAG:-main}
     container_name: mino-server
     restart: unless-stopped
     ports:
@@ -54,8 +55,11 @@ services:
 
   # -------------------------------------------------------------------------
   # Cloudflare Tunnel — Secure remote access (no open ports)
-  # Activate with: docker compose --profile tunnel up -d
-  # Recommended with tunnel mode:
+  # Auto behavior:
+  #   - CF_TUNNEL_TOKEN set     -> tunnel starts
+  #   - CF_TUNNEL_TOKEN missing -> tunnel service stays idle
+  #
+  # Recommended for tunnel mode:
   #   MINO_PORT_BIND=127.0.0.1 (avoid exposing host port externally)
   #
   # Get your tunnel token from: https://one.dash.cloudflare.com
@@ -66,11 +70,19 @@ services:
     image: cloudflare/cloudflared:latest
     container_name: mino-tunnel
     restart: unless-stopped
-    profiles: ["tunnel", "full"]
-    command: tunnel --no-autoupdate run
+    entrypoint: ["/bin/sh"]
+    command:
+      - -c
+      - |
+        if [ -n "$${TUNNEL_TOKEN:-}" ]; then
+          echo "Cloudflare Tunnel enabled"
+          exec cloudflared tunnel --no-autoupdate run --token "$${TUNNEL_TOKEN}"
+        fi
+        echo "Cloudflare Tunnel disabled (CF_TUNNEL_TOKEN not set)"
+        exec tail -f /dev/null
     environment:
       # Keep optional so base stack deploys without tunnel config.
-      # When enabling the tunnel profile, set CF_TUNNEL_TOKEN in Portainer env vars.
+      # Set CF_TUNNEL_TOKEN in Portainer env vars to enable the tunnel.
       - TUNNEL_TOKEN=${CF_TUNNEL_TOKEN:-}
     depends_on:
       mino:
@@ -86,7 +98,7 @@ services:
     image: containrrr/watchtower:latest
     container_name: mino-watchtower
     restart: unless-stopped
-    profiles: ["autoupdate", "full"]
+    profiles: ["autoupdate"]
     environment:
       - WATCHTOWER_CLEANUP=true
       - WATCHTOWER_POLL_INTERVAL=21600    # 6 hours

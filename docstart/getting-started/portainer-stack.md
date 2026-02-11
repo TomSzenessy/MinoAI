@@ -15,28 +15,27 @@ Deploy Mino by pasting one compose file in Portainer. No repository clone is req
 5. (Optional) Add environment variables in Portainer:
    - `MINO_PORT` (default `3000`)
    - `MINO_PORT_BIND` (default `0.0.0.0`, set `127.0.0.1` for safer tunnel mode)
-   - `CF_TUNNEL_TOKEN` (required only if tunnel profile is enabled)
-   - `COMPOSE_PROFILES` (`tunnel`, `autoupdate`, or `full`)
+   - `MINO_IMAGE_TAG` (default `main`, optional override to `latest` or a pinned version)
+   - `CF_TUNNEL_TOKEN` (optional; if set, tunnel starts automatically)
+   - `COMPOSE_PROFILES=autoupdate` (optional; enables Watchtower sidecar)
 6. Deploy the stack.
 
 ## What Starts By Default
 
 With no profile configured:
 - `mino` service starts
-- `cloudflared` and `watchtower` stay disabled
+- `cloudflared` starts in disabled-idle mode unless `CF_TUNNEL_TOKEN` is set
+- `watchtower` stays disabled
 - Port bind defaults to open mode (`0.0.0.0:${MINO_PORT}`)
 
 ## Optional Modes
 
-- `COMPOSE_PROFILES=tunnel`
-  Starts `cloudflared` + `mino`
-  Recommended extras:
-  - `MINO_PORT_BIND=127.0.0.1`
+- Tunnel mode (recommended secure remote access)
+  Set:
   - `CF_TUNNEL_TOKEN=<token from Cloudflare dashboard>`
+  - `MINO_PORT_BIND=127.0.0.1`
 - `COMPOSE_PROFILES=autoupdate`
   Starts `watchtower` + `mino`
-- `COMPOSE_PROFILES=full`
-  Starts all services
 
 ## Verify Deployment
 
@@ -60,7 +59,7 @@ Expected health response status is `200`.
    `docker run cloudflare/cloudflared:latest tunnel --no-autoupdate run --token eyJ...`
 7. Copy only the token value after `--token`.
 8. Paste that token into Portainer env var: `CF_TUNNEL_TOKEN`.
-9. Set `COMPOSE_PROFILES=tunnel` and `MINO_PORT_BIND=127.0.0.1`.
+9. Set `MINO_PORT_BIND=127.0.0.1`.
 10. Redeploy stack.
 
 ## Persistent Data

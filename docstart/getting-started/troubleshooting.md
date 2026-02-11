@@ -35,23 +35,35 @@ Fix:
 ## Cloudflare Tunnel Service Won't Start
 
 Cause:
-- `CF_TUNNEL_TOKEN` missing while `tunnel` profile is enabled
+- `CF_TUNNEL_TOKEN` missing, invalid, or copied with extra spaces
 
 Fix:
 - add `CF_TUNNEL_TOKEN` in Portainer env variables
+- copy only the raw value after `--token` from Cloudflare
 - redeploy stack
 
-## Setup Link Works But UI Does Not Auto-Fill
+Note:
+- Tunnel is optional. If you do not set `CF_TUNNEL_TOKEN`, Mino still runs in open-port mode.
+
+## `manifest unknown` During Stack Deploy
 
 Cause:
-- client route does not yet parse query params
+- container tag does not exist in GHCR (`latest` may lag or be missing)
 
 Fix:
-- manually paste values from setup response:
-  - `server.server.url`
-  - `apiKey`
-- then track implementation against:
-  - `../reference/link-handler-spec.md`
+- use the default compose setting `MINO_IMAGE_TAG=main`
+- or set a known version tag in Portainer (example: `MINO_IMAGE_TAG=v0.1.0`)
+- redeploy stack
+
+## Setup Link Opens But Does Not Auto-Link
+
+Cause:
+- stale web client build or blocked API call (CORS/network)
+
+Fix:
+- ensure URL has both params: `serverUrl` and `apiKey`
+- confirm browser can reach `serverUrl` and CORS allows the UI origin
+- update to latest web build and retry the `/link` URL
 
 ## Data Missing After Redeploy
 
