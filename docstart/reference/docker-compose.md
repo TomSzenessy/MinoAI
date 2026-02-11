@@ -9,10 +9,9 @@ Copy everything inside the code block into Portainer -> Stacks -> Add stack.
 # Mino Server — Docker Compose (Portainer-friendly)
 #
 # Usage:
-#   docker compose up -d                           — Relay mode (default, safer, no public port)
-#   MINO_CONNECTION_MODE=open-port MINO_PORT_BIND=0.0.0.0 docker compose up -d
-#                                                  — Open-port mode (direct public access)
-#   docker compose --profile autoupdate up -d      — Start server + Watchtower
+#   docker compose up -d                           — Relay mode (default, no tunnel)
+#   docker compose --profile tunnel up -d          — Start with Cloudflare Tunnel
+#   docker compose --profile autoupdate up -d      — Start with Watchtower auto-updates
 #
 # Copy-paste this file into Portainer → Stacks → "Add Stack" → Paste YAML.
 # =============================================================================
@@ -68,12 +67,10 @@ services:
 
   # -------------------------------------------------------------------------
   # Cloudflare Tunnel — Secure remote access (no open ports)
-  # Auto behavior:
-  #   - CF_TUNNEL_TOKEN set     -> tunnel starts
-  #   - CF_TUNNEL_TOKEN missing -> tunnel service stays idle
+  # Activate with: docker compose --profile tunnel up -d
   #
-  # Recommended for tunnel mode:
-  #   MINO_PORT_BIND=127.0.0.1 (avoid exposing host port externally)
+  # Only starts when the "tunnel" profile is active.
+  # Requires CF_TUNNEL_TOKEN to be set in Portainer env vars.
   #
   # Get your tunnel token from: https://one.dash.cloudflare.com
   # Networks/Tunnels -> Create tunnel -> Cloudflared
@@ -83,6 +80,7 @@ services:
     image: cloudflare/cloudflared:latest
     container_name: mino-tunnel
     restart: unless-stopped
+    profiles: ["tunnel"]
     command: tunnel --no-autoupdate run --token ${CF_TUNNEL_TOKEN}
     depends_on:
       mino:
