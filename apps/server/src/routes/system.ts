@@ -19,7 +19,7 @@ export function systemRoutes(): Hono<AppContext> {
   router.get("/capabilities", (c) => {
     const cpu = cpus();
     const cpuModel = cpu[0]?.model ?? "Unknown";
-    const cpuCores = cpu.length;
+    const cpuCores = Math.max(cpu.length, 1);
     const totalMB = Math.round(totalmem() / 1024 / 1024);
     const availableMB = Math.round(freemem() / 1024 / 1024);
 

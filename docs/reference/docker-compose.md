@@ -1,0 +1,95 @@
+# Docker Compose (Portainer Copy Block)
+
+[Back to docs](../README.md)
+
+Copy everything inside the code block into Portainer -> Stacks -> Add stack.
+
+```yaml
+# =============================================================================
+# Mino Server — Docker Compose (Portainer-friendly)
+#
+# Usage:
+#   docker compose up -d                           — Start server only
+#   docker compose --profile tunnel up -d          — Start server + Cloudflare Tunnel
+#   docker compose --profile autoupdate up -d      — Start server + Watchtower
+#   docker compose --profile full up -d            — Start everything
+#
+# Copy-paste this file into Portainer → Stacks → "Add Stack" → Paste YAML.
+# =============================================================================
+
+services:
+  # -------------------------------------------------------------------------
+  # Mino Server — The core API + built-in web UI
+  # -------------------------------------------------------------------------
+  mino:
+    image: ghcr.io/tomszenessy/mino-server:latest
+    container_name: mino-server
+    restart: unless-stopped
+    ports:
+      - "${MINO_PORT:-3000}:3000"
+    volumes:
+      - mino-data:/data
+    environment:
+      - NODE_ENV=production
+      - MINO_DATA_DIR=/data
+      # Optional overrides (uncomment as needed):
+      # - MINO_PORT=3000
+      # - MINO_HOST=0.0.0.0
+      # - MINO_AUTH_MODE=api-key
+      # - MINO_CORS_ORIGINS=https://mino.ink,https://test.mino.ink,http://localhost:3000
+      # - MINO_AGENT_ENABLED=true
+      # - MINO_AGENT_PROVIDER=anthropic
+      # - MINO_AGENT_MODEL=claude-sonnet-4-20250514
+      # - MINO_AGENT_API_KEY=sk-ant-...
+      # - MINO_LOG_LEVEL=info
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/v1/health"]
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+
+  # -------------------------------------------------------------------------
+  # Cloudflare Tunnel — Secure remote access (no open ports)
+  # Activate with: docker compose --profile tunnel up -d
+  #
+  # Get your tunnel token from: https://one.dash.cloudflare.com
+  # Tunnels → Create Tunnel → Copy token
+  # -------------------------------------------------------------------------
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: mino-tunnel
+    restart: unless-stopped
+    profiles: ["tunnel", "full"]
+    command: tunnel run
+    environment:
+      - TUNNEL_TOKEN=${CF_TUNNEL_TOKEN:?Set CF_TUNNEL_TOKEN to your Cloudflare Tunnel token}
+    depends_on:
+      mino:
+        condition: service_healthy
+
+  # -------------------------------------------------------------------------
+  # Watchtower — Automatic Docker image updates from GHCR
+  # Activate with: docker compose --profile autoupdate up -d
+  #
+  # Checks for new images every 6 hours. Zero-downtime restarts.
+  # -------------------------------------------------------------------------
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: mino-watchtower
+    restart: unless-stopped
+    profiles: ["autoupdate", "full"]
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_POLL_INTERVAL=21600    # 6 hours
+      - WATCHTOWER_INCLUDE_STOPPED=false
+      - WATCHTOWER_SCOPE=mino
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      - "com.centurylinklabs.watchtower.scope=mino"
+
+volumes:
+  mino-data:
+    name: mino-data
+```

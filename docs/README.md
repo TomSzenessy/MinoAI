@@ -1,58 +1,50 @@
-# 🟣 Mino — Documentation
+# Mino Docs
 
-> A comprehensive, end-to-end blueprint for building the Mino knowledge platform.
+This documentation is organized for two audiences:
+- users deploying from Portainer with copy/paste compose
+- contributors building and extending Mino locally
 
----
+## Getting Started
 
-## Quick Links
+### 1. Deployment
+- `getting-started/portainer-stack.md`
+  What to paste into Portainer, what starts by default, and optional profiles.
 
-| Document | Contents |
-|----------|----------|
-| [**Design System**](./design-system.md) | Colors, typography, components, logo usage, glassmorphism effects |
-| [**Architecture**](./architecture.md) | Tech stack, three-layer model, deployment, hosting, Docker, CI/CD |
-| [**Server**](./server.md) | Mino server, auto-bootstrap, REST API, built-in UI, plugins, sandbox |
-| [**Frontend**](./frontend.md) | mino.ink (Cloudflare Pages), local UI, mobile apps, hybrid auth |
-| [**AI Agent**](./ai-agent.md) | "The Organizer" agent, server-hosted runtime, plugin install, MCP |
-| [**Security**](./security.md) | Hybrid auth, credential flow, Cloudflare Tunnel, security hardening |
-| [**Roadmap**](./roadmap.md) | Phased plan, deployment priorities, risk analysis, open questions |
+### 2. Linking + Auth
+- `getting-started/linking-and-auth.md`
+  How `/api/v1/system/setup` works, what headers to use, and how linking is marked complete.
 
----
+### 3. Local Build + Interface
+- `getting-started/local-build.md`
+  Build/test instructions and local interface options.
 
-## What Mino Is
+### 4. Troubleshooting
+- `getting-started/troubleshooting.md`
+  Common setup failures and fixes.
 
-Mino is an **open-source, markdown-based knowledge platform** where your notes live as plain `.md` files in folder trees, managed by a self-hosted server, accessible through beautiful interfaces (web + mobile), and maintained by AI agents.
+## Reference
 
-### Three Pillars
+### 1. Stack YAML
+- `reference/docker-compose.md`
+  Portainer-ready compose YAML copy block.
 
-| Pillar | Meaning |
-|--------|---------|
-| **Modularity** | Server, web, mobile, agent — all independent. Swap any piece. Run everything locally or split across services. |
-| **Agent-Native** | The AI agent is not bolted on — it runs server-side as the primary way power users interact. The API is designed for agents first, humans second. |
-| **Open-Source First** | Every component is open-source. Self-hosting is a first-class experience. One Docker Compose = fully running server. |
+### 2. Setup API Payload
+- `reference/setup-response.md`
+  Field-by-field explanation of `GET /api/v1/system/setup`.
 
-### Hosting Model
+## Architecture Deep Dives
 
-Mino follows a **hybrid hosting model** — the server runs on your infrastructure, and the web UI can come from anywhere:
+- `architecture.md`
+- `server.md`
+- `frontend.md`
+- `ai-agent.md`
+- `security.md`
+- `design-system.md`
+- `roadmap.md`
 
-| Mode | Description | Requires Account? |
-|------|-------------|-------------------|
-| **mino.ink + self-hosted server** | Use the hosted web UI at mino.ink, link your own server via credentials | Optional (Google sign-in to persist across devices, or just localStorage) |
-| **mino.ink free tier** | Use a limited managed server hosted by mino.ink — no self-hosting, no setup | Optional (Google sign-in for persistence) |
-| **Fully self-hosted** | Run the Docker image, which includes the full web UI at `http://server:3000` | ❌ No account needed |
-| **API / CLI / MCP only** | Talk directly to the server API using generated credentials | ❌ No account needed |
+## Suggested Read Order
 
-### Target Audience
-
-1. **Primary:** Developers who use AI coding agents (Antigravity, Cursor, Claude Code, Windsurf) and want their knowledge base to be agent-accessible and agent-maintained.
-2. **Secondary:** Technical knowledge workers who want a self-hosted, privacy-first alternative to Notion/Obsidian with AI superpowers.
-3. **Tertiary:** Teams and organizations wanting a shared knowledge base with AI-powered organization.
-
-### The Key Insight
-
-Most note-taking apps treat AI as a feature. **Mino treats the AI agent as a first-class user.** The API, the file structure, the search capabilities — everything is designed so that an AI agent can efficiently navigate, understand, modify, and organize a vault of thousands of notes with minimal token usage and maximum accuracy.
-
----
-
-> **This is a living blueprint.** Update individual docs as decisions are made and the project evolves.
->
-> *Last updated: 2026-02-11*
+1. `getting-started/portainer-stack.md`
+2. `getting-started/linking-and-auth.md`
+3. `getting-started/troubleshooting.md`
+4. Deep dives as needed

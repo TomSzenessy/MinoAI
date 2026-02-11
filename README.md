@@ -1,208 +1,117 @@
-# 🟣 Mino — Mind Notes
+# Mino Server (Portainer-First Setup)
 
-<p align="center">
-  <strong>Your Mind, Organized. Agent-First.</strong>
-</p>
+This repository is set up so users can deploy with **one copy/paste Docker Compose stack in Portainer**.
 
-<p align="center">
-  <em>An open-source, markdown-based knowledge platform designed for developers who want AI agents to organize their notes for them.</em>
-</p>
+If you do not want to clone the repo, that is fine. Use the compose YAML in `docker/docker-compose.yml` (or the copy in `docs/reference/docker-compose.md`) and deploy it as a Portainer stack.
 
-<p align="center">
-  <a href="https://mino.ink">Website</a> ·
-  <a href="#quick-start">Quick Start</a> ·
-  <a href="#architecture">Architecture</a> ·
-  <a href="MASTER_PLAN.md">Master Plan</a> ·
-  <a href="#self-hosting">Self-Hosting</a> ·
-  <a href="#api-reference">API</a> ·
-  <a href="#contributing">Contributing</a>
-</p>
+## 1. Deploy In Portainer (Copy/Paste Only)
 
----
+1. Open Portainer.
+2. Go to `Stacks` -> `Add stack`.
+3. Name it (example: `mino`).
+4. Paste the compose YAML from `docs/reference/docker-compose.md`.
+5. Click `Deploy the stack`.
 
-## What is Mino?
+After deploy, Portainer will start `mino-server` (and optional sidecars if profiles are enabled).
 
-**Mino** is an open-source notes and knowledge management platform built around three core principles:
+## 2. First-Run Output (Auth + Links)
 
-1. **Markdown-first** — Your notes are plain `.md` files in a folder tree. No vendor lock-in. No proprietary formats. You always own your data.
-2. **Agent-native** — Built from the ground up so AI coding agents (Antigravity, Cursor, Claude Code, etc.) can seamlessly read, write, organize, and maintain your notes via a clean API and MCP tools.
-3. **Modular architecture** — The server, web interface, mobile apps, and AI agent are completely independent. Swap, host, or extend any piece without touching the others.
+On first boot, Mino auto-generates:
+- `serverId`
+- `adminApiKey`
+- `jwtSecret`
+- `/data/config.json`
+- `/data/credentials.json`
 
-Think of it as **Obsidian meets an AI coding agent**, designed for developers who want their knowledge base to be a living, AI-maintained system rather than a static vault.
+Use either of these to get setup details:
+- Container logs in Portainer (`mino-server`)
+- Setup endpoint: `http://<YOUR_SERVER>:3000/api/v1/system/setup`
 
-## Why Mino?
+The setup payload now includes:
+- Auth method (`X-Mino-Key`)
+- API key (redacted after setup is complete)
+- Clickable connection links for:
+  - `https://test.mino.ink`
+  - `https://mino.ink`
+  - local UI (`http://localhost:5173`)
 
-| Problem | Mino's Answer |
-|---------|---------------|
-| Notes apps lock you into proprietary formats | Plain markdown files in folders — `git clone` and you're done |
-| No native AI agent integration | First-class API + MCP tools purpose-built for coding agents |
-| Can't self-host with full control | One-command Docker/binary deploy; point any client to your server |
-| Note organization is manual busywork | AI agent auto-organizes, tags, links, and maintains your notes |
-| Mobile apps don't work offline | Full offline-first sync with CRDT conflict resolution |
+## 3. Link The Server
 
-## Architecture
+Use one of the links returned by `/api/v1/system/setup`:
+- `links.connect.testMinoInk`
+- `links.connect.minoInk`
+- `links.connect.localUi`
 
-Mino is built as a set of independent, modular services:
+If your UI does not support prefilled query params yet, copy these manually:
+- `server.server.url`
+- `apiKey`
 
-```
-┌─────────────────────────────────────────────────────┐
-│                    INTERFACES                        │
-│  ┌──────────┐  ┌──────────┐  ┌──────────────────┐  │
-│  │  Web App  │  │ Mobile   │  │  Agent / MCP     │  │
-│  │ (mino.ink)│  │ (iOS/    │  │  (Antigravity,   │  │
-│  │          │  │  Android) │  │   Cursor, etc.)  │  │
-│  └────┬─────┘  └────┬─────┘  └────────┬─────────┘  │
-│       └──────────────┼─────────────────┘             │
-└──────────────────────┼──────────────────────────────┘
-                       │  REST / WebSocket / MCP
-                       ▼
-┌──────────────────────────────────────────────────────┐
-│                  MINO SERVER                          │
-│  ┌────────┐ ┌──────────┐ ┌───────┐ ┌─────────────┐ │
-│  │REST API │ │WebSocket │ │ Auth  │ │  Agent      │ │
-│  │        │ │(realtime)│ │(JWT/  │ │  Runtime    │ │
-│  │        │ │          │ │OAuth) │ │  (AI brain) │ │
-│  └────┬───┘ └────┬─────┘ └───┬───┘ └──────┬──────┘ │
-│       └──────────┼───────────┼─────────────┘         │
-│                  ▼                                    │
-│  ┌──────────────────────────────────────────────┐    │
-│  │           FILE SYSTEM + INDEX                 │    │
-│  │  📁 Markdown files  │  🔍 SQLite FTS index   │    │
-│  │  📁 Folder tree     │  📊 Embedding vectors   │    │
-│  └──────────────────────────────────────────────┘    │
-└──────────────────────────────────────────────────────┘
-```
-
-> **Key insight:** The server manages the files and exposes the API. Every interface — web, mobile, or AI agent — is just a client. You can swap, duplicate, or skip any client you don't need.
-
-## Quick Start
-
-### Option 1: Use the hosted service (mino.ink)
-
-1. Go to [mino.ink](https://mino.ink)
-2. Sign up / sign in
-3. Start writing
-
-### Option 2: Self-host
+Then verify auth:
 
 ```bash
-# Docker (recommended)
-docker run -d \
-  -p 3000:3000 \
-  -v ~/mino-notes:/data \
-  ghcr.io/mino-ink/mino-server:latest
+curl -X POST http://<YOUR_SERVER>:3000/api/v1/auth/verify \
+  -H "X-Mino-Key: <YOUR_API_KEY>"
+```
 
-# Or from source
-git clone https://github.com/mino-ink/mino.git
-cd mino/server
-cp .env.example .env
+## 4. Optional Profiles
+
+The compose file includes optional services:
+- `cloudflared` (`tunnel` profile)
+- `watchtower` (`autoupdate` profile)
+
+Examples:
+- Server only: default deploy (no profile)
+- Server + tunnel: set `COMPOSE_PROFILES=tunnel`
+- Server + auto-update: set `COMPOSE_PROFILES=autoupdate`
+- Everything: set `COMPOSE_PROFILES=full`
+
+If you enable `tunnel`, set `CF_TUNNEL_TOKEN` in Portainer environment variables.
+
+## 5. Local Build / Development (For Contributors)
+
+For development/customization:
+
+```bash
 bun install
-bun run start
+cd packages/shared && bun run build
+cd ../../apps/server && bun run dev
 ```
 
-### Option 3: Connect an AI agent
+Run tests:
 
 ```bash
-# Install the Mino MCP tool for your agent
-npx @mino-ink/mcp-server --endpoint https://your-server.com --api-key YOUR_KEY
+cd apps/server
+bun test
 ```
 
-Then in your agent, you can:
-- `mino.search("meeting notes from last week")`
-- `mino.create("/Projects/Alpha/notes.md", content)`
-- `mino.organize()` — let the agent reorganize your vault
-
-## Self-Hosting
-
-Mino is designed to be self-hosted as easily as possible:
-
-| Method | Command | Best for |
-|--------|---------|----------|
-| **Docker** | `docker run ghcr.io/mino-ink/mino-server` | Production |
-| **Binary** | `./mino-server --data ~/notes` | Single machine |
-| **From source** | `bun run start` | Development |
-
-Once your server is running, point any Mino client (web, mobile, agent) to it by setting the endpoint URL.
-
-**Multi-server support:** You can run multiple Mino servers managing different note collections and switch between them in any client.
-
-## API Reference
-
-The API is RESTful with optional WebSocket for real-time sync:
-
-```
-# Notes
-GET    /api/v1/notes                    # List all notes
-GET    /api/v1/notes/:path              # Get note by path
-POST   /api/v1/notes                    # Create note
-PUT    /api/v1/notes/:path              # Update note
-DELETE /api/v1/notes/:path              # Delete note
-PATCH  /api/v1/notes/:path/move         # Move/rename note
-
-# Search
-GET    /api/v1/search?q=...             # Full-text search
-POST   /api/v1/search/semantic          # Semantic/embedding search
-
-# Folders
-GET    /api/v1/tree                     # Get folder tree
-POST   /api/v1/folders                  # Create folder
-DELETE /api/v1/folders/:path            # Delete folder
-
-# Agent
-POST   /api/v1/agent/chat              # Chat with the AI agent
-GET    /api/v1/agent/suggestions        # Get organization suggestions
-
-# Auth
-POST   /api/v1/auth/login              # Get JWT token
-POST   /api/v1/auth/refresh            # Refresh token
-```
-
-> Full OpenAPI spec available at `GET /api/v1/docs`
-
-## Tech Stack
-
-| Layer | Technology | Why |
-|-------|------------|-----|
-| **Server** | TypeScript + Bun + Hono | Fast, modern, excellent DX |
-| **Database** | SQLite (index) + File system (data) | Portable, zero-config, fast |
-| **Web App** | Next.js 15 + React + Tailwind CSS | SSR, great ecosystem |
-| **Mobile** | React Native + Expo | Cross-platform, offline-first |
-| **AI Agent** | LLM API + MCP tools | Model-agnostic, extensible |
-| **Search** | SQLite FTS5 + vector embeddings | Fast full-text + semantic search |
-| **Auth** | JWT + OAuth 2.0 (Google) | Standard, secure |
-| **Sync** | CRDTs (Yjs) | Offline-first conflict resolution |
-
-## Plugins & Integrations
-
-Mino supports plugins for extending the agent's capabilities:
-
-- 🌐 **Web Search** — Search the web and save results as notes
-- 📧 **Email Import** — Auto-import emails as notes
-- 📺 **YouTube Transcripts** — Save video transcripts
-- 🎙️ **Voice Notes** — Speech-to-text note creation
-- 🖼️ **Image OCR** — Extract text from images
-- 📰 **News & RSS** — Follow feeds and clip articles
-- 🐦 **Social Media** — Save tweets/posts as notes
-
-## Contributing
-
-Mino is open-source and community-driven. We welcome contributions!
+Build Docker image locally:
 
 ```bash
-git clone https://github.com/mino-ink/mino.git
-cd mino
-bun install
-bun run dev
+docker build -f docker/Dockerfile -t mino-server .
+docker run --rm -p 3000:3000 -v mino-data:/data mino-server
 ```
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+## 6. Local Interface Options
 
-## License
+Current options:
+- Hosted clients: `https://mino.ink` and `https://test.mino.ink`
+- Prototype UI in this repo: `prototype/` (static frontend preview)
 
-MIT — [LICENSE](LICENSE)
+To run the prototype locally:
 
----
+```bash
+cd prototype
+python3 -m http.server 5173
+```
 
-<p align="center">
-  Built with 💜 for developers who think in markdown.
-</p>
+Then open `http://localhost:5173`.
+
+## 7. Docs
+
+Start here: `docs/README.md`
+
+Key docs:
+- Portainer deployment: `docs/getting-started/portainer-stack.md`
+- Linking/auth flow: `docs/getting-started/linking-and-auth.md`
+- Local build/interface: `docs/getting-started/local-build.md`
+- Troubleshooting: `docs/getting-started/troubleshooting.md`

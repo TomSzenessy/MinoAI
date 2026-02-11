@@ -10,7 +10,7 @@ import { Hono } from "hono";
 import type { Credentials, ServerConfig } from "@mino-ink/shared";
 import { corsMiddleware } from "./middleware/cors";
 import { authMiddleware } from "./middleware/auth";
-import { errorHandler } from "./middleware/error-handler";
+import { errorHandler, handleAppError } from "./middleware/error-handler";
 import { requestLogger } from "./middleware/request-logger";
 import { healthRoutes } from "./routes/health";
 import { setupRoutes } from "./routes/setup";
@@ -36,6 +36,7 @@ export interface AppDependencies {
  */
 export function createApp(deps: AppDependencies): Hono<AppContext> {
   const app = new Hono<AppContext>();
+  app.onError(handleAppError);
 
   // ---------------------------------------------------------------------------
   // Inject dependencies into Hono context (available in all routes)
@@ -65,6 +66,7 @@ export function createApp(deps: AppDependencies): Hono<AppContext> {
   // Protected routes (API key or JWT required)
   // ---------------------------------------------------------------------------
   const protectedApi = new Hono<AppContext>();
+  protectedApi.onError(handleAppError);
   protectedApi.use("*", authMiddleware());
   protectedApi.route("/system", systemRoutes());
   protectedApi.route("/auth", authRoutes());

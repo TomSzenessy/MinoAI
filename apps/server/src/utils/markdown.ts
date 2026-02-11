@@ -106,8 +106,10 @@ function extractLinks(content: string): string[] {
 function countWords(content: string): number {
   // Remove code blocks
   const withoutCode = content.replace(/```[\s\S]*?```/g, "").replace(/`[^`]+`/g, "");
+  // Remove markdown headings (treat headings as metadata, not body content)
+  const withoutHeadings = withoutCode.replace(/^\s{0,3}#{1,6}\s+.*$/gm, "");
   // Remove HTML tags
-  const withoutHtml = withoutCode.replace(/<[^>]+>/g, "");
+  const withoutHtml = withoutHeadings.replace(/<[^>]+>/g, "");
   // Split on whitespace and count non-empty tokens
   return withoutHtml.split(/\s+/).filter((word) => word.length > 0).length;
 }

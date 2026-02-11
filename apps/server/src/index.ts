@@ -37,11 +37,18 @@ async function main(): Promise<void> {
   logger.info(`Server listening on http://${host}:${port}`);
 
   if (!credentials.setupComplete) {
+    const localBaseUrl = `http://${host === "0.0.0.0" ? "localhost" : host}:${port}`;
+    const linkParams = new URLSearchParams({ serverUrl: localBaseUrl });
+
     logger.info("─".repeat(60));
     logger.info("🟣 FIRST RUN — Setup credentials:");
     logger.info(`   Admin API Key: ${credentials.adminApiKey}`);
     logger.info(`   Server ID:     ${credentials.serverId}`);
-    logger.info(`   Setup page:    http://${host === "0.0.0.0" ? "localhost" : host}:${port}/api/v1/system/setup`);
+    logger.info(`   Auth header:   X-Mino-Key: ${credentials.adminApiKey}`);
+    logger.info(`   Setup API:     ${localBaseUrl}/api/v1/system/setup`);
+    logger.info(`   test.mino.ink: https://test.mino.ink/link?${linkParams.toString()}`);
+    logger.info(`   mino.ink:      https://mino.ink/link?${linkParams.toString()}`);
+    logger.info(`   Local UI:      http://localhost:5173/link?${linkParams.toString()}`);
     logger.info("─".repeat(60));
   }
 
