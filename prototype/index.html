@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Mino — Your Mind, Organized. An agent-first, markdown-based knowledge platform for developers.">
+  <title>Mino — Your Mind, Organized</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" type="image/svg+xml" href="logo.svg">
+</head>
+<body>
+
+  <!-- ============================================================
+       LANDING PAGE
+       ============================================================ -->
+  <div class="landing" id="landing">
+    <!-- Animated Background -->
+    <div class="landing-bg">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="orb orb-3"></div>
+      <div class="grid-overlay"></div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+      <div class="navbar-logo">
+        <svg width="28" height="28" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="100" cy="100" r="95" fill="#1E1E1E" stroke="rgba(187,134,252,0.15)" stroke-width="2"/>
+          <ellipse cx="50" cy="100" rx="17" ry="50" fill="#BB86FC"/>
+          <ellipse cx="100" cy="100" rx="20" ry="70" fill="#BB86FC"/>
+          <ellipse cx="150" cy="100" rx="17" ry="50" fill="#BB86FC"/>
+        </svg>
+        <span>ino</span>
+      </div>
+      <div class="navbar-links">
+        <button class="navbar-link active">Features</button>
+        <button class="navbar-link">Docs</button>
+        <button class="navbar-link">GitHub</button>
+        <button class="navbar-link">Blog</button>
+      </div>
+      <button class="navbar-cta" onclick="enterApp()">Get Started</button>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-badge">
+        <span class="dot"></span>
+        Open Source & Self-Hostable
+      </div>
+
+      <h1>
+        Your Mind,<br>
+        <span class="gradient-text">Organized.</span>
+      </h1>
+
+      <p>
+        An agent-first, markdown-based knowledge platform.
+        Let AI organize your notes while you focus on what matters.
+      </p>
+
+      <div class="hero-actions">
+        <button class="btn-primary" onclick="enterApp()">
+          ✦ Start Writing
+        </button>
+        <button class="btn-secondary">
+          ↗ View on GitHub
+        </button>
+      </div>
+
+      <!-- Inline App Preview -->
+      <div class="hero-preview">
+        <div class="hero-preview-window">
+          <div class="preview-topbar">
+            <div class="preview-dots">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="preview-url">mino.ink/workspace</div>
+          </div>
+          <div class="preview-body">
+            <div class="preview-sidebar">
+              <div class="preview-sidebar-item active">
+                <span class="icon">📁</span> Projects
+              </div>
+              <div class="preview-sidebar-item" style="padding-left: 28px;">
+                <span class="icon">📄</span> Architecture
+              </div>
+              <div class="preview-sidebar-item" style="padding-left: 28px;">
+                <span class="icon">📄</span> Roadmap
+              </div>
+              <div class="preview-sidebar-item">
+                <span class="icon">📁</span> Daily Notes
+              </div>
+              <div class="preview-sidebar-item">
+                <span class="icon">📁</span> Research
+              </div>
+              <div class="preview-sidebar-item">
+                <span class="icon">💡</span> Ideas
+              </div>
+              <div class="preview-sidebar-item">
+                <span class="icon">📦</span> Archive
+              </div>
+            </div>
+            <div class="preview-editor">
+              <div><span class="line-num">1</span><span class="heading"># System Architecture</span></div>
+              <div><span class="line-num">2</span></div>
+              <div><span class="line-num">3</span><span class="heading">## Core Objectives</span></div>
+              <div><span class="line-num">4</span>- Establish robust sync using <span class="keyword">CRDTs</span></div>
+              <div><span class="line-num">5</span>- Implement end-to-end encryption</div>
+              <div><span class="line-num">6</span>- Build <span class="keyword">agent-native</span> API layer</div>
+              <div><span class="line-num">7</span></div>
+              <div><span class="line-num">8</span><span class="heading">## Stack</span></div>
+              <div><span class="line-num">9</span><span class="comment">// Server: Bun + Hono</span></div>
+              <div><span class="line-num">10</span><span class="comment">// Frontend: Next.js + React</span></div>
+              <div><span class="line-num">11</span><span class="comment">// Mobile: React Native + Expo</span></div>
+              <div><span class="line-num">12</span></div>
+              <div><span class="line-num">13</span>> <span class="keyword">The agent is a first-class user.</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+      <div class="features-header">
+        <h2>Built for <span class="gradient-text">Developers</span></h2>
+        <p>Three pillars that make Mino different from every other notes app.</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <h3>Smart Import</h3>
+          <p>Drop in web pages, emails, PDFs, voice memos, or YouTube videos. The AI agent formats and files them automatically.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🧠</div>
+          <h3>AI Organization</h3>
+          <p>Your notes organize themselves. The agent auto-tags, links related content, and maintains your knowledge graph.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔍</div>
+          <h3>Intelligent Retrieval</h3>
+          <p>Semantic search across your entire vault. Ask questions in natural language and get synthesized answers.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔒</div>
+          <h3>Self-Hosted & Private</h3>
+          <p>Your data stays yours. Deploy with one command, connect any client. Full control, zero vendor lock-in.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🤖</div>
+          <h3>Agent-Native API</h3>
+          <p>Built for AI agents first. MCP tools let Antigravity, Cursor, or any agent read and write your notes directly.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📱</div>
+          <h3>Everywhere, Offline</h3>
+          <p>Web, iOS, Android — all offline-first with CRDT sync. Edit anywhere, conflicts resolve automatically.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============================================================
+       APP VIEW
+       ============================================================ -->
+  <div class="app-container" id="app">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <svg width="24" height="24" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="100" cy="100" r="95" fill="#1E1E1E" stroke="rgba(187,134,252,0.15)" stroke-width="2"/>
+            <ellipse cx="50" cy="100" rx="17" ry="50" fill="#BB86FC"/>
+            <ellipse cx="100" cy="100" rx="20" ry="70" fill="#BB86FC"/>
+            <ellipse cx="150" cy="100" rx="17" ry="50" fill="#BB86FC"/>
+          </svg>
+          <span>ino</span>
+        </div>
+        <button class="sidebar-toggle" title="Toggle sidebar">☰</button>
+      </div>
+
+      <!-- Search -->
+      <div class="sidebar-search">
+        <div class="search-wrapper">
+          <span class="search-icon">🔍</span>
+          <input type="text" class="search-input" placeholder="Search notes..." id="sidebarSearch">
+          <span class="search-shortcut">⌘K</span>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="sidebar-actions">
+        <button class="sidebar-action-btn" onclick="createNewNote()">
+          <span class="icon">✏️</span>
+          New Note
+        </button>
+      </div>
+
+      <!-- Section Label -->
+      <div class="sidebar-section-label">Workspace</div>
+
+      <!-- Folder Tree -->
+      <div class="folder-tree" id="folderTree">
+        <div class="tree-item active" onclick="selectFolder(this, 'all')">
+          <span class="icon">📋</span>
+          <span>All Notes</span>
+          <span class="count">12</span>
+        </div>
+        <div class="tree-item" onclick="selectFolder(this, 'projects')">
+          <span class="icon">📁</span>
+          <span>Projects</span>
+          <span class="count">5</span>
+        </div>
+        <div class="tree-item indent-1" onclick="selectFolder(this, 'alpha')">
+          <span class="icon">📄</span>
+          <span>Alpha</span>
+        </div>
+        <div class="tree-item indent-1" onclick="selectFolder(this, 'beta')">
+          <span class="icon">📄</span>
+          <span>Beta</span>
+        </div>
+        <div class="tree-item" onclick="selectFolder(this, 'daily')">
+          <span class="icon">📅</span>
+          <span>Daily Notes</span>
+          <span class="count">3</span>
+        </div>
+        <div class="tree-item" onclick="selectFolder(this, 'research')">
+          <span class="icon">🔬</span>
+          <span>Research</span>
+          <span class="count">2</span>
+        </div>
+        <div class="tree-item" onclick="selectFolder(this, 'ideas')">
+          <span class="icon">💡</span>
+          <span>Ideas</span>
+          <span class="count">2</span>
+        </div>
+
+        <div class="sidebar-section-label" style="margin-top: 16px;">Tags</div>
+        <div class="tree-item" onclick="selectFolder(this, 'tag-architecture')">
+          <span class="icon" style="color: var(--purple-400);">●</span>
+          <span>architecture</span>
+          <span class="count">3</span>
+        </div>
+        <div class="tree-item" onclick="selectFolder(this, 'tag-meeting')">
+          <span class="icon" style="color: var(--success);">●</span>
+          <span>meeting</span>
+          <span class="count">2</span>
+        </div>
+        <div class="tree-item" onclick="selectFolder(this, 'tag-idea')">
+          <span class="icon" style="color: var(--warning);">●</span>
+          <span>idea</span>
+          <span class="count">4</span>
+        </div>
+      </div>
+
+      <!-- Sidebar Footer -->
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="user-avatar">T</div>
+          <div class="user-info">
+            <div class="user-name">Tom</div>
+            <div class="user-status">
+              <span class="dot"></span>
+              Synced
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+      <!-- Top Bar -->
+      <div class="topbar">
+        <div class="topbar-left">
+          <div class="breadcrumb">
+            <span class="breadcrumb-item" onclick="showNotesList()">All Notes</span>
+            <span class="breadcrumb-sep">›</span>
+            <span class="breadcrumb-item current" id="breadcrumbCurrent">12 notes</span>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <div class="view-toggle">
+            <button class="topbar-btn active" id="gridViewBtn" onclick="setView('grid')" title="Grid view">▦</button>
+            <button class="topbar-btn" id="listViewBtn" onclick="setView('list')" title="List view">☰</button>
+          </div>
+          <button class="topbar-btn" onclick="toggleSort()" title="Sort">↕</button>
+          <button class="topbar-btn" onclick="toggleAIPanel()" title="AI Assistant">✦</button>
+        </div>
+      </div>
+
+      <!-- Notes Grid -->
+      <div class="notes-area" id="notesArea">
+        <div class="notes-grid" id="notesGrid">
+          <!-- Cards populated by JS -->
+        </div>
+      </div>
+
+      <!-- Editor View -->
+      <div class="editor-view" id="editorView">
+        <div class="editor-toolbar">
+          <button class="editor-tool-btn" onclick="showNotesList()" title="Back">←</button>
+          <div class="editor-tool-sep"></div>
+          <button class="editor-tool-btn" title="Bold"><b>B</b></button>
+          <button class="editor-tool-btn" title="Italic"><i>I</i></button>
+          <button class="editor-tool-btn" title="Strikethrough"><s>S</s></button>
+          <div class="editor-tool-sep"></div>
+          <button class="editor-tool-btn" title="Heading">H</button>
+          <button class="editor-tool-btn" title="List">≡</button>
+          <button class="editor-tool-btn" title="Checklist">☑</button>
+          <div class="editor-tool-sep"></div>
+          <button class="editor-tool-btn" title="Code">{ }</button>
+          <button class="editor-tool-btn" title="Link">🔗</button>
+          <button class="editor-tool-btn" title="Image">🖼</button>
+          <div class="editor-tool-sep"></div>
+          <button class="editor-tool-btn" onclick="toggleAIPanel()" title="Ask AI">✦</button>
+        </div>
+
+        <div class="editor-body">
+          <div class="editor-content" id="editorContent">
+            <input type="text" class="editor-title" id="editorTitle" placeholder="Untitled" spellcheck="false">
+            <div class="editor-rendered" id="editorRendered">
+              <!-- Rendered content goes here -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Status Bar -->
+      <div class="status-bar">
+        <div class="status-left">
+          <div class="status-item">
+            <span class="status-dot synced"></span>
+            Synced
+          </div>
+          <div class="status-item">UTF-8</div>
+          <div class="status-item">Markdown</div>
+        </div>
+        <div class="status-right">
+          <div class="status-item" id="statusWords">0 words</div>
+          <div class="status-item" id="statusDate">Today</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Chat Panel -->
+    <div class="ai-panel" id="aiPanel">
+      <div class="ai-panel-header">
+        <h3>✦ AI Organizer <span class="ai-badge">BETA</span></h3>
+        <button class="ai-panel-close" onclick="toggleAIPanel()">✕</button>
+      </div>
+      <div class="ai-messages" id="aiMessages">
+        <div class="ai-message">
+          <div class="ai-message-avatar ai">✦</div>
+          <div class="ai-message-content">
+            <strong>Hi Tom!</strong> I'm your AI organizer. I can help you search notes, organize your vault, find connections, or answer questions from your knowledge base. What would you like to do?
+          </div>
+        </div>
+      </div>
+      <div class="ai-input-area">
+        <div class="ai-input-wrapper">
+          <input type="text" class="ai-input" id="aiInput" placeholder="Ask anything about your notes..." onkeydown="handleAIInput(event)">
+          <button class="ai-send-btn" onclick="sendAIMessage()">↑</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAB -->
+    <button class="fab" onclick="createNewNote()" title="New Note" id="fab">✏</button>
+  </div>
+
+  <!-- ============================================================
+       COMMAND PALETTE
+       ============================================================ -->
+  <div class="cmd-overlay" id="cmdOverlay" onclick="closeCmdPalette(event)">
+    <div class="cmd-palette">
+      <div class="cmd-input-wrapper">
+        <span class="icon">🔍</span>
+        <input type="text" class="cmd-input" id="cmdInput" placeholder="Search notes, commands..." oninput="filterCommands()">
+      </div>
+      <div class="cmd-results" id="cmdResults">
+        <div class="cmd-result-item selected" onclick="cmdAction('search')">
+          <span class="icon">🔍</span>
+          <span class="text">Search notes...</span>
+        </div>
+        <div class="cmd-result-item" onclick="cmdAction('new')">
+          <span class="icon">✏️</span>
+          <span class="text">New note</span>
+          <span class="shortcut"><kbd>⌘</kbd><kbd>N</kbd></span>
+        </div>
+        <div class="cmd-result-item" onclick="cmdAction('ai')">
+          <span class="icon">✦</span>
+          <span class="text">Ask AI organizer</span>
+          <span class="shortcut"><kbd>⌘</kbd><kbd>J</kbd></span>
+        </div>
+        <div class="cmd-result-item" onclick="cmdAction('theme')">
+          <span class="icon">🎨</span>
+          <span class="text">Toggle theme</span>
+        </div>
+        <div class="cmd-result-item" onclick="cmdAction('settings')">
+          <span class="icon">⚙️</span>
+          <span class="text">Settings</span>
+          <span class="shortcut"><kbd>⌘</kbd><kbd>,</kbd></span>
+        </div>
+      </div>
+      <div class="cmd-footer">
+        <span><kbd>↑↓</kbd> Navigate</span>
+        <span><kbd>↵</kbd> Select</span>
+        <span><kbd>esc</kbd> Close</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
