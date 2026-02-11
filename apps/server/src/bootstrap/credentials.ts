@@ -6,7 +6,13 @@
  */
 
 import type { Credentials } from "@mino-ink/shared";
-import { generateApiKey, generateServerId, generateJwtSecret } from "../utils/crypto";
+import {
+  generateApiKey,
+  generateServerId,
+  generateJwtSecret,
+  generateRelaySecret,
+  generateRelayPairCode,
+} from "../utils/crypto";
 import { logger } from "../utils/logger";
 
 /**
@@ -14,11 +20,15 @@ import { logger } from "../utils/logger";
  * Called only during first-run bootstrap.
  */
 export function generateCredentials(): Credentials {
+  const now = new Date().toISOString();
   return {
     serverId: generateServerId(),
     adminApiKey: generateApiKey(),
     jwtSecret: generateJwtSecret(),
-    createdAt: new Date().toISOString(),
+    relaySecret: generateRelaySecret(),
+    relayPairCode: generateRelayPairCode(),
+    relayPairCodeCreatedAt: now,
+    createdAt: now,
     setupComplete: false,
   };
 }
@@ -61,6 +71,26 @@ export async function loadCredentials(path: string): Promise<Credentials> {
     throw new Error(`Credentials file is malformed: ${path}`);
   }
 
+  // Backward compatibility for existing credentials files
+  let changed = false;
+  if (!parsed.relaySecret) {
+    parsed.relaySecret = generateRelaySecret();
+    changed = true;
+  }
+  if (!parsed.relayPairCode) {
+    parsed.relayPairCode = generateRelayPairCode();
+    parsed.relayPairCodeCreatedAt = new Date().toISOString();
+    changed = true;
+  }
+  if (!parsed.relayPairCodeCreatedAt) {
+    parsed.relayPairCodeCreatedAt = parsed.createdAt ?? new Date().toISOString();
+    changed = true;
+  }
+  if (changed) {
+    await saveCredentials(path, parsed);
+    logger.info("Credentials upgraded with relay fields");
+  }
+
   return parsed;
 }
 
@@ -73,4 +103,14 @@ export async function markSetupComplete(path: string): Promise<void> {
   credentials.setupComplete = true;
   await saveCredentials(path, credentials);
   logger.info("Setup marked as complete");
+}
+
+/** Rotates relay pair code for one-click linking flows. */
+export async function rotateRelayPairCode(path: string): Promise<string> {
+  const credentials = await loadCredentials(path);
+  credentials.relayPairCode = generateRelayPairCode();
+  credentials.relayPairCodeCreatedAt = new Date().toISOString();
+  await saveCredentials(path, credentials);
+  logger.info("Relay pair code rotated");
+  return credentials.relayPairCode;
 }

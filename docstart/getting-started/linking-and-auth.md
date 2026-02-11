@@ -12,7 +12,7 @@ This endpoint returns:
 - server identity (`serverId`)
 - auth method details (`X-Mino-Key`)
 - setup status (`setupComplete`)
-- connection links for `test.mino.ink`, `mino.ink`, and local UI
+- connection mode + links (`relay` or `open-port`)
 
 ## Auth Method
 
@@ -30,10 +30,15 @@ curl http://<SERVER_IP>:3000/api/v1/system/capabilities \
 ## Link Flows
 
 From setup response (`links.connect`):
-- `testMinoInk`
-- `minoInk`
-- `localUi`
-- `localDevUi`
+- Relay mode:
+  - `testMinoInk`
+  - `minoInk`
+  - uses `relayCode` in link params
+- Open-port mode:
+  - `testMinoInk`
+  - `minoInk`
+  - `localUi`
+  - `localDevUi`
 
 If query-prefill is unsupported by the client, manually enter:
 - `serverUrl`
@@ -43,7 +48,9 @@ If query-prefill is unsupported by the client, manually enter:
 
 This flow is active in `apps/web`:
 - route: `/link`
-- input: `serverUrl` + `apiKey` query params
+- input:
+  - direct: `serverUrl` + `apiKey`
+  - relay: `relayCode` (+ optional `relayUrl`)
 - behavior: auto-verify key, call `/api/v1/auth/link`, persist session/server config, then redirect to workspace
 
 Detailed spec:

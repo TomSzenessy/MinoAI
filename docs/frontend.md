@@ -94,6 +94,7 @@ Use two Pages projects (test + production) with the same build pipeline.
   - `NEXT_PUBLIC_APP_ENV=test`
   - `NEXT_PUBLIC_APP_ORIGIN=https://test.mino.ink`
   - `NEXT_PUBLIC_DEFAULT_LINK_TARGET=https://test.mino.ink`
+  - `NEXT_PUBLIC_RELAY_URL=https://relay.mino.ink`
 
 #### Production project (`mino.ink`)
 
@@ -103,6 +104,7 @@ Use two Pages projects (test + production) with the same build pipeline.
   - `NEXT_PUBLIC_APP_ENV=production`
   - `NEXT_PUBLIC_APP_ORIGIN=https://mino.ink`
   - `NEXT_PUBLIC_DEFAULT_LINK_TARGET=https://mino.ink`
+  - `NEXT_PUBLIC_RELAY_URL=https://relay.mino.ink`
 
 ### Workspace Layout (from screen.png mockup)
 

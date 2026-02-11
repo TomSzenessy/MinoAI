@@ -118,6 +118,9 @@ describe("Setup Endpoint", () => {
         serverId: "test-id",
         adminApiKey: "mino_sk_abcdefabcdefabcdefabcdefabcdefabcdefabcdef123456",
         jwtSecret: "test-secret",
+        relaySecret: "relay-secret-test",
+        relayPairCode: "ABCD1234",
+        relayPairCodeCreatedAt: new Date().toISOString(),
         createdAt: new Date().toISOString(),
         setupComplete: true,
       },
@@ -131,5 +134,38 @@ describe("Setup Endpoint", () => {
     expect(body.data.apiKey).not.toBe(
       "mino_sk_abcdefabcdefabcdefabcdefabcdefabcdefabcdef123456",
     );
+  });
+
+  it("returns relay pairing links in relay mode", async () => {
+    const { app } = createTestApp(dataDir);
+
+    const res = await app.request("/api/v1/system/setup");
+    expect(res.status).toBe(200);
+
+    const body = await res.json();
+    expect(body.data.pairing.mode).toBe("relay");
+    expect(body.data.links.connect.minoInk).toContain("relayCode=");
+    expect(body.data.links.connect.localUi).toBeUndefined();
+  });
+
+  it("returns direct links in open-port mode", async () => {
+    const baseConfig = createTestApp(dataDir).deps.config;
+    const { app } = createTestApp(dataDir, {
+      config: {
+        ...baseConfig,
+        connection: {
+          ...baseConfig.connection,
+          mode: "open-port",
+        },
+      },
+    });
+
+    const res = await app.request("/api/v1/system/setup");
+    expect(res.status).toBe(200);
+
+    const body = await res.json();
+    expect(body.data.pairing.mode).toBe("open-port");
+    expect(body.data.links.connect.minoInk).toContain("serverUrl=");
+    expect(body.data.links.connect.localUi).toContain("/link?");
   });
 });

@@ -18,6 +18,12 @@ export const authConfigSchema = z.object({
   allowedOrigins: z.array(z.string()).default([]),
 });
 
+export const connectionConfigSchema = z.object({
+  mode: z.enum(["relay", "open-port"]).default("relay"),
+  relayUrl: z.string().url().default("https://relay.mino.ink"),
+  publicServerUrl: z.string().url().or(z.literal("")).default(""),
+});
+
 export const agentConfigSchema = z.object({
   enabled: z.boolean().default(false),
   provider: z.enum(["anthropic", "openai", "google", "local", ""]).default(""),
@@ -53,6 +59,7 @@ export const resourceConfigSchema = z.object({
 export const serverConfigSchema = z.object({
   server: serverNetworkSchema,
   auth: authConfigSchema,
+  connection: connectionConfigSchema,
   agent: agentConfigSchema,
   search: searchConfigSchema,
   sync: syncConfigSchema,

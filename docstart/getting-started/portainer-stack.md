@@ -14,9 +14,12 @@ Deploy Mino by pasting one compose file in Portainer. No repository clone is req
 4. Paste YAML from `../reference/docker-compose.md`.
 5. (Optional) Add environment variables in Portainer:
    - `MINO_PORT` (default `3000`)
-   - `MINO_PORT_BIND` (default `0.0.0.0`, set `127.0.0.1` for safer tunnel mode)
+   - `MINO_PORT_BIND` (default `127.0.0.1`, use `0.0.0.0` for open-port mode)
    - `MINO_IMAGE_TAG` (default `main`, optional override to `latest` or a pinned version)
-   - `CF_TUNNEL_TOKEN` (optional; if set, tunnel starts automatically)
+   - `MINO_CONNECTION_MODE` (`relay` default, `open-port` optional)
+   - `MINO_RELAY_URL` (default `https://relay.mino.ink`)
+   - `MINO_PUBLIC_SERVER_URL` (optional explicit public URL for open-port mode)
+   - `CF_TUNNEL_TOKEN` (optional, only if you also want Cloudflare tunnel sidecar)
    - `COMPOSE_PROFILES=autoupdate` (optional; enables Watchtower sidecar)
 6. Deploy the stack.
 
@@ -24,47 +27,49 @@ Deploy Mino by pasting one compose file in Portainer. No repository clone is req
 
 With no profile configured:
 - `mino` service starts
-- `cloudflared` starts in disabled-idle mode unless `CF_TUNNEL_TOKEN` is set
+- server mode is `relay`
+- host bind defaults to `127.0.0.1:${MINO_PORT}` (not public)
+- `cloudflared` sidecar stays idle unless `CF_TUNNEL_TOKEN` is set
 - `watchtower` stays disabled
-- Port bind defaults to open mode (`0.0.0.0:${MINO_PORT}`)
 
-## Optional Modes
+## Connection Modes
 
-- Tunnel mode (recommended secure remote access)
-  Set:
-  - `CF_TUNNEL_TOKEN=<token from Cloudflare dashboard>`
-  - `MINO_PORT_BIND=127.0.0.1`
+- Relay mode (default)
+  - `MINO_CONNECTION_MODE=relay`
+  - generates `mino.ink` / `test.mino.ink` links using relay pairing code
+  - local UI links are intentionally omitted in this mode
+- Open-port mode (direct)
+  - `MINO_CONNECTION_MODE=open-port`
+  - `MINO_PORT_BIND=0.0.0.0`
+  - optionally set `MINO_PUBLIC_SERVER_URL=https://api.yourdomain.com`
+  - generates direct links for `mino.ink`, built-in UI, and local dev UI
+
+## Optional Profiles
+
 - `COMPOSE_PROFILES=autoupdate`
   Starts `watchtower` + `mino`
 
 ## Verify Deployment
 
 Use these URLs:
-- Health: `http://<SERVER_IP>:3000/api/v1/health`
-- Setup: `http://<SERVER_IP>:3000/api/v1/system/setup`
-- Web docs explorer: `http://<SERVER_IP>:3000/docs` (includes blueprint + docstart docs)
+- Health: `http://<SERVER_IP>:3000/api/v1/health` (open-port mode or local host access)
+- Setup: `http://<SERVER_IP>:3000/api/v1/system/setup` (same access rules)
+- Web docs explorer: `http://<SERVER_IP>:3000/docs`
 
-From setup response, `links.connect.*` are intended to open a frontend `/link` handler for zero-manual linking (see `../reference/link-handler-spec.md`).
+If the setup URL is not reachable (relay mode + local bind), use the first-run links printed in container logs.
 
 Expected health response status is `200`.
 
-## Cloudflare Tunnel Setup (Dashboard Path)
+## Link Output Rules
 
-1. Open `https://one.dash.cloudflare.com/`.
-2. Go to `Networks` / `Connectors`.
-3. Click `Add a tunnel`.
-4. Choose `Cloudflared` (or `WARP connector` if you prefer).
-5. Name the tunnel.
-6. Cloudflare will show a command like:
-   `docker run cloudflare/cloudflared:latest tunnel --no-autoupdate run --token eyJ...`
-7. Copy only the token value after `--token`.
-8. In the same tunnel, add a Public Hostname:
-   - Hostname: your subdomain (example: `test.mino.ink`)
-   - Service type: `HTTP`
-   - URL: `http://mino:3000`
-9. Paste token into Portainer env var: `CF_TUNNEL_TOKEN`.
-10. Set `MINO_PORT_BIND=127.0.0.1`.
-11. Redeploy stack.
+- `relay` mode:
+  - generates relay-code links for `mino.ink` and `test.mino.ink`
+  - intended one-click flow: open link -> `/link` auto-exchanges code -> connected
+- `open-port` mode:
+  - generates direct `serverUrl + apiKey` links for:
+    - `mino.ink`
+    - built-in UI (`/link`)
+    - local dev UI (`localhost:5173/link`)
 
 ## Persistent Data
 

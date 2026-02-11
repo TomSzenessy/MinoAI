@@ -4,6 +4,7 @@ export interface WebConfig {
   appEnv: AppEnv;
   appOrigin: string;
   defaultLinkTarget: string;
+  relayUrl: string;
 }
 
 function normalizeEnv(value: string | undefined): AppEnv {
@@ -19,10 +20,12 @@ export function getWebConfig(): WebConfig {
   const defaultLinkTarget =
     process.env.NEXT_PUBLIC_DEFAULT_LINK_TARGET ??
     (appEnv === "production" ? "https://mino.ink" : "https://test.mino.ink");
+  const relayUrl = process.env.NEXT_PUBLIC_RELAY_URL ?? "https://relay.mino.ink";
 
   return {
     appEnv,
     appOrigin,
     defaultLinkTarget,
+    relayUrl,
   };
 }

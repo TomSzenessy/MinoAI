@@ -39,6 +39,9 @@ jobs:
       - name: Typecheck web
         run: cd apps/web && bun run typecheck
 
+      - name: Typecheck relay
+        run: cd apps/relay && bun run typecheck
+
       - name: Run server tests
         run: cd apps/server && bun test
 
@@ -50,3 +53,6 @@ jobs:
 
       - name: Build server
         run: cd apps/server && bun run build
+
+      - name: Build relay
+        run: cd apps/relay && bun run build

@@ -3,6 +3,8 @@ const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "::1"]);
 export interface ParsedLinkParams {
   serverUrl?: string;
   apiKey?: string;
+  relayCode?: string;
+  relayUrl?: string;
   name?: string;
 }
 
@@ -41,7 +43,7 @@ export function normalizeServerUrl(input: string): UrlValidationResult {
     };
   }
 
-  parsed.pathname = "";
+  parsed.pathname = parsed.pathname.replace(/\/+$/, "") || "/";
   parsed.search = "";
   parsed.hash = "";
 
@@ -52,9 +54,11 @@ export function normalizeServerUrl(input: string): UrlValidationResult {
 export function parseLinkParams(searchParams: URLSearchParams): ParsedLinkParams {
   const serverUrl = searchParams.get("serverUrl")?.trim() || undefined;
   const apiKey = searchParams.get("apiKey")?.trim() || undefined;
+  const relayCode = searchParams.get("relayCode")?.trim() || undefined;
+  const relayUrl = searchParams.get("relayUrl")?.trim() || undefined;
   const name = searchParams.get("name")?.trim() || undefined;
 
-  return { serverUrl, apiKey, name };
+  return { serverUrl, apiKey, relayCode, relayUrl, name };
 }
 
 export function removeSensitiveQueryParams(
@@ -63,6 +67,8 @@ export function removeSensitiveQueryParams(
 ): string {
   const next = new URLSearchParams(searchParams.toString());
   next.delete("apiKey");
+  next.delete("relayCode");
+  next.delete("relayUrl");
 
   const query = next.toString();
   if (!query) {

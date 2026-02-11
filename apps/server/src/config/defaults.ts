@@ -30,6 +30,11 @@ export const DEFAULT_CONFIG: ServerConfig = {
       "http://localhost:3000",
     ],
   },
+  connection: {
+    mode: "relay",
+    relayUrl: "https://relay.mino.ink",
+    publicServerUrl: "",
+  },
   agent: {
     enabled: false,             // disabled until user configures LLM provider
     provider: "",

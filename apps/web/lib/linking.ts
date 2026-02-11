@@ -4,6 +4,7 @@ import { normalizeServerUrl } from "./url";
 import { upsertProfile, type LinkedServerProfile } from "./storage";
 
 export type LinkStep =
+  | "resolving"
   | "validating"
   | "verifying"
   | "linking"
@@ -14,7 +15,7 @@ export interface RunLinkFlowInput {
   serverUrl: string;
   apiKey: string;
   name?: string;
-  source: "link" | "manual" | "local";
+  source: "link" | "manual" | "local" | "relay";
   onStep?: (step: LinkStep) => void;
 }
 

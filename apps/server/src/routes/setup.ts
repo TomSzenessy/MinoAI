@@ -22,17 +22,39 @@ export function setupRoutes(): Hono<AppContext> {
     const credentials = c.get("credentials");
     const version = c.get("version");
     const config = c.get("config");
-    const serverUrl = resolveServerUrl(c);
+    const directServerUrl = resolveDirectServerUrl(c);
+    const mode = config.connection.mode;
+    const relayBaseUrl = normalizeBaseUrl(config.connection.relayUrl);
+    const publicServerUrl = normalizeBaseUrl(config.connection.publicServerUrl) || directServerUrl;
 
     // If setup is already complete, redact the API key
     const apiKey = credentials.setupComplete
       ? `${credentials.adminApiKey.slice(0, 12)}${"•".repeat(20)}`
       : credentials.adminApiKey;
 
-    const linkParams = new URLSearchParams({ serverUrl });
+    const directLinkParams = new URLSearchParams({ serverUrl: publicServerUrl });
     if (!credentials.setupComplete) {
-      linkParams.set("apiKey", credentials.adminApiKey);
+      directLinkParams.set("apiKey", credentials.adminApiKey);
     }
+
+    const relayLinkParams = new URLSearchParams({
+      relayCode: credentials.relayPairCode,
+    });
+    if (relayBaseUrl) {
+      relayLinkParams.set("relayUrl", relayBaseUrl);
+    }
+
+    const connectLinks = mode === "relay"
+      ? {
+          testMinoInk: `https://test.mino.ink/link?${relayLinkParams.toString()}`,
+          minoInk: `https://mino.ink/link?${relayLinkParams.toString()}`,
+        }
+      : {
+          testMinoInk: `https://test.mino.ink/link?${directLinkParams.toString()}`,
+          minoInk: `https://mino.ink/link?${directLinkParams.toString()}`,
+          localUi: `${publicServerUrl}/link?${directLinkParams.toString()}`,
+          localDevUi: `http://localhost:5173/link?${directLinkParams.toString()}`,
+        };
 
     return c.json({
       success: true,
@@ -46,29 +68,37 @@ export function setupRoutes(): Hono<AppContext> {
           header: "X-Mino-Key",
           note: "Use this header for all protected API endpoints",
         },
+        pairing: {
+          mode,
+          relayCode: mode === "relay" ? credentials.relayPairCode : null,
+          relayUrl: mode === "relay" ? relayBaseUrl : null,
+        },
         server: {
-          url: serverUrl,
+          url: publicServerUrl,
           port: config.server.port,
           host: config.server.host,
           cors: config.server.cors,
         },
         links: {
-          setupApi: `${serverUrl}/api/v1/system/setup`,
-          health: `${serverUrl}/api/v1/health`,
-          apiBase: `${serverUrl}/api/v1`,
-          connect: {
-            testMinoInk: `https://test.mino.ink/link?${linkParams.toString()}`,
-            minoInk: `https://mino.ink/link?${linkParams.toString()}`,
-            localUi: `${serverUrl}/link?${linkParams.toString()}`,
-            localDevUi: `http://localhost:5173/link?${linkParams.toString()}`,
-          },
+          setupApi: `${publicServerUrl}/api/v1/system/setup`,
+          health: `${publicServerUrl}/api/v1/health`,
+          apiBase: mode === "relay" && relayBaseUrl
+            ? `${relayBaseUrl}/r/${credentials.serverId}/api/v1`
+            : `${publicServerUrl}/api/v1`,
+          directApiBase: `${publicServerUrl}/api/v1`,
+          relayApiBase: relayBaseUrl ? `${relayBaseUrl}/r/${credentials.serverId}/api/v1` : null,
+          connect: connectLinks,
         },
         instructions: credentials.setupComplete
           ? "Server is configured. Use the web UI or API to manage your notes."
           : [
-              "Copy your API key — it will be redacted after setup.",
+              mode === "relay"
+                ? "Open the mino.ink connect link. It uses relay code pairing by default."
+                : "Copy your API key — it will be redacted after setup.",
               "Open one of the connect links to prefill server details.",
-              "If prefill is unavailable, paste server URL and API key manually.",
+              mode === "relay"
+                ? "Open-port/local UI links are disabled in relay mode. Switch to open-port mode to use local interface links."
+                : "If prefill is unavailable, paste server URL and API key manually.",
               "Then call POST /api/v1/auth/link to mark setup complete.",
             ],
       },
@@ -78,7 +108,16 @@ export function setupRoutes(): Hono<AppContext> {
   return router;
 }
 
-function resolveServerUrl(c: Context<AppContext>): string {
+function normalizeBaseUrl(value: string): string {
+  return value.trim().replace(/\/+$/, "");
+}
+
+function resolveDirectServerUrl(c: Context<AppContext>): string {
+  const config = c.get("config");
+  if (config.connection.publicServerUrl) {
+    return normalizeBaseUrl(config.connection.publicServerUrl);
+  }
+
   const forwardedProto = c.req.header("X-Forwarded-Proto");
   const forwardedHost = c.req.header("X-Forwarded-Host");
 
@@ -88,5 +127,5 @@ function resolveServerUrl(c: Context<AppContext>): string {
   }
 
   const url = new URL(c.req.url);
-  return `${url.protocol}//${url.host}`;
+  return normalizeBaseUrl(`${url.protocol}//${url.host}`);
 }

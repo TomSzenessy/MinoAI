@@ -25,6 +25,22 @@ export function generateJwtSecret(): string {
   return randomBytes(64).toString("hex");
 }
 
+/** Generates a random secret used for relay connector authentication. */
+export function generateRelaySecret(): string {
+  return randomBytes(32).toString("hex");
+}
+
+/** Generates an 8-char pairing code (uppercase letters + digits). */
+export function generateRelayPairCode(length = 8): string {
+  const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  const bytes = randomBytes(length);
+  let code = "";
+  for (let i = 0; i < length; i += 1) {
+    code += alphabet[bytes[i]! % alphabet.length];
+  }
+  return code;
+}
+
 /**
  * Computes a SHA-256 hash of the given content.
  * Used for note content checksums and change detection.

@@ -13,6 +13,12 @@ export interface Credentials {
   adminApiKey: string;
   /** Secret used to sign JWT tokens. */
   jwtSecret: string;
+  /** Secret used by the server connector to authenticate to relay. */
+  relaySecret: string;
+  /** Human-friendly pairing code for one-click relay linking. */
+  relayPairCode: string;
+  /** ISO 8601 timestamp of latest relay pairing code generation. */
+  relayPairCodeCreatedAt: string;
   /** ISO 8601 timestamp of when credentials were generated. */
   createdAt: string;
   /** Whether the setup flow has been completed (server linked to a frontend). */

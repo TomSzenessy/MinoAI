@@ -62,6 +62,7 @@ export function systemRoutes(): Hono<AppContext> {
         auth: {
           mode: config.auth.mode,
         },
+        connection: config.connection,
         agent: {
           enabled: config.agent.enabled,
           provider: config.agent.provider,

@@ -12,6 +12,8 @@
     "web:dev": "pnpm --filter @mino-ink/web dev",
     "web:build": "pnpm --filter @mino-ink/web build",
     "web:test": "pnpm --filter @mino-ink/web test",
+    "relay:dev": "pnpm --filter @mino-ink/relay dev",
+    "relay:build": "pnpm --filter @mino-ink/relay build",
     "clean": "turbo clean && rm -rf node_modules",
     "format": "prettier --write .",
     "docker:build": "docker build -f docker/Dockerfile -t mino-server .",

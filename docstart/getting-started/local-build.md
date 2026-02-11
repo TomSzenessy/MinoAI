@@ -60,6 +60,10 @@ Then use the `links.connect.localUi` URL or manually pass:
 - `serverUrl=http://localhost:3000`
 - `apiKey=<YOUR_KEY>`
 
-Planned requirement:
-- local client must support `/link` auto-linking with these query params.
+Relay mode note:
+- if server is in relay mode, setup links for hosted UI use `relayCode`.
+- local UI links are generated only in `open-port` mode.
+
+Current state:
+- local client supports `/link` auto-linking.
 - spec: `../reference/link-handler-spec.md`

@@ -8,7 +8,7 @@
 
 import { Hono } from "hono";
 import type { AppContext } from "../types";
-import { markSetupComplete } from "../bootstrap/credentials";
+import { markSetupComplete, rotateRelayPairCode } from "../bootstrap/credentials";
 import { getCredentialsPath } from "../utils/paths";
 import { logger } from "../utils/logger";
 
@@ -54,6 +54,27 @@ export function authRoutes(): Hono<AppContext> {
         serverId: credentials.serverId,
         setupComplete: true,
         message: "Server successfully linked.",
+      },
+    });
+  });
+
+  /**
+   * POST /api/v1/auth/pair-code/rotate
+   * Rotates relay pair code for one-click linking.
+   */
+  router.post("/pair-code/rotate", async (c) => {
+    const credentials = c.get("credentials");
+    const dataDir = c.get("dataDir");
+    const nextCode = await rotateRelayPairCode(getCredentialsPath(dataDir));
+    credentials.relayPairCode = nextCode;
+    credentials.relayPairCodeCreatedAt = new Date().toISOString();
+
+    return c.json({
+      success: true,
+      data: {
+        serverId: credentials.serverId,
+        relayPairCode: credentials.relayPairCode,
+        relayPairCodeCreatedAt: credentials.relayPairCodeCreatedAt,
       },
     });
   });

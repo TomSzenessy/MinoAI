@@ -9,6 +9,7 @@
 export interface ServerConfig {
   server: ServerNetworkConfig;
   auth: AuthConfig;
+  connection: ConnectionConfig;
   agent: AgentConfig;
   search: SearchConfig;
   sync: SyncConfig;
@@ -39,6 +40,23 @@ export interface AuthConfig {
    * Separate from CORS — this controls which frontends can link.
    */
   allowedOrigins: string[];
+}
+
+/** Connection routing settings. */
+export interface ConnectionConfig {
+  /**
+   * Relay mode (default): server connects outbound to managed relay,
+   * frontend connects through relay URL.
+   * Open-port mode: frontend connects directly to server URL.
+   */
+  mode: "relay" | "open-port";
+  /** Public relay base URL used for managed connection mode. */
+  relayUrl: string;
+  /**
+   * Optional explicit public server URL for open-port mode.
+   * Example: "https://notes.example.com"
+   */
+  publicServerUrl: string;
 }
 
 /** AI agent configuration. */

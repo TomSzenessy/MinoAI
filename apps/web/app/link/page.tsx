@@ -6,9 +6,11 @@ import { useEffect, useMemo, useState } from "react";
 import { LinkStatusCard } from "@/components/link-status-card";
 import { BrandLogo } from "@/components/brand-logo";
 import { runLinkFlow, type LinkStep } from "@/lib/linking";
+import { exchangeRelayCode } from "@/lib/relay";
 import { parseLinkParams, removeSensitiveQueryParams } from "@/lib/url";
 
 const STEP_LABEL: Record<LinkStep, string> = {
+  resolving: "Resolving relay code",
   validating: "Validating URL",
   verifying: "Verifying API key",
   linking: "Linking server",
@@ -48,6 +50,8 @@ export default function LinkPage() {
 
     if (parsed.serverUrl && parsed.apiKey) {
       void startLinking(parsed.serverUrl, parsed.apiKey, parsed.name, "link");
+    } else if (parsed.relayCode) {
+      void startRelayLinking(parsed.relayCode, parsed.relayUrl, parsed.name);
     } else {
       setAutoAttempted(true);
     }
@@ -58,7 +62,7 @@ export default function LinkPage() {
     nextServerUrl: string,
     nextApiKey: string,
     nextName: string | undefined,
-    source: "link" | "manual" | "local",
+    source: "link" | "manual" | "local" | "relay",
   ) {
     setError(null);
     setBusy(true);
@@ -78,6 +82,28 @@ export default function LinkPage() {
       setAutoAttempted(true);
       setStep(null);
     } finally {
+      setBusy(false);
+    }
+  }
+
+  async function startRelayLinking(
+    relayCode: string,
+    relayUrl: string | undefined,
+    nextName: string | undefined,
+  ) {
+    setError(null);
+    setBusy(true);
+    setStep("resolving");
+
+    try {
+      const exchanged = await exchangeRelayCode(relayCode, relayUrl);
+      setServerUrl(exchanged.serverUrl);
+      setApiKey(exchanged.apiKey);
+      await startLinking(exchanged.serverUrl, exchanged.apiKey, nextName, "relay");
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "Failed to exchange relay code.");
+      setAutoAttempted(true);
+      setStep(null);
       setBusy(false);
     }
   }

@@ -72,12 +72,20 @@ function applyEnvOverrides(config: ServerConfig): void {
     value === "openai" ||
     value === "google" ||
     value === "local";
+  const isConnectionMode = (
+    value: string,
+  ): value is ServerConfig["connection"]["mode"] =>
+    value === "relay" || value === "open-port";
 
   const envMap: Record<string, (val: string) => void> = {
     MINO_PORT:             (v) => { config.server.port = parseInt(v, 10); },
     MINO_HOST:             (v) => { config.server.host = v; },
     MINO_CORS_ORIGINS:     (v) => { config.server.cors = v.split(",").map(s => s.trim()); },
     MINO_AUTH_MODE:        (v) => { if (isAuthMode(v)) config.auth.mode = v; },
+    MINO_CONNECTION_MODE:  (v) => { if (isConnectionMode(v)) config.connection.mode = v; },
+    MINO_CONNECT_MODE:     (v) => { if (isConnectionMode(v)) config.connection.mode = v; },
+    MINO_RELAY_URL:        (v) => { config.connection.relayUrl = v.trim(); },
+    MINO_PUBLIC_SERVER_URL:(v) => { config.connection.publicServerUrl = v.trim(); },
     MINO_AGENT_ENABLED:    (v) => { config.agent.enabled = v === "true"; },
     MINO_AGENT_PROVIDER:   (v) => { if (isAgentProvider(v)) config.agent.provider = v; },
     MINO_AGENT_MODEL:      (v) => { config.agent.model = v; },

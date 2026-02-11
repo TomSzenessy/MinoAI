@@ -21,11 +21,12 @@ Clients connect to a Mino server URL and use:
 `/link` is implemented in `apps/web` and must remain available on each web client (`mino.ink`, `test.mino.ink`, built-in UI, and local dev) so setup URLs work without manual typing.
 
 Required flow:
-1. Read `serverUrl` and `apiKey` from query params.
-2. Call `POST {serverUrl}/api/v1/auth/verify` with `X-Mino-Key`.
-3. Call `POST {serverUrl}/api/v1/auth/link` with `X-Mino-Key`.
-4. Persist server connection locally.
-5. Remove `apiKey` from URL and redirect to workspace.
+1. Read direct params (`serverUrl`, `apiKey`) or relay params (`relayCode`, optional `relayUrl`).
+2. If relay mode, exchange code at relay to resolve `serverUrl` + `apiKey`.
+3. Call `POST {serverUrl}/api/v1/auth/verify` with `X-Mino-Key`.
+4. Call `POST {serverUrl}/api/v1/auth/link` with `X-Mino-Key`.
+5. Persist server connection locally.
+6. Remove sensitive params from URL and redirect to workspace.
 
 Implementation spec:
 - `./reference/link-handler-spec.md`

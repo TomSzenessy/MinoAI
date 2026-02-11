@@ -30,6 +30,19 @@ If still unhealthy:
 - verify app health directly:
   `http://<SERVER_IP>:3000/api/v1/health`
 
+## Relay Mode Link Fails (`relayCode` invalid / not found)
+
+Cause:
+- relay service cannot see active server connector
+- server is not in relay mode or relay URL is incorrect
+
+Fix:
+- confirm env vars:
+  - `MINO_CONNECTION_MODE=relay`
+  - `MINO_RELAY_URL=https://relay.mino.ink` (or your relay URL)
+- inspect container logs for `Relay connector started`
+- verify relay health endpoint (`/api/v1/health`) if self-hosting relay
+
 ## `401 UNAUTHORIZED` On Protected Routes
 
 Cause:
@@ -59,7 +72,7 @@ Fix:
 - redeploy stack
 
 Note:
-- Tunnel is optional. If you do not set `CF_TUNNEL_TOKEN`, Mino still runs in open-port mode.
+- Tunnel sidecar is optional. If you do not set `CF_TUNNEL_TOKEN`, Mino still runs in its configured connection mode (`relay` by default).
 
 ## Tunnel Runs But Domain Does Not Reach Mino
 

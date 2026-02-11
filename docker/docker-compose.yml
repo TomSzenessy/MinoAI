@@ -2,8 +2,9 @@
 # Mino Server — Docker Compose (Portainer-friendly)
 #
 # Usage:
-#   docker compose up -d                           — Open mode (default, published port)
-#   CF_TUNNEL_TOKEN=<token> docker compose up -d   — Tunnel enabled (no tunnel profile needed)
+#   docker compose up -d                           — Relay mode (default, safer, no public port)
+#   MINO_CONNECTION_MODE=open-port MINO_PORT_BIND=0.0.0.0 docker compose up -d
+#                                                  — Open-port mode (direct public access)
 #   docker compose --profile autoupdate up -d      — Start server + Watchtower
 #
 # Copy-paste this file into Portainer → Stacks → "Add Stack" → Paste YAML.
@@ -20,18 +21,24 @@ services:
     container_name: mino-server
     restart: unless-stopped
     ports:
-      # Open mode default: MINO_PORT_BIND=0.0.0.0 (public on host)
-      # Safer tunnel mode: MINO_PORT_BIND=127.0.0.1 (local-only bind)
-      - "${MINO_PORT_BIND:-0.0.0.0}:${MINO_PORT:-3000}:3000"
+      # Relay mode default: local-only bind
+      # Open-port mode: set MINO_PORT_BIND=0.0.0.0
+      - "${MINO_PORT_BIND:-127.0.0.1}:${MINO_PORT:-3000}:3000"
     volumes:
       - mino-data:/data
     environment:
       - NODE_ENV=production
       - MINO_DATA_DIR=/data
+      - MINO_CONNECTION_MODE=${MINO_CONNECTION_MODE:-relay}
+      - MINO_RELAY_URL=${MINO_RELAY_URL:-https://relay.mino.ink}
+      - MINO_PUBLIC_SERVER_URL=${MINO_PUBLIC_SERVER_URL:-}
       # Optional overrides (uncomment as needed):
       # - MINO_PORT=3000
       # - MINO_PORT_BIND=0.0.0.0
       # - MINO_HOST=0.0.0.0
+      # - MINO_CONNECTION_MODE=relay|open-port
+      # - MINO_RELAY_URL=https://relay.mino.ink
+      # - MINO_PUBLIC_SERVER_URL=https://api.yourdomain.com
       # - MINO_AUTH_MODE=api-key
       # - MINO_CORS_ORIGINS=https://mino.ink,https://test.mino.ink,http://localhost:3000
       # - MINO_AGENT_ENABLED=true
@@ -62,7 +69,7 @@ services:
   #   MINO_PORT_BIND=127.0.0.1 (avoid exposing host port externally)
   #
   # Get your tunnel token from: https://one.dash.cloudflare.com
-  # Networks/Connectors -> Add a tunnel -> Cloudflared or WARP connector
+  # Networks/Tunnels -> Create tunnel -> Cloudflared
   # Copy token from the shown docker command: `... --token <TOKEN>`
   # -------------------------------------------------------------------------
   cloudflared:

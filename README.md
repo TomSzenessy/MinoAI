@@ -1,6 +1,6 @@
 # Mino (Portainer-First + Web Link Handler)
 
-Deploy first, then connect from `test.mino.ink` (or built-in local UI) with zero manual setup.
+Deploy first, then connect from `mino.ink` / `test.mino.ink` or local UI.
 
 ## 1. Portainer Deployment (Copy/Paste Only)
 
@@ -15,59 +15,49 @@ Default service:
 - `mino-server` on port `3000`
 
 Access modes:
-- Open mode (default): published host port
-- Tunnel mode (safer): set `CF_TUNNEL_TOKEN` + `MINO_PORT_BIND=127.0.0.1`
+- `relay` (default): no public port required, uses managed relay URL
+- `open-port` (optional): direct public endpoint, local UI/dev links enabled
+
+Mode switch variables:
+- `MINO_CONNECTION_MODE=relay|open-port`
+- `MINO_PORT_BIND=127.0.0.1` (relay default, local-only bind)
+- `MINO_PORT_BIND=0.0.0.0` (open-port mode)
+- `MINO_RELAY_URL=https://relay.mino.ink` (managed relay endpoint)
 
 ## 2. First Run: Get Auth + Links
 
-After startup, open:
-- `http://<SERVER_IP>:3000/api/v1/system/setup`
+After startup, check either:
+- Portainer logs (first-run block with generated links/code)
+- or setup endpoint (`http://<SERVER_IP>:3000/api/v1/system/setup`) when reachable
 
 You get:
 - `serverId`
 - `apiKey` (redacted after setup completes)
+- `pairing.mode` (`relay` or `open-port`)
+- `pairing.relayCode` (relay mode)
 - auth method (`X-Mino-Key`)
 - generated connect links:
-  - `links.connect.testMinoInk`
-  - `links.connect.minoInk`
-  - `links.connect.localUi` (built-in UI, same server)
-  - `links.connect.localDevUi` (`localhost:5173` dev client)
+  - relay mode: `mino.ink` + `test.mino.ink` links with `relayCode`
+  - open-port mode: `mino.ink` + local links with `serverUrl` + `apiKey`
 
 ## 3. Linking Flow (Now Implemented)
 
 `/link` is implemented in `apps/web` and supports prefilled URLs:
 
-`/link?serverUrl=...&apiKey=...`
+- direct mode: `/link?serverUrl=...&apiKey=...`
+- relay mode: `/link?relayCode=...&relayUrl=...`
 
 Behavior:
 1. Parse params.
-2. Validate + normalize `serverUrl`.
-3. Call `POST /api/v1/auth/verify`.
-4. Call `POST /api/v1/auth/link`.
-5. Persist profile locally.
-6. Remove `apiKey` from URL.
-7. Redirect to `/workspace?profile=<id>`.
+2. If relay code is present, exchange code at relay.
+3. Validate + normalize `serverUrl`.
+4. Call `POST /api/v1/auth/verify`.
+5. Call `POST /api/v1/auth/link`.
+6. Persist profile locally.
+7. Remove sensitive query params.
+8. Redirect to `/workspace?profile=<id>`.
 
 Manual form fallback is shown if params are missing/invalid.
-
-## 3.1 Cloudflare Tunnel (Optional Safer Mode)
-
-If you do not want open host ports, use tunnel mode:
-
-1. Open `https://one.dash.cloudflare.com/`.
-2. Go to `Networks` / `Connectors` -> `Add a tunnel`.
-3. Choose `Cloudflared` (or `WARP connector`), name it.
-4. Cloudflare shows a command like:
-   `docker run cloudflare/cloudflared:latest tunnel --no-autoupdate run --token eyJ...`
-5. Copy only the token value after `--token`.
-6. In that tunnel, add a Public Hostname:
-   - Hostname: `test.mino.ink` (or your chosen domain)
-   - Service type: `HTTP`
-   - URL: `http://mino:3000`
-7. In Portainer stack environment vars set:
-   - `CF_TUNNEL_TOKEN=<copied token>`
-   - `MINO_PORT_BIND=127.0.0.1`
-8. Redeploy the stack.
 
 Image tag note:
 - default compose image tag is `main` (most reliable after pushes)
@@ -87,6 +77,7 @@ Use two projects: one for testing, one for production.
   - `NEXT_PUBLIC_APP_ENV=test`
   - `NEXT_PUBLIC_APP_ORIGIN=https://test.mino.ink`
   - `NEXT_PUBLIC_DEFAULT_LINK_TARGET=https://test.mino.ink`
+  - `NEXT_PUBLIC_RELAY_URL=https://relay.mino.ink`
 
 ### Production template (`mino.ink`) — prepare now, cut over later
 - Same build settings
@@ -95,6 +86,7 @@ Use two projects: one for testing, one for production.
   - `NEXT_PUBLIC_APP_ENV=production`
   - `NEXT_PUBLIC_APP_ORIGIN=https://mino.ink`
   - `NEXT_PUBLIC_DEFAULT_LINK_TARGET=https://mino.ink`
+  - `NEXT_PUBLIC_RELAY_URL=https://relay.mino.ink`
 
 ## 5. Documentation Endpoint
 
@@ -103,6 +95,20 @@ The web `/docs` endpoint now shows **both** tracks:
 - Implementation docs from `/docstart`
 
 So users can browse architecture and setup runbooks from one place (`test.mino.ink/docs`).
+
+## 5.1 Relay Deployment (Operator)
+
+Managed relay service source:
+- app: `apps/relay`
+- image: `ghcr.io/tomszenessy/mino-relay:main`
+
+Minimal relay run:
+
+```bash
+docker run --rm -p 8787:8787 \
+  -e RELAY_PUBLIC_BASE_URL=https://relay.mino.ink \
+  ghcr.io/tomszenessy/mino-relay:main
+```
 
 ## 6. Local Build (Contributors)
 

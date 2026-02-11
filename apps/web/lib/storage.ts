@@ -13,7 +13,7 @@ export interface LinkedServerProfile {
   linkedAt: string;
   lastVerifiedAt: string;
   setupComplete: boolean;
-  source: "link" | "manual" | "local";
+  source: "link" | "manual" | "local" | "relay";
 }
 
 export interface LinkedServersStore {

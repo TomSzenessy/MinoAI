@@ -13,6 +13,7 @@ import { createApp } from "./server";
 import { loadConfig } from "./config/index";
 import { logger } from "./utils/logger";
 import { getDataDir } from "./utils/paths";
+import { startRelayConnector } from "./services/relay-connector";
 import { existsSync } from "node:fs";
 import { join, resolve } from "node:path";
 
@@ -58,24 +59,50 @@ async function main(): Promise<void> {
 
   // Step 4: Start listening
   const { port, host } = config.server;
+  const localBaseUrl = `http://${host === "0.0.0.0" ? "localhost" : host}:${port}`;
 
   logger.info(`Server listening on http://${host}:${port}`);
   logger.info(`Web UI: ${webDistDir ? `enabled (${webDistDir})` : "not bundled"}`);
+  logger.info(`Connection mode: ${config.connection.mode}`);
+
+  if (config.connection.mode === "relay") {
+    startRelayConnector({
+      relayUrl: config.connection.relayUrl,
+      serverId: credentials.serverId,
+      relaySecret: credentials.relaySecret,
+      getRelayPairCode: () => credentials.relayPairCode,
+      adminApiKey: credentials.adminApiKey,
+      localBaseUrl: `http://127.0.0.1:${port}`,
+      waitMs: 20000,
+    });
+  }
 
   if (!credentials.setupComplete) {
-    const localBaseUrl = `http://${host === "0.0.0.0" ? "localhost" : host}:${port}`;
-    const linkParams = new URLSearchParams({ serverUrl: localBaseUrl });
+    const directLinkParams = new URLSearchParams({ serverUrl: localBaseUrl });
+    directLinkParams.set("apiKey", credentials.adminApiKey);
+    const relayLinkParams = new URLSearchParams({
+      relayCode: credentials.relayPairCode,
+    });
+    const relayBaseUrl = config.connection.relayUrl.replace(/\/+$/, "");
+    relayLinkParams.set("relayUrl", relayBaseUrl);
 
     logger.info("─".repeat(60));
     logger.info("🟣 FIRST RUN — Setup credentials:");
     logger.info(`   Admin API Key: ${credentials.adminApiKey}`);
+    logger.info(`   Relay Pair Code:${credentials.relayPairCode}`);
     logger.info(`   Server ID:     ${credentials.serverId}`);
     logger.info(`   Auth header:   X-Mino-Key: ${credentials.adminApiKey}`);
     logger.info(`   Setup API:     ${localBaseUrl}/api/v1/system/setup`);
-    logger.info(`   test.mino.ink: https://test.mino.ink/link?${linkParams.toString()}`);
-    logger.info(`   mino.ink:      https://mino.ink/link?${linkParams.toString()}`);
-    logger.info(`   Built-in UI:   ${localBaseUrl}/link?${linkParams.toString()}`);
-    logger.info(`   Local dev UI:  http://localhost:5173/link?${linkParams.toString()}`);
+    if (config.connection.mode === "relay") {
+      logger.info(`   test.mino.ink: https://test.mino.ink/link?${relayLinkParams.toString()}`);
+      logger.info(`   mino.ink:      https://mino.ink/link?${relayLinkParams.toString()}`);
+      logger.info("   Local links:   disabled in relay mode");
+    } else {
+      logger.info(`   test.mino.ink: https://test.mino.ink/link?${directLinkParams.toString()}`);
+      logger.info(`   mino.ink:      https://mino.ink/link?${directLinkParams.toString()}`);
+      logger.info(`   Built-in UI:   ${localBaseUrl}/link?${directLinkParams.toString()}`);
+      logger.info(`   Local dev UI:  http://localhost:5173/link?${directLinkParams.toString()}`);
+    }
     logger.info("─".repeat(60));
   }
 

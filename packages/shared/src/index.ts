@@ -7,7 +7,14 @@
 
 export type { Note, NoteMetadata, NoteFrontmatter, CreateNoteRequest, UpdateNoteRequest } from "./types/note";
 export type { FolderNode, FolderTree } from "./types/note";
-export type { ServerConfig, AgentConfig, SearchConfig, PluginConfig, SyncConfig } from "./types/config";
+export type {
+  ServerConfig,
+  ConnectionConfig,
+  AgentConfig,
+  SearchConfig,
+  PluginConfig,
+  SyncConfig,
+} from "./types/config";
 export type { Credentials, ServerIdentity, AuthToken, ApiKeyInfo } from "./types/auth";
 export type { SystemCapabilities, ResourceProfile, HealthStatus } from "./types/system";
 export type {

@@ -20,6 +20,11 @@ Endpoint:
       "header": "X-Mino-Key",
       "note": "Use this header for all protected API endpoints"
     },
+    "pairing": {
+      "mode": "relay",
+      "relayCode": "ABCD1234",
+      "relayUrl": "https://relay.mino.ink"
+    },
     "server": {
       "url": "http://localhost:3000",
       "port": 3000,
@@ -29,12 +34,12 @@ Endpoint:
     "links": {
       "setupApi": "http://localhost:3000/api/v1/system/setup",
       "health": "http://localhost:3000/api/v1/health",
-      "apiBase": "http://localhost:3000/api/v1",
+      "apiBase": "https://relay.mino.ink/r/<serverId>/api/v1",
+      "directApiBase": "http://localhost:3000/api/v1",
+      "relayApiBase": "https://relay.mino.ink/r/<serverId>/api/v1",
       "connect": {
-        "testMinoInk": "https://test.mino.ink/link?...",
-        "minoInk": "https://mino.ink/link?...",
-        "localUi": "http://localhost:3000/link?...",
-        "localDevUi": "http://localhost:5173/link?..."
+        "testMinoInk": "https://test.mino.ink/link?relayCode=...",
+        "minoInk": "https://mino.ink/link?relayCode=..."
       }
     },
     "instructions": [
@@ -55,6 +60,10 @@ Endpoint:
   Required header name for protected API requests.
 - `server.url`
   Canonical base URL detected from request context.
+- `pairing.mode`
+  `relay` (default) or `open-port`.
+- `pairing.relayCode`
+  One-click code used by `/link` to exchange relay connection info.
 - `links.connect.*`
   Prefilled URLs for production/test/local clients.
 - Client contract for these URLs:
