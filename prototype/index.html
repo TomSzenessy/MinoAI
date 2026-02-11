@@ -24,26 +24,50 @@
 
     <!-- Navbar -->
     <nav class="navbar" id="navbar">
-      <div class="navbar-logo">
-        <svg width="28" height="28" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="100" cy="100" r="95" fill="#1E1E1E" stroke="rgba(187,134,252,0.15)" stroke-width="2"/>
-          <ellipse cx="50" cy="100" rx="17" ry="50" fill="#BB86FC"/>
-          <ellipse cx="100" cy="100" rx="20" ry="70" fill="#BB86FC"/>
-          <ellipse cx="150" cy="100" rx="17" ry="50" fill="#BB86FC"/>
-        </svg>
-        <span>ino</span>
+      <div class="navbar-inner">
+        <div class="navbar-logo" onclick="scrollToSection('hero')">
+          <svg width="36" height="36" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="100" cy="100" r="95" fill="#1E1E1E" stroke="rgba(187,134,252,0.15)" stroke-width="2"/>
+            <ellipse cx="50" cy="100" rx="17" ry="50" fill="#BB86FC"/>
+            <ellipse cx="100" cy="100" rx="20" ry="70" fill="#BB86FC"/>
+            <ellipse cx="150" cy="100" rx="17" ry="50" fill="#BB86FC"/>
+          </svg>
+          <span>ino</span>
+        </div>
+
+        <!-- Desktop nav links with sliding indicator -->
+        <div class="navbar-links" id="navbarLinks">
+          <div class="navbar-indicator" id="navbarIndicator"></div>
+          <button class="navbar-link active" data-section="hero" onclick="scrollToSection('hero')">Home</button>
+          <button class="navbar-link" data-section="features" onclick="scrollToSection('features')">Features</button>
+          <button class="navbar-link" data-section="how-it-works" onclick="scrollToSection('how-it-works')">How It Works</button>
+          <button class="navbar-link" data-section="agent" onclick="scrollToSection('agent')">AI Agent</button>
+          <button class="navbar-link" data-section="tech" onclick="scrollToSection('tech')">Stack</button>
+          <button class="navbar-link" data-section="open-source" onclick="scrollToSection('open-source')">Open Source</button>
+        </div>
+
+        <button class="navbar-cta" onclick="enterApp()">Get Started</button>
+
+        <!-- Mobile hamburger -->
+        <button class="navbar-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
       </div>
-      <div class="navbar-links">
-        <button class="navbar-link active">Features</button>
-        <button class="navbar-link">Docs</button>
-        <button class="navbar-link">GitHub</button>
-        <button class="navbar-link">Blog</button>
-      </div>
-      <button class="navbar-cta" onclick="enterApp()">Get Started</button>
     </nav>
 
-    <!-- Hero Section -->
-    <section class="hero">
+    <!-- Mobile menu overlay -->
+    <div class="mobile-menu" id="mobileMenu">
+      <button class="mobile-menu-link" data-section="hero" onclick="scrollToSection('hero'); closeMobileMenu()">Home</button>
+      <button class="mobile-menu-link" data-section="features" onclick="scrollToSection('features'); closeMobileMenu()">Features</button>
+      <button class="mobile-menu-link" data-section="how-it-works" onclick="scrollToSection('how-it-works'); closeMobileMenu()">How It Works</button>
+      <button class="mobile-menu-link" data-section="agent" onclick="scrollToSection('agent'); closeMobileMenu()">AI Agent</button>
+      <button class="mobile-menu-link" data-section="tech" onclick="scrollToSection('tech'); closeMobileMenu()">Stack</button>
+      <button class="mobile-menu-link" data-section="open-source" onclick="scrollToSection('open-source'); closeMobileMenu()">Open Source</button>
+      <button class="mobile-menu-cta" onclick="enterApp(); closeMobileMenu()">✦ Get Started</button>
+    </div>
+
+    <!-- ===== SECTION 1: HERO ===== -->
+    <section class="hero section" id="hero">
       <div class="hero-badge">
         <span class="dot"></span>
         Open Source & Self-Hostable
@@ -54,7 +78,7 @@
         <span class="gradient-text">Organized.</span>
       </h1>
 
-      <p>
+      <p class="hero-sub">
         An agent-first, markdown-based knowledge platform.
         Let AI organize your notes while you focus on what matters.
       </p>
@@ -68,99 +92,290 @@
         </button>
       </div>
 
-      <!-- Inline App Preview -->
-      <div class="hero-preview">
-        <div class="hero-preview-window">
-          <div class="preview-topbar">
-            <div class="preview-dots">
-              <span></span><span></span><span></span>
+      <div class="scroll-hint" onclick="scrollToSection('preview')">
+        <span>See it in action</span>
+        <div class="scroll-arrow">↓</div>
+      </div>
+    </section>
+
+    <!-- ===== SECTION 2: APP PREVIEW ===== -->
+    <section class="section section-preview" id="preview">
+      <div class="section-container">
+        <div class="hero-preview">
+          <div class="hero-preview-window">
+            <div class="preview-topbar">
+              <div class="preview-dots">
+                <span></span><span></span><span></span>
+              </div>
+              <div class="preview-url">mino.ink/workspace</div>
             </div>
-            <div class="preview-url">mino.ink/workspace</div>
-          </div>
-          <div class="preview-body">
-            <div class="preview-sidebar">
-              <div class="preview-sidebar-item active">
-                <span class="icon">📁</span> Projects
+            <div class="preview-body">
+              <div class="preview-sidebar">
+                <div class="preview-sidebar-item active">
+                  <span class="icon">📁</span> Projects
+                </div>
+                <div class="preview-sidebar-item" style="padding-left: 28px;">
+                  <span class="icon">📄</span> Architecture
+                </div>
+                <div class="preview-sidebar-item" style="padding-left: 28px;">
+                  <span class="icon">📄</span> Roadmap
+                </div>
+                <div class="preview-sidebar-item">
+                  <span class="icon">📁</span> Daily Notes
+                </div>
+                <div class="preview-sidebar-item">
+                  <span class="icon">📁</span> Research
+                </div>
+                <div class="preview-sidebar-item">
+                  <span class="icon">💡</span> Ideas
+                </div>
+                <div class="preview-sidebar-item">
+                  <span class="icon">📦</span> Archive
+                </div>
               </div>
-              <div class="preview-sidebar-item" style="padding-left: 28px;">
-                <span class="icon">📄</span> Architecture
+              <div class="preview-editor">
+                <div><span class="line-num">1</span><span class="heading"># System Architecture</span></div>
+                <div><span class="line-num">2</span></div>
+                <div><span class="line-num">3</span><span class="heading">## Core Objectives</span></div>
+                <div><span class="line-num">4</span>- Establish robust sync using <span class="keyword">CRDTs</span></div>
+                <div><span class="line-num">5</span>- Implement end-to-end encryption</div>
+                <div><span class="line-num">6</span>- Build <span class="keyword">agent-native</span> API layer</div>
+                <div><span class="line-num">7</span></div>
+                <div><span class="line-num">8</span><span class="heading">## Stack</span></div>
+                <div><span class="line-num">9</span><span class="comment">// Server: Bun + Hono</span></div>
+                <div><span class="line-num">10</span><span class="comment">// Frontend: Next.js + React</span></div>
+                <div><span class="line-num">11</span><span class="comment">// Mobile: React Native + Expo</span></div>
+                <div><span class="line-num">12</span></div>
+                <div><span class="line-num">13</span>> <span class="keyword">The agent is a first-class user.</span></div>
               </div>
-              <div class="preview-sidebar-item" style="padding-left: 28px;">
-                <span class="icon">📄</span> Roadmap
-              </div>
-              <div class="preview-sidebar-item">
-                <span class="icon">📁</span> Daily Notes
-              </div>
-              <div class="preview-sidebar-item">
-                <span class="icon">📁</span> Research
-              </div>
-              <div class="preview-sidebar-item">
-                <span class="icon">💡</span> Ideas
-              </div>
-              <div class="preview-sidebar-item">
-                <span class="icon">📦</span> Archive
-              </div>
-            </div>
-            <div class="preview-editor">
-              <div><span class="line-num">1</span><span class="heading"># System Architecture</span></div>
-              <div><span class="line-num">2</span></div>
-              <div><span class="line-num">3</span><span class="heading">## Core Objectives</span></div>
-              <div><span class="line-num">4</span>- Establish robust sync using <span class="keyword">CRDTs</span></div>
-              <div><span class="line-num">5</span>- Implement end-to-end encryption</div>
-              <div><span class="line-num">6</span>- Build <span class="keyword">agent-native</span> API layer</div>
-              <div><span class="line-num">7</span></div>
-              <div><span class="line-num">8</span><span class="heading">## Stack</span></div>
-              <div><span class="line-num">9</span><span class="comment">// Server: Bun + Hono</span></div>
-              <div><span class="line-num">10</span><span class="comment">// Frontend: Next.js + React</span></div>
-              <div><span class="line-num">11</span><span class="comment">// Mobile: React Native + Expo</span></div>
-              <div><span class="line-num">12</span></div>
-              <div><span class="line-num">13</span>> <span class="keyword">The agent is a first-class user.</span></div>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Features Section -->
-    <section class="features" id="features">
-      <div class="features-header">
+    <!-- ===== SECTION 3: FEATURES ===== -->
+    <section class="features section" id="features">
+      <div class="section-container">
+        <div class="section-label">WHAT IT DOES</div>
         <h2>Built for <span class="gradient-text">Developers</span></h2>
-        <p>Three pillars that make Mino different from every other notes app.</p>
-      </div>
+        <p class="section-sub">Six pillars that make Mino different from every other notes app.</p>
 
-      <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon">⚡</div>
-          <h3>Smart Import</h3>
-          <p>Drop in web pages, emails, PDFs, voice memos, or YouTube videos. The AI agent formats and files them automatically.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">🧠</div>
-          <h3>AI Organization</h3>
-          <p>Your notes organize themselves. The agent auto-tags, links related content, and maintains your knowledge graph.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">🔍</div>
-          <h3>Intelligent Retrieval</h3>
-          <p>Semantic search across your entire vault. Ask questions in natural language and get synthesized answers.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">🔒</div>
-          <h3>Self-Hosted & Private</h3>
-          <p>Your data stays yours. Deploy with one command, connect any client. Full control, zero vendor lock-in.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">🤖</div>
-          <h3>Agent-Native API</h3>
-          <p>Built for AI agents first. MCP tools let Antigravity, Cursor, or any agent read and write your notes directly.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">📱</div>
-          <h3>Everywhere, Offline</h3>
-          <p>Web, iOS, Android — all offline-first with CRDT sync. Edit anywhere, conflicts resolve automatically.</p>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">⚡</div>
+            <h3>Smart Import</h3>
+            <p>Drop in web pages, emails, PDFs, voice memos, or YouTube videos. The AI agent formats and files them automatically.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🧠</div>
+            <h3>AI Organization</h3>
+            <p>Your notes organize themselves. The agent auto-tags, links related content, and maintains your knowledge graph.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🔍</div>
+            <h3>Intelligent Retrieval</h3>
+            <p>Semantic search across your entire vault. Ask questions in natural language and get synthesized answers.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🔒</div>
+            <h3>Self-Hosted & Private</h3>
+            <p>Your data stays yours. Deploy with one command, connect any client. Full control, zero vendor lock-in.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🤖</div>
+            <h3>Agent-Native API</h3>
+            <p>Built for AI agents first. MCP tools let Antigravity, Cursor, or any agent read and write your notes directly.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">📱</div>
+            <h3>Everywhere, Offline</h3>
+            <p>Web, iOS, Android — all offline-first with CRDT sync. Edit anywhere, conflicts resolve automatically.</p>
+          </div>
         </div>
       </div>
     </section>
+
+    <!-- ===== SECTION 4: HOW IT WORKS ===== -->
+    <section class="section section-how" id="how-it-works">
+      <div class="section-container">
+        <div class="section-label">HOW IT WORKS</div>
+        <h2>From <span class="gradient-text">Chaos</span> to Clarity</h2>
+        <p class="section-sub">Three steps to a perfectly organized knowledge base.</p>
+
+        <div class="steps-grid">
+          <div class="step-card">
+            <div class="step-number">01</div>
+            <div class="step-content">
+              <h3>Capture Everything</h3>
+              <p>Write in markdown, import from anywhere, or dictate with voice. Every note is a plain <code>.md</code> file — no lock-in, ever.</p>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-number">02</div>
+            <div class="step-content">
+              <h3>AI Organizes</h3>
+              <p>The agent reads your notes, auto-tags them, files them into the right folders, and creates links between related ideas.</p>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-number">03</div>
+            <div class="step-content">
+              <h3>Retrieve Instantly</h3>
+              <p>Ask questions, search semantically, or browse your auto-generated knowledge graph. Your second brain, always up to date.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SECTION 5: AI AGENT ===== -->
+    <section class="section section-agent" id="agent">
+      <div class="section-container">
+        <div class="section-label">THE KILLER FEATURE</div>
+        <h2>Meet the <span class="gradient-text">AI Organizer</span></h2>
+        <p class="section-sub">Not a chatbot — a knowledge steward that works in the background.</p>
+
+        <div class="agent-demo">
+          <div class="agent-chat-mock">
+            <div class="agent-chat-header">
+              <span class="agent-icon">✦</span>
+              <span>AI Organizer</span>
+              <span class="ai-badge">BETA</span>
+            </div>
+            <div class="agent-chat-messages">
+              <div class="agent-msg ai">
+                <div class="agent-msg-avatar">✦</div>
+                <div class="agent-msg-text">I found <strong>3 notes</strong> about "architecture" that aren't linked together. Want me to connect them and create a Map of Content?</div>
+              </div>
+              <div class="agent-msg user">
+                <div class="agent-msg-avatar">T</div>
+                <div class="agent-msg-text">Yes, and also tag them with #core-systems</div>
+              </div>
+              <div class="agent-msg ai">
+                <div class="agent-msg-avatar">✦</div>
+                <div class="agent-msg-text">Done! I've:<br>• Linked all 3 architecture notes<br>• Created <code>MOC-Architecture.md</code><br>• Added <code>#core-systems</code> to each<br>• Found 2 more related notes in /Research you might want to include</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="agent-capabilities">
+            <div class="capability">
+              <span class="capability-icon">🏷️</span>
+              <div>
+                <strong>Auto-tagging</strong>
+                <p>Reads content and applies relevant tags</p>
+              </div>
+            </div>
+            <div class="capability">
+              <span class="capability-icon">🔗</span>
+              <div>
+                <strong>Link Discovery</strong>
+                <p>Finds connections you missed</p>
+              </div>
+            </div>
+            <div class="capability">
+              <span class="capability-icon">📊</span>
+              <div>
+                <strong>Smart Summaries</strong>
+                <p>Generates MOCs and indexes</p>
+              </div>
+            </div>
+            <div class="capability">
+              <span class="capability-icon">🧹</span>
+              <div>
+                <strong>Vault Cleanup</strong>
+                <p>Finds duplicates, archives stale notes</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SECTION 6: TECH STACK ===== -->
+    <section class="section section-tech" id="tech">
+      <div class="section-container">
+        <div class="section-label">UNDER THE HOOD</div>
+        <h2>A Modern <span class="gradient-text">Stack</span></h2>
+        <p class="section-sub">Every choice made for performance, developer experience, and self-hosting simplicity.</p>
+
+        <div class="tech-grid">
+          <div class="tech-item">
+            <div class="tech-name">Bun</div>
+            <div class="tech-role">Server Runtime</div>
+          </div>
+          <div class="tech-item">
+            <div class="tech-name">Hono</div>
+            <div class="tech-role">API Framework</div>
+          </div>
+          <div class="tech-item">
+            <div class="tech-name">Next.js</div>
+            <div class="tech-role">Web App</div>
+          </div>
+          <div class="tech-item">
+            <div class="tech-name">Expo</div>
+            <div class="tech-role">Mobile Apps</div>
+          </div>
+          <div class="tech-item">
+            <div class="tech-name">SQLite</div>
+            <div class="tech-role">Index + FTS5</div>
+          </div>
+          <div class="tech-item">
+            <div class="tech-name">Yjs</div>
+            <div class="tech-role">CRDT Sync</div>
+          </div>
+          <div class="tech-item">
+            <div class="tech-name">MCP</div>
+            <div class="tech-role">Agent Protocol</div>
+          </div>
+          <div class="tech-item">
+            <div class="tech-name">.md</div>
+            <div class="tech-role">Source of Truth</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SECTION 7: OPEN SOURCE + CTA ===== -->
+    <section class="section section-cta" id="open-source">
+      <div class="section-container">
+        <div class="cta-box">
+          <div class="section-label">OPEN SOURCE</div>
+          <h2>Built in the Open</h2>
+          <p class="section-sub">Mino is 100% open-source. Self-host with one command, fork it, extend it, or contribute. Your notes are <em>yours</em> — forever.</p>
+
+          <div class="cta-code">
+            <code>curl -fsSL https://mino.ink/install.sh | bash</code>
+          </div>
+
+          <div class="hero-actions">
+            <button class="btn-primary" onclick="enterApp()">
+              ✦ Try the Demo
+            </button>
+            <button class="btn-secondary">
+              ↗ Star on GitHub
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="landing-footer">
+      <div class="footer-inner">
+        <div class="footer-logo">
+          <svg width="24" height="24" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="100" cy="100" r="95" fill="#1E1E1E" stroke="rgba(187,134,252,0.15)" stroke-width="2"/>
+            <ellipse cx="50" cy="100" rx="17" ry="50" fill="#BB86FC"/>
+            <ellipse cx="100" cy="100" rx="20" ry="70" fill="#BB86FC"/>
+            <ellipse cx="150" cy="100" rx="17" ry="50" fill="#BB86FC"/>
+          </svg>
+          <span>Mino</span>
+        </div>
+        <div class="footer-text">Open source · Self-hostable · Agent-native</div>
+      </div>
+    </footer>
   </div>
 
   <!-- ============================================================

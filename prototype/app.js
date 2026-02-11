@@ -76,14 +76,8 @@ Sync:     Yjs CRDTs over WebSocket</code></pre>
     preview: 'Brand colors (#BB86FC purple, #1E1E1E surfaces), typography rules, and design principles...'
   },
   {
-    id: 4,
-    title: 'API Endpoint Design',
-    folder: 'projects',
-    tags: ['architecture', 'api'],
-    date: '2 days ago',
-    pinned: false,
-    content: `<h2>REST API v1</h2>
-<pre><code>GET    /api/v1/notes          — List notes
+    id: 4, title: 'API Endpoint Design', folder: 'projects', tags: ['architecture', 'api'], date: '2 days ago', pinned: false,
+    content: `<h2>REST API v1</h2><pre><code>GET    /api/v1/notes          — List notes
 POST   /api/v1/notes          — Create note
 GET    /api/v1/notes/:path    — Read note
 PUT    /api/v1/notes/:path    — Update note
@@ -100,195 +94,121 @@ POST   /api/v1/agent/chat     — AI agent</code></pre>
     preview: 'REST API v1 endpoints for notes, search, folders, and agent. JWT + API key auth...'
   },
   {
-    id: 5,
-    title: 'Plugin Ideas Brainstorm',
-    folder: 'ideas',
-    tags: ['idea', 'plugins'],
-    date: '3 days ago',
-    pinned: false,
-    content: `<h2>Priority Plugins</h2>
-<ul>
-  <li><strong>Web Search</strong> — Search via Perplexity, save as notes</li>
-  <li><strong>YouTube Transcripts</strong> — Import video content</li>
-  <li><strong>Voice Notes</strong> — Whisper STT integration</li>
-  <li><strong>Obsidian Import</strong> — Migrate existing vaults</li>
-</ul>
-
-<h2>Future Ideas</h2>
-<ul>
-  <li>Email digest → daily note</li>
-  <li>RSS feed clipper</li>
-  <li>Calendar → daily notes</li>
-  <li>Twitter/X thread saver</li>
-  <li>Readwise integration</li>
-</ul>
-
-<blockquote>Each plugin is an npm package using <code>definePlugin()</code> from the SDK.</blockquote>`,
+    id: 5, title: 'Plugin Ideas Brainstorm', folder: 'ideas', tags: ['idea', 'plugins'], date: '3 days ago', pinned: false,
+    content: `<h2>Priority Plugins</h2><ul><li><strong>Web Search</strong> — Search via Perplexity, save as notes</li><li><strong>YouTube Transcripts</strong> — Import video content</li><li><strong>Voice Notes</strong> — Whisper STT integration</li><li><strong>Obsidian Import</strong> — Migrate existing vaults</li></ul><h2>Future Ideas</h2><ul><li>Email digest → daily note</li><li>RSS feed clipper</li><li>Calendar → daily notes</li><li>Twitter/X thread saver</li><li>Readwise integration</li></ul><blockquote>Each plugin is an npm package using <code>definePlugin()</code> from the SDK.</blockquote>`,
     preview: 'Priority plugins: web search, YouTube, voice notes, Obsidian import. Future: email, RSS...'
   },
   {
-    id: 6,
-    title: 'Offline Sync Strategy',
-    folder: 'research',
-    tags: ['architecture', 'sync'],
-    date: '4 days ago',
-    pinned: false,
-    content: `<h2>CRDT Approach</h2>
-<p>Using <strong>Yjs</strong> for conflict-free sync. All edits are CRDT operations that merge automatically regardless of order.</p>
-
-<h2>Sync Flow</h2>
-<ol>
-  <li>Client connects via WebSocket</li>
-  <li>Exchange state vectors (handshake)</li>
-  <li>Server sends deltas since last sync</li>
-  <li>Client applies + sends its local deltas</li>
-  <li>WebSocket stays open for real-time</li>
-</ol>
-
-<h2>Conflict Policy</h2>
-<p>Edit always wins over delete (soft-delete). CRDTs guarantee all devices converge to the same state.</p>`,
+    id: 6, title: 'Offline Sync Strategy', folder: 'research', tags: ['architecture', 'sync'], date: '4 days ago', pinned: false,
+    content: `<h2>CRDT Approach</h2><p>Using <strong>Yjs</strong> for conflict-free sync.</p><h2>Sync Flow</h2><ol><li>Client connects via WebSocket</li><li>Exchange state vectors</li><li>Server sends deltas</li><li>Client applies + sends local deltas</li><li>WebSocket stays open for real-time</li></ol><h2>Conflict Policy</h2><p>Edit always wins over delete (soft-delete). CRDTs guarantee convergence.</p>`,
     preview: 'Yjs CRDTs for offline sync. WebSocket flow, state vectors, edit-wins-over-delete policy...'
   },
   {
-    id: 7,
-    title: 'Security Hardening Checklist',
-    folder: 'projects',
-    tags: ['security'],
-    date: '5 days ago',
-    pinned: false,
-    content: `<h2>Authentication</h2>
-<div class="task-item"><div class="task-checkbox checked"></div><span>JWT with 15min expiry + refresh tokens</span></div>
-<div class="task-item"><div class="task-checkbox checked"></div><span>API keys hashed with bcrypt</span></div>
-<div class="task-item"><div class="task-checkbox"></div><span>OAuth 2.0 (Google) integration</span></div>
-
-<h2>Input & Output</h2>
-<div class="task-item"><div class="task-checkbox checked"></div><span>Zod validation on all inputs</span></div>
-<div class="task-item"><div class="task-checkbox"></div><span>CSP headers on web app</span></div>
-<div class="task-item"><div class="task-checkbox"></div><span>Strict CORS allowlist</span></div>
-
-<h2>Data</h2>
-<div class="task-item"><div class="task-checkbox"></div><span>Path traversal protection</span></div>
-<div class="task-item"><div class="task-checkbox"></div><span>Optional E2E encryption</span></div>`,
+    id: 7, title: 'Security Hardening Checklist', folder: 'projects', tags: ['security'], date: '5 days ago', pinned: false,
+    content: `<h2>Authentication</h2><div class="task-item"><div class="task-checkbox checked"></div><span>JWT with 15min expiry + refresh tokens</span></div><div class="task-item"><div class="task-checkbox checked"></div><span>API keys hashed with bcrypt</span></div><div class="task-item"><div class="task-checkbox"></div><span>OAuth 2.0 (Google) integration</span></div><h2>Input & Output</h2><div class="task-item"><div class="task-checkbox checked"></div><span>Zod validation on all inputs</span></div><div class="task-item"><div class="task-checkbox"></div><span>CSP headers on web app</span></div>`,
     preview: 'Security checklist: JWT auth, API key hashing, Zod validation, CSP, CORS, E2E encryption...'
   },
   {
-    id: 8,
-    title: 'Daily — Feb 11, 2026',
-    folder: 'daily',
-    tags: ['daily'],
-    date: 'Today',
-    pinned: false,
-    content: `<h2>Today</h2>
-<div class="task-item"><div class="task-checkbox checked"></div><span>Finalize design system with logo colors</span></div>
-<div class="task-item"><div class="task-checkbox checked"></div><span>Write README and Master Plan</span></div>
-<div class="task-item"><div class="task-checkbox"></div><span>Build clickable prototype</span></div>
-<div class="task-item"><div class="task-checkbox"></div><span>Split docs into modular files</span></div>
-
-<h2>Notes</h2>
-<p>Logo uses <code>#BB86FC</code> — recalibrated entire design system around this. Three-pill motif is the visual identity.</p>`,
+    id: 8, title: 'Daily — Feb 11, 2026', folder: 'daily', tags: ['daily'], date: 'Today', pinned: false,
+    content: `<h2>Today</h2><div class="task-item"><div class="task-checkbox checked"></div><span>Finalize design system with logo colors</span></div><div class="task-item"><div class="task-checkbox checked"></div><span>Write README and Master Plan</span></div><div class="task-item"><div class="task-checkbox"></div><span>Build clickable prototype</span></div><div class="task-item"><div class="task-checkbox"></div><span>Split docs into modular files</span></div><h2>Notes</h2><p>Logo uses <code>#BB86FC</code> — recalibrated entire design system around this.</p>`,
     preview: 'Feb 11 daily — finalize design system, build prototype, split docs...'
   },
   {
-    id: 9,
-    title: 'AI Agent Context Strategy',
-    folder: 'research',
-    tags: ['ai', 'architecture'],
-    date: 'Last week',
-    pinned: false,
-    content: `<h2>Token Efficiency</h2>
-<p>The agent must be aggressive about minimizing token usage.</p>
-
-<h2>Strategies</h2>
-<ul>
-  <li><strong>Compact file tree</strong> — folder names + counts, not every file</li>
-  <li><strong>Snippet search</strong> — 200-char snippets, never full files</li>
-  <li><strong>Search-and-replace</strong> — <code>mino.edit(path, old, new)</code></li>
-  <li><strong>Embeddings pre-filter</strong> — find 5 right notes from 10,000</li>
-  <li><strong>Session memory</strong> — compact summary of known vault info</li>
-</ul>
-
-<h2>4-Phase Search</h2>
-<ol>
-  <li>Title + tag match (0 tokens)</li>
-  <li>Full-text FTS5 (snippets, ~500 tokens)</li>
-  <li>Semantic embedding search (~200 tokens)</li>
-  <li>Full file read (only when confident)</li>
-</ol>`,
+    id: 9, title: 'AI Agent Context Strategy', folder: 'research', tags: ['ai', 'architecture'], date: 'Last week', pinned: false,
+    content: `<h2>Token Efficiency</h2><p>The agent must be aggressive about minimizing token usage.</p><h2>Strategies</h2><ul><li><strong>Compact file tree</strong></li><li><strong>Snippet search</strong> — 200-char snippets</li><li><strong>Search-and-replace</strong></li><li><strong>Embeddings pre-filter</strong></li><li><strong>Session memory</strong></li></ul><h2>4-Phase Search</h2><ol><li>Title + tag match (0 tokens)</li><li>FTS5 (snippets)</li><li>Semantic embedding</li><li>Full file read (only when confident)</li></ol>`,
     preview: 'Token efficiency strategies: compact tree, snippets, search-and-replace, 4-phase search...'
   },
   {
-    id: 10,
-    title: 'Graph View Concept',
-    folder: 'ideas',
-    tags: ['idea', 'design'],
-    date: 'Last week',
-    pinned: false,
-    content: `<h2>Visual Knowledge Graph</h2>
-<p>Like Obsidian's graph view but auto-generated. The AI agent creates links between related notes.</p>
-
-<h2>Implementation</h2>
-<ul>
-  <li>Use <code>react-force-graph</code> or D3.js</li>
-  <li>Nodes = notes, edges = links/backlinks</li>
-  <li>Color by folder, size by connections</li>
-  <li>Click node to open note</li>
-  <li>Cluster detection for topic groups</li>
-</ul>
-
-<blockquote>Phase 3+ feature. Needs the link tracking system in place first.</blockquote>`,
+    id: 10, title: 'Graph View Concept', folder: 'ideas', tags: ['idea', 'design'], date: 'Last week', pinned: false,
+    content: `<h2>Visual Knowledge Graph</h2><p>Like Obsidian's graph view but auto-generated.</p><h2>Implementation</h2><ul><li>Use <code>react-force-graph</code> or D3.js</li><li>Nodes = notes, edges = links/backlinks</li><li>Color by folder, size by connections</li><li>Click node to open note</li></ul><blockquote>Phase 3+ feature.</blockquote>`,
     preview: 'Visual knowledge graph like Obsidian. react-force-graph, auto-linked, colored by folder...'
   },
   {
-    id: 11,
-    title: 'Monorepo Setup Guide',
-    folder: 'projects',
-    tags: ['setup'],
-    date: '2 weeks ago',
-    pinned: false,
-    content: `<h2>Structure</h2>
-<pre><code>mino/
-├── packages/
-│   ├── shared/     (types, utils, API client)
-│   ├── ui/         (React components)
-│   └── tokens/     (design tokens)
-├── apps/
-│   ├── server/     (Bun + Hono)
-│   ├── web/        (Next.js)
-│   └── mobile/     (Expo)
-└── tools/
-    ├── mcp-server/ (MCP tools)
-    └── cli/        (CLI)</code></pre>
-
-<h2>Setup</h2>
-<p>pnpm workspaces + Turborepo. Run <code>turbo dev</code> to start all services.</p>`,
+    id: 11, title: 'Monorepo Setup Guide', folder: 'projects', tags: ['setup'], date: '2 weeks ago', pinned: false,
+    content: `<h2>Structure</h2><pre><code>mino/
+├── packages/ (shared, ui, tokens)
+├── apps/     (server, web, mobile)
+└── tools/    (mcp-server, cli)</code></pre><h2>Setup</h2><p>pnpm workspaces + Turborepo. Run <code>turbo dev</code> to start all services.</p>`,
     preview: 'Monorepo with pnpm workspaces + Turborepo. packages/, apps/, tools/ structure...'
   },
   {
-    id: 12,
-    title: 'Daily — Feb 10, 2026',
-    folder: 'daily',
-    tags: ['daily'],
-    date: 'Yesterday',
-    pinned: false,
-    content: `<h2>Today</h2>
-<div class="task-item"><div class="task-checkbox checked"></div><span>Research OpenClaw agent architecture</span></div>
-<div class="task-item"><div class="task-checkbox checked"></div><span>Analyze existing workspace prototypes</span></div>
-<div class="task-item"><div class="task-checkbox checked"></div><span>Visit mino.ink for design inspiration</span></div>
-
-<h2>Insights</h2>
-<p>OpenClaw has 52 skills (including Obsidian, Notion, Apple Notes integrations) and a robust plugin architecture. Good reference for Mino's agent system.</p>`,
+    id: 12, title: 'Daily — Feb 10, 2026', folder: 'daily', tags: ['daily'], date: 'Yesterday', pinned: false,
+    content: `<h2>Today</h2><div class="task-item"><div class="task-checkbox checked"></div><span>Research OpenClaw agent architecture</span></div><div class="task-item"><div class="task-checkbox checked"></div><span>Analyze existing workspace prototypes</span></div><div class="task-item"><div class="task-checkbox checked"></div><span>Visit mino.ink for design inspiration</span></div><h2>Insights</h2><p>OpenClaw has 52 skills and a robust plugin architecture.</p>`,
     preview: 'Feb 10 daily — researched OpenClaw, analyzed prototypes, visited mino.ink...'
   }
 ];
 
 // === STATE ===
-let currentView = 'landing'; // 'landing' | 'app'
-let currentNoteView = 'grid'; // 'grid' | 'editor'
+let currentView = 'landing';
+let currentNoteView = 'grid';
 let currentNote = null;
 let aiPanelOpen = false;
 
+// === SCROLL-BASED NAVBAR ===
+const sectionIds = ['hero', 'features', 'how-it-works', 'agent', 'tech', 'open-source'];
+
+function scrollToSection(id) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function updateNavbarIndicator(activeLink) {
+  const indicator = document.getElementById('navbarIndicator');
+  if (!indicator || !activeLink) return;
+  const container = document.getElementById('navbarLinks');
+  const containerRect = container.getBoundingClientRect();
+  const linkRect = activeLink.getBoundingClientRect();
+  indicator.style.left = (linkRect.left - containerRect.left) + 'px';
+  indicator.style.width = linkRect.width + 'px';
+  indicator.style.top = (linkRect.top - containerRect.top) + 'px';
+}
+
+function setActiveNavLink(sectionId) {
+  const links = document.querySelectorAll('.navbar-link');
+  links.forEach(link => {
+    if (link.dataset.section === sectionId) {
+      link.classList.add('active');
+      updateNavbarIndicator(link);
+    } else {
+      link.classList.remove('active');
+    }
+  });
+}
+
+// IntersectionObserver to track which section is in view
+function initScrollTracking() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && entry.intersectionRatio >= 0.3) {
+        setActiveNavLink(entry.target.id);
+      }
+    });
+  }, { threshold: [0.3], rootMargin: '-80px 0px -40% 0px' });
+
+  sectionIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) observer.observe(el);
+  });
+}
+
+// === MOBILE MENU ===
+function toggleMobileMenu() {
+  const menu = document.getElementById('mobileMenu');
+  const hamburger = document.getElementById('navHamburger');
+  menu.classList.toggle('open');
+  hamburger.classList.toggle('open');
+  document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
+}
+
+function closeMobileMenu() {
+  document.getElementById('mobileMenu').classList.remove('open');
+  document.getElementById('navHamburger').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
 // === PAGE NAVIGATION ===
 function enterApp() {
+  closeMobileMenu();
   document.getElementById('landing').style.display = 'none';
   document.getElementById('navbar').style.display = 'none';
   const app = document.getElementById('app');
@@ -309,8 +229,6 @@ function goToLanding() {
 function renderNotes(notes) {
   const grid = document.getElementById('notesGrid');
   grid.innerHTML = '';
-
-  // Sort: pinned first, then by date
   const sorted = [...notes].sort((a, b) => {
     if (a.pinned && !b.pinned) return -1;
     if (!a.pinned && b.pinned) return 1;
@@ -321,7 +239,6 @@ function renderNotes(notes) {
     const card = document.createElement('div');
     card.className = `note-card${note.pinned ? ' pinned' : ''}`;
     card.onclick = () => openNote(note);
-
     card.innerHTML = `
       <div class="note-card-title">${note.title}</div>
       <div class="note-card-preview">${note.preview}</div>
@@ -332,7 +249,6 @@ function renderNotes(notes) {
         </div>
       </div>
     `;
-
     grid.appendChild(card);
   });
 
@@ -344,16 +260,13 @@ function renderNotes(notes) {
 function openNote(note) {
   currentNote = note;
   currentNoteView = 'editor';
-
   document.getElementById('notesArea').style.display = 'none';
   const editorView = document.getElementById('editorView');
   editorView.classList.add('active');
   editorView.classList.add('page-transition');
-
   document.getElementById('editorTitle').value = note.title;
   document.getElementById('editorRendered').innerHTML = note.content;
 
-  // Update breadcrumb
   const breadcrumb = document.querySelector('.breadcrumb');
   breadcrumb.innerHTML = `
     <span class="breadcrumb-item" onclick="showNotesList()">All Notes</span>
@@ -363,29 +276,22 @@ function openNote(note) {
     <span class="breadcrumb-item current">${note.title}</span>
   `;
 
-  // Update status bar
   const wordCount = note.content.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(w => w).length;
   document.getElementById('statusWords').textContent = `${wordCount} words`;
   document.getElementById('statusDate').textContent = note.date;
-
-  // Hide FAB in editor
   document.getElementById('fab').style.display = 'none';
 }
 
 function showNotesList() {
   currentNoteView = 'grid';
   currentNote = null;
-
   document.getElementById('notesArea').style.display = '';
   document.getElementById('editorView').classList.remove('active');
-
-  // Reset breadcrumb
   document.querySelector('.breadcrumb').innerHTML = `
     <span class="breadcrumb-item" onclick="showNotesList()">All Notes</span>
     <span class="breadcrumb-sep">›</span>
     <span class="breadcrumb-item current">${sampleNotes.length} notes</span>
   `;
-
   document.getElementById('statusWords').textContent = `${sampleNotes.length} notes`;
   document.getElementById('statusDate').textContent = 'Today';
   document.getElementById('fab').style.display = '';
@@ -393,11 +299,8 @@ function showNotesList() {
 
 // === SIDEBAR ===
 function selectFolder(element, folder) {
-  // Update active state
   document.querySelectorAll('.tree-item').forEach(el => el.classList.remove('active'));
   element.classList.add('active');
-
-  // Filter notes
   let filtered;
   if (folder === 'all') {
     filtered = sampleNotes;
@@ -407,12 +310,7 @@ function selectFolder(element, folder) {
   } else {
     filtered = sampleNotes.filter(n => n.folder === folder);
   }
-
-  // Show notes list if in editor
-  if (currentNoteView === 'editor') {
-    showNotesList();
-  }
-
+  if (currentNoteView === 'editor') showNotesList();
   renderNotes(filtered);
 }
 
@@ -421,7 +319,6 @@ function setView(mode) {
   const grid = document.getElementById('notesGrid');
   const gridBtn = document.getElementById('gridViewBtn');
   const listBtn = document.getElementById('listViewBtn');
-
   if (mode === 'grid') {
     grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(240px, 1fr))';
     gridBtn.classList.add('active');
@@ -434,7 +331,6 @@ function setView(mode) {
 }
 
 function toggleSort() {
-  // Visual feedback only for prototype
   const sortedReverse = [...sampleNotes].reverse();
   renderNotes(sortedReverse);
 }
@@ -453,38 +349,26 @@ function closeCmdPalette(event) {
 
 function filterCommands() {
   const query = document.getElementById('cmdInput').value.toLowerCase();
-  const items = document.querySelectorAll('.cmd-result-item');
-
   if (!query) {
-    items.forEach(item => item.style.display = '');
+    document.querySelectorAll('.cmd-result-item').forEach(item => item.style.display = '');
     return;
   }
-
-  // If typing, show matching notes as results
   const results = document.getElementById('cmdResults');
   const matchingNotes = sampleNotes.filter(n =>
     n.title.toLowerCase().includes(query) ||
     n.tags.some(t => t.includes(query)) ||
     n.preview.toLowerCase().includes(query)
   );
-
-  // Clear and show matching notes + default items
   results.innerHTML = '';
-
   matchingNotes.forEach(note => {
     const item = document.createElement('div');
     item.className = 'cmd-result-item';
-    item.onclick = () => { closeCmdPalette({ target: { currentTarget: null } }); document.getElementById('cmdOverlay').classList.remove('active'); if (currentView === 'landing') enterApp(); openNote(note); };
-    item.innerHTML = `
-      <span class="icon">📄</span>
-      <span class="text">${note.title}</span>
-      <span class="shortcut" style="color: var(--text-muted); font-size: 0.7rem;">${note.folder}</span>
-    `;
+    item.onclick = () => { document.getElementById('cmdOverlay').classList.remove('active'); if (currentView === 'landing') enterApp(); openNote(note); };
+    item.innerHTML = `<span class="icon">📄</span><span class="text">${note.title}</span><span class="shortcut" style="color:var(--text-muted);font-size:0.7rem;">${note.folder}</span>`;
     results.appendChild(item);
   });
-
   if (matchingNotes.length === 0) {
-    results.innerHTML = `<div class="cmd-result-item"><span class="icon">🔍</span><span class="text" style="color: var(--text-tertiary);">No results for "${query}"</span></div>`;
+    results.innerHTML = `<div class="cmd-result-item"><span class="icon">🔍</span><span class="text" style="color:var(--text-tertiary);">No results for "${query}"</span></div>`;
   }
 }
 
@@ -493,7 +377,6 @@ function cmdAction(action) {
   switch (action) {
     case 'new': createNewNote(); break;
     case 'ai': toggleAIPanel(); break;
-    default: break;
   }
 }
 
@@ -512,42 +395,19 @@ function sendAIMessage() {
   const input = document.getElementById('aiInput');
   const text = input.value.trim();
   if (!text) return;
-
   const messages = document.getElementById('aiMessages');
-
-  // User message
-  messages.innerHTML += `
-    <div class="ai-message">
-      <div class="ai-message-avatar user">T</div>
-      <div class="ai-message-content">${text}</div>
-    </div>
-  `;
-
+  messages.innerHTML += `<div class="ai-message"><div class="ai-message-avatar user">T</div><div class="ai-message-content">${text}</div></div>`;
   input.value = '';
-
-  // Simulate AI thinking
   setTimeout(() => {
     let response;
-
     if (text.toLowerCase().includes('organiz')) {
-      response = `I've scanned your vault and found some suggestions:<br><br>
-        • <strong>3 notes</strong> about "architecture" could be linked together<br>
-        • <strong>Daily notes</strong> could use consistent tagging<br>
-        • <strong>"Plugin Ideas"</strong> and <strong>"Graph View Concept"</strong> could be moved to a "Future" folder<br><br>
-        Want me to apply these changes?`;
+      response = `I've scanned your vault and found some suggestions:<br><br>• <strong>3 notes</strong> about "architecture" could be linked together<br>• <strong>Daily notes</strong> could use consistent tagging<br>• <strong>"Plugin Ideas"</strong> and <strong>"Graph View Concept"</strong> could be moved to a "Future" folder<br><br>Want me to apply these changes?`;
     } else if (text.toLowerCase().includes('search') || text.toLowerCase().includes('find')) {
-      response = `I found <strong>4 notes</strong> related to your query across your vault. The most relevant is <strong>"System Architecture"</strong> which covers the core objectives and tech stack. Would you like me to open it?`;
+      response = `I found <strong>4 notes</strong> related to your query. The most relevant is <strong>"System Architecture"</strong> which covers the core objectives and tech stack. Would you like me to open it?`;
     } else {
-      response = `Based on your notes, here's what I found:<br><br>
-        Your vault has <strong>12 notes</strong> across 5 folders. The most active area is <strong>Projects</strong> with 5 notes. I'd suggest creating a <strong>map of content (MOC)</strong> note to link your architecture-related notes together. Want me to create one?`;
+      response = `Based on your notes, your vault has <strong>12 notes</strong> across 5 folders. The most active area is <strong>Projects</strong> with 5 notes. I'd suggest creating a <strong>map of content (MOC)</strong> note to link your architecture-related notes together. Want me to create one?`;
     }
-
-    messages.innerHTML += `
-      <div class="ai-message">
-        <div class="ai-message-avatar ai">✦</div>
-        <div class="ai-message-content">${response}</div>
-      </div>
-    `;
+    messages.innerHTML += `<div class="ai-message"><div class="ai-message-avatar ai">✦</div><div class="ai-message-content">${response}</div></div>`;
     messages.scrollTop = messages.scrollHeight;
   }, 800);
 }
@@ -555,18 +415,7 @@ function sendAIMessage() {
 // === NEW NOTE ===
 function createNewNote() {
   if (currentView === 'landing') enterApp();
-
-  const newNote = {
-    id: Date.now(),
-    title: 'Untitled Note',
-    folder: 'all',
-    tags: [],
-    date: 'Just now',
-    pinned: false,
-    content: '<p>Start writing...</p>',
-    preview: 'A new blank note...'
-  };
-
+  const newNote = { id: Date.now(), title: 'Untitled Note', folder: 'all', tags: [], date: 'Just now', pinned: false, content: '<p>Start writing...</p>', preview: 'A new blank note...' };
   openNote(newNote);
   document.getElementById('editorTitle').value = '';
   document.getElementById('editorTitle').focus();
@@ -574,49 +423,41 @@ function createNewNote() {
 
 // === KEYBOARD SHORTCUTS ===
 document.addEventListener('keydown', (e) => {
-  // Cmd+K — Command palette
   if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
     e.preventDefault();
-    if (document.getElementById('cmdOverlay').classList.contains('active')) {
-      document.getElementById('cmdOverlay').classList.remove('active');
-    } else {
-      openCmdPalette();
-    }
+    document.getElementById('cmdOverlay').classList.contains('active')
+      ? document.getElementById('cmdOverlay').classList.remove('active')
+      : openCmdPalette();
   }
-
-  // Escape — Close overlays
   if (e.key === 'Escape') {
     document.getElementById('cmdOverlay').classList.remove('active');
     if (aiPanelOpen) toggleAIPanel();
+    closeMobileMenu();
   }
-
-  // Cmd+N — New note
-  if ((e.metaKey || e.ctrlKey) && e.key === 'n') {
-    e.preventDefault();
-    createNewNote();
-  }
-
-  // Cmd+J — AI panel
-  if ((e.metaKey || e.ctrlKey) && e.key === 'j') {
-    e.preventDefault();
-    if (currentView === 'landing') enterApp();
-    toggleAIPanel();
-  }
+  if ((e.metaKey || e.ctrlKey) && e.key === 'n') { e.preventDefault(); createNewNote(); }
+  if ((e.metaKey || e.ctrlKey) && e.key === 'j') { e.preventDefault(); if (currentView === 'landing') enterApp(); toggleAIPanel(); }
 });
 
 // === SEARCH ===
-document.getElementById('sidebarSearch').addEventListener('focus', () => {
-  openCmdPalette();
-});
+document.getElementById('sidebarSearch').addEventListener('focus', () => openCmdPalette());
 
 // === TASK CHECKBOXES ===
 document.addEventListener('click', (e) => {
-  if (e.target.classList.contains('task-checkbox')) {
-    e.target.classList.toggle('checked');
-  }
+  if (e.target.classList.contains('task-checkbox')) e.target.classList.toggle('checked');
 });
 
 // === INIT ===
 document.addEventListener('DOMContentLoaded', () => {
-  // Nothing to init on landing — notes render on enterApp()
+  initScrollTracking();
+  // Position indicator on initial active link
+  setTimeout(() => {
+    const activeLink = document.querySelector('.navbar-link.active');
+    if (activeLink) updateNavbarIndicator(activeLink);
+  }, 700); // wait for slideDown animation
+});
+
+// Recalculate indicator on resize
+window.addEventListener('resize', () => {
+  const activeLink = document.querySelector('.navbar-link.active');
+  if (activeLink) updateNavbarIndicator(activeLink);
 });
