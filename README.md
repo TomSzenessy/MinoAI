@@ -19,6 +19,10 @@ Optional profiles:
 - `autoupdate` (Watchtower)
 - `full` (all sidecars)
 
+Access modes:
+- Open mode (default): published host port
+- Tunnel mode (safer): set `COMPOSE_PROFILES=tunnel` + `MINO_PORT_BIND=127.0.0.1`
+
 ## 2. First Run: Get Auth + Links
 
 After startup, open:
@@ -50,6 +54,22 @@ Behavior:
 7. Redirect to `/workspace?profile=<id>`.
 
 Manual form fallback is shown if params are missing/invalid.
+
+## 3.1 Cloudflare Tunnel (Optional Safer Mode)
+
+If you do not want open host ports, use tunnel mode:
+
+1. Open `https://one.dash.cloudflare.com/`.
+2. Go to `Networks` / `Connectors` -> `Add a tunnel`.
+3. Choose `Cloudflared` (or `WARP connector`), name it.
+4. Cloudflare shows a command like:
+   `docker run cloudflare/cloudflared:latest tunnel --no-autoupdate run --token eyJ...`
+5. Copy only the token value after `--token`.
+6. In Portainer stack environment vars set:
+   - `COMPOSE_PROFILES=tunnel`
+   - `CF_TUNNEL_TOKEN=<copied token>`
+   - `MINO_PORT_BIND=127.0.0.1`
+7. Redeploy the stack.
 
 ## 4. Cloudflare Pages Settings
 

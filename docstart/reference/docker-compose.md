@@ -9,8 +9,8 @@ Copy everything inside the code block into Portainer -> Stacks -> Add stack.
 # Mino Server — Docker Compose (Portainer-friendly)
 #
 # Usage:
-#   docker compose up -d                           — Start server only
-#   docker compose --profile tunnel up -d          — Start server + Cloudflare Tunnel
+#   docker compose up -d                           — Open mode (default, published port)
+#   docker compose --profile tunnel up -d          — Tunnel mode (recommended safer mode)
 #   docker compose --profile autoupdate up -d      — Start server + Watchtower
 #   docker compose --profile full up -d            — Start everything
 #
@@ -26,7 +26,9 @@ services:
     container_name: mino-server
     restart: unless-stopped
     ports:
-      - "${MINO_PORT:-3000}:3000"
+      # Open mode default: MINO_PORT_BIND=0.0.0.0 (public on host)
+      # Safer tunnel mode: MINO_PORT_BIND=127.0.0.1 (local-only bind)
+      - "${MINO_PORT_BIND:-0.0.0.0}:${MINO_PORT:-3000}:3000"
     volumes:
       - mino-data:/data
     environment:
@@ -34,6 +36,7 @@ services:
       - MINO_DATA_DIR=/data
       # Optional overrides (uncomment as needed):
       # - MINO_PORT=3000
+      # - MINO_PORT_BIND=0.0.0.0
       # - MINO_HOST=0.0.0.0
       # - MINO_AUTH_MODE=api-key
       # - MINO_CORS_ORIGINS=https://mino.ink,https://test.mino.ink,http://localhost:3000
@@ -52,16 +55,19 @@ services:
   # -------------------------------------------------------------------------
   # Cloudflare Tunnel — Secure remote access (no open ports)
   # Activate with: docker compose --profile tunnel up -d
+  # Recommended with tunnel mode:
+  #   MINO_PORT_BIND=127.0.0.1 (avoid exposing host port externally)
   #
   # Get your tunnel token from: https://one.dash.cloudflare.com
-  # Tunnels → Create Tunnel → Copy token
+  # Networks/Connectors -> Add a tunnel -> Cloudflared or WARP connector
+  # Copy token from the shown docker command: `... --token <TOKEN>`
   # -------------------------------------------------------------------------
   cloudflared:
     image: cloudflare/cloudflared:latest
     container_name: mino-tunnel
     restart: unless-stopped
     profiles: ["tunnel", "full"]
-    command: tunnel run
+    command: tunnel --no-autoupdate run
     environment:
       # Keep optional so base stack deploys without tunnel config.
       # When enabling the tunnel profile, set CF_TUNNEL_TOKEN in Portainer env vars.
