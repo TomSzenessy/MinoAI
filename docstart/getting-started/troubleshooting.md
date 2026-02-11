@@ -1,6 +1,6 @@
 # Troubleshooting
 
-[Back to docs](../README.md)
+[Back to DocStart](../README.md)
 
 ## Stack Deploys But Setup URL Fails
 
@@ -50,6 +50,8 @@ Fix:
 - manually paste values from setup response:
   - `server.server.url`
   - `apiKey`
+- then track implementation against:
+  - `../reference/link-handler-spec.md`
 
 ## Data Missing After Redeploy
 

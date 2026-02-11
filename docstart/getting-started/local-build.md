@@ -1,6 +1,6 @@
 # Local Build And Interface
 
-[Back to docs](../README.md)
+[Back to DocStart](../README.md)
 
 ## Prerequisites
 
@@ -59,3 +59,7 @@ Use setup endpoint from your local server:
 Then use the `links.connect.localUi` URL or manually pass:
 - `serverUrl=http://localhost:3000`
 - `apiKey=<YOUR_KEY>`
+
+Planned requirement:
+- local client must support `/link` auto-linking with these query params.
+- spec: `../reference/link-handler-spec.md`

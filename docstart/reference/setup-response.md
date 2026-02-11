@@ -1,6 +1,6 @@
 # Setup Response Reference
 
-[Back to docs](../README.md)
+[Back to DocStart](../README.md)
 
 Endpoint:
 - `GET /api/v1/system/setup`
@@ -56,3 +56,5 @@ Endpoint:
   Canonical base URL detected from request context.
 - `links.connect.*`
   Prefilled URLs for production/test/local clients.
+- Client contract for these URLs:
+  `./link-handler-spec.md`

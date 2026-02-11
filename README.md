@@ -2,14 +2,14 @@
 
 This repository is set up so users can deploy with **one copy/paste Docker Compose stack in Portainer**.
 
-If you do not want to clone the repo, that is fine. Use the compose YAML in `docker/docker-compose.yml` (or the copy in `docs/reference/docker-compose.md`) and deploy it as a Portainer stack.
+If you do not want to clone the repo, that is fine. Use the compose YAML in `docker/docker-compose.yml` (or the copy in `docstart/reference/docker-compose.md`) and deploy it as a Portainer stack.
 
 ## 1. Deploy In Portainer (Copy/Paste Only)
 
 1. Open Portainer.
 2. Go to `Stacks` -> `Add stack`.
 3. Name it (example: `mino`).
-4. Paste the compose YAML from `docs/reference/docker-compose.md`.
+4. Paste the compose YAML from `docstart/reference/docker-compose.md`.
 5. Click `Deploy the stack`.
 
 After deploy, Portainer will start `mino-server` (and optional sidecars if profiles are enabled).
@@ -45,6 +45,10 @@ Use one of the links returned by `/api/v1/system/setup`:
 If your UI does not support prefilled query params yet, copy these manually:
 - `server.server.url`
 - `apiKey`
+
+Planned frontend requirement:
+- dedicated `/link` route auto-parses `serverUrl` + `apiKey`, verifies the server, calls `/api/v1/auth/link`, and opens the workspace with no manual input.
+- spec: `docstart/reference/link-handler-spec.md`
 
 Then verify auth:
 
@@ -108,10 +112,18 @@ Then open `http://localhost:5173`.
 
 ## 7. Docs
 
-Start here: `docs/README.md`
+Two docs tracks:
+- Blueprint/planning docs: `docs/README.md`
+- Implementation/use docs: `docstart/README.md`
 
-Key docs:
-- Portainer deployment: `docs/getting-started/portainer-stack.md`
-- Linking/auth flow: `docs/getting-started/linking-and-auth.md`
-- Local build/interface: `docs/getting-started/local-build.md`
-- Troubleshooting: `docs/getting-started/troubleshooting.md`
+Implementation docs (`docstart`):
+- Portainer deployment: `docstart/getting-started/portainer-stack.md`
+- Linking/auth flow: `docstart/getting-started/linking-and-auth.md`
+- Local build/interface: `docstart/getting-started/local-build.md`
+- Troubleshooting: `docstart/getting-started/troubleshooting.md`
+- `/link` auto-linking spec: `docstart/reference/link-handler-spec.md`
+
+## 8. Repository
+
+Canonical GitHub repository:
+- `https://github.com/TomSzenessy/MinoAI`

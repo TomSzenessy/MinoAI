@@ -1,6 +1,6 @@
 # Portainer Stack Deployment
 
-[Back to docs](../README.md)
+[Back to DocStart](../README.md)
 
 ## Goal
 
@@ -38,6 +38,8 @@ With no profile configured:
 Use these URLs:
 - Health: `http://<SERVER_IP>:3000/api/v1/health`
 - Setup: `http://<SERVER_IP>:3000/api/v1/system/setup`
+
+From setup response, `links.connect.*` are intended to open a frontend `/link` handler for zero-manual linking (see `../reference/link-handler-spec.md`).
 
 Expected health response status is `200`.
 

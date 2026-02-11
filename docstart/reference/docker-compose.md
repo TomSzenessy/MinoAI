@@ -1,6 +1,6 @@
 # Docker Compose (Portainer Copy Block)
 
-[Back to docs](../README.md)
+[Back to DocStart](../README.md)
 
 Copy everything inside the code block into Portainer -> Stacks -> Add stack.
 

@@ -1,6 +1,6 @@
 # Linking And Auth
 
-[Back to docs](../README.md)
+[Back to DocStart](../README.md)
 
 ## First-Run Setup Endpoint
 
@@ -37,6 +37,18 @@ From setup response (`links.connect`):
 If query-prefill is unsupported by the client, manually enter:
 - `serverUrl`
 - `apiKey`
+
+## Planned `/link` Auto-Linking (Required)
+
+This is a required frontend implementation target:
+- route: `/link`
+- input: `serverUrl` + `apiKey` query params
+- behavior: auto-verify key, call `/api/v1/auth/link`, persist session/server config, then redirect to workspace
+
+Detailed spec:
+- `../reference/link-handler-spec.md`
+
+Until `/link` exists in the client, manual entry is the fallback.
 
 ## Mark Setup Complete
 
