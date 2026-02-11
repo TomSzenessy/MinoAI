@@ -1,6 +1,6 @@
 # Architecture
 
-> Tech stack, three-layer model, data storage, and offline-first sync strategy.
+> Tech stack, three-layer model, deployment, hosting, Docker, and CI/CD pipeline.
 
 [← Back to docs](./README.md)
 
@@ -14,7 +14,7 @@
 |-----------|------------|-----------|
 | **Server Runtime** | **Bun** | 3x faster than Node.js for I/O, native TypeScript, built-in SQLite, single binary deploys, excellent DX |
 | **Server Framework** | **Hono** | Ultra-lightweight (14KB), works everywhere (Bun/Node/Deno/Cloudflare), type-safe middleware, OpenAPI generation |
-| **Web Framework** | **Next.js 15 (App Router)** | SSR for SEO (landing/docs), RSC for performance, massive ecosystem, Vercel deployment option |
+| **Web Framework** | **Next.js 15 (App Router)** | SSR for SEO (landing/docs), static export for Cloudflare Pages + bundled UI, massive ecosystem |
 | **UI Components** | **shadcn/ui + Radix UI** | Accessible, composable, unstyled primitives. Already used in both prototypes. |
 | **Styling** | **Tailwind CSS 4** | Utility-first, design token support, excellent with shadcn/ui |
 | **Mobile** | **React Native + Expo** | Cross-platform iOS/Android, shared business logic with web, offline-first capabilities, OTA updates |
@@ -22,12 +22,16 @@
 | **Database (Index)** | **SQLite (via Bun built-in)** | Zero-config, embedded, incredibly fast for read-heavy workloads, portable, FTS5 for full-text search |
 | **Data Storage** | **File system (markdown files)** | The core data IS the files. SQLite indexes them, but the source of truth is always the `.md` files on disk. |
 | **Search** | **SQLite FTS5 + vector embeddings** | FTS5 for instant full-text search, optional embeddings (via `sqlite-vec`) for semantic search |
-| **Auth** | **JWT (self-hosted) + OAuth 2.0 (hosted)** | JWT for API access, Google OAuth for managed service |
+| **Auth** | **Hybrid (JWT + API Key + Google OAuth)** | JWT for sessions, API keys for machine access, Google OAuth for cross-device persistence on mino.ink |
 | **Real-time Sync** | **WebSocket + Yjs (CRDTs)** | Conflict-free offline-first sync across devices |
 | **AI/LLM** | **Model-agnostic (OpenAI, Anthropic, Google, local)** | User chooses their provider. Server proxies requests. |
+| **Container Registry** | **GitHub Container Registry (ghcr.io)** | No pull rate limits, native GitHub Actions integration, free for public images |
+| **CI/CD** | **GitHub Actions** | Builds Docker images, pushes to GHCR, deploys frontend to Cloudflare Pages |
+| **Web Hosting** | **Cloudflare Pages** | Free, global CDN, static Next.js export, zero-config deploys |
+| **Tunnel (optional)** | **Cloudflare Tunnel (cloudflared)** | Free, zero-port-exposure remote access to self-hosted servers |
+| **Auto-updates** | **Watchtower** | Monitors GHCR for new image tags, auto-pulls and restarts containers |
 | **Monorepo** | **pnpm workspaces + Turborepo** | Shared types, shared components, efficient builds |
 | **Testing** | **Vitest + Playwright** | Fast unit tests, reliable E2E |
-| **CI/CD** | **GitHub Actions** | Standard, free for open-source |
 | **Docs** | **Mintlify or Starlight** | Beautiful API docs from OpenAPI spec |
 
 ### Why NOT Other Options?
@@ -40,6 +44,185 @@
 | **MongoDB/NoSQL** | Notes are files. The index database should be relational (tags, folders, links between notes). SQLite is ideal. |
 | **Prisma ORM** | Too heavy for SQLite. Use `drizzle-orm` or raw `bun:sqlite` — faster, lighter, better SQLite support. |
 | **Vanilla CSS** | Too much boilerplate for a large consistent design system. Tailwind + design tokens is the pragmatic choice. |
+| **DockerHub** | Free tier has pull rate limits (100/6hr anonymous). GHCR has no limits and integrates natively with GitHub Actions. |
+| **Vercel** | Great for Next.js but unnecessary — Cloudflare Pages is free and the frontend is just a static shell. |
+
+---
+
+## Deployment & Hosting Architecture
+
+### Overview
+
+```
+┌─ mino.ink (Cloudflare Pages, FREE) ─────────────────────────┐
+│  Static Next.js export — just a UI shell                     │
+│  Auth: optional Google sign-in (persists linked servers)     │
+│  OR: just paste server credentials (localStorage only)       │
+│  OR: use the free-tier managed instance (limited)            │
+└──────────────────────────┬───────────────────────────────────┘
+                           │
+            ┌──────────────┴──────────────┐
+            │                             │
+       Direct HTTPS              Cloudflare Tunnel (free)
+       (port forwarded)          (zero ports exposed)
+            │                             │
+            └──────────────┬──────────────┘
+                           ▼
+┌─ User's Server (Docker, self-hosted) ───────────────────────┐
+│  ghcr.io/mino-ink/server:latest                              │
+│                                                              │
+│  ├─ Hono API server (:3000)                                  │
+│  ├─ Built-in Web UI (same as mino.ink, served at /)          │
+│  ├─ Agent Runtime (LLM, tools, plugins)                      │
+│  ├─ SQLite index + file watcher                              │
+│  ├─ Plugin host (install/load/update at runtime)             │
+│  ├─ Sandbox (optional, for code execution / local AI tools)  │
+│  └─ /data/ (notes, config, credentials, SQLite)              │
+│                                                              │
+│  Optional sidecars:                                          │
+│  ├─ cloudflared (Cloudflare Tunnel for remote access)        │
+│  └─ watchtower (auto-updates from GHCR)                      │
+└──────────────────────────────────────────────────────────────┘
+```
+
+### Docker Compose (One-Paste for Portainer)
+
+```yaml
+services:
+  mino:
+    image: ghcr.io/mino-ink/server:latest
+    volumes:
+      - mino-data:/data
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    # No environment variables needed — auto-bootstraps on first run
+
+  # Optional: Cloudflare Tunnel for remote access (free, no open ports)
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    command: tunnel --no-autoupdate run
+    environment:
+      - TUNNEL_TOKEN=${CF_TUNNEL_TOKEN:-}
+    depends_on:
+      - mino
+    restart: unless-stopped
+    profiles: ["tunnel"]    # Only starts if explicitly enabled
+
+  # Optional: auto-updates from GHCR
+  watchtower:
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_POLL_INTERVAL=86400  # Check daily
+    profiles: ["autoupdate"]
+
+volumes:
+  mino-data:
+```
+
+### Auto-Bootstrap (Zero Console Setup)
+
+On first boot, the server detects `/data` is empty and bootstraps automatically:
+
+1. Generates an **Admin API Key** (`mino_sk_xxxxxxxxxxxx`)
+2. Generates a **Server ID** (unique UUID)
+3. Creates a JWT signing secret
+4. Writes default `config.json`
+5. Creates `/data/notes/` folder structure
+6. Initializes SQLite index (`mino.db`)
+7. Writes credentials to `/data/credentials.json`
+8. Starts the API + built-in UI immediately
+9. Serves a **setup page** at `http://server:3000/setup` showing credentials in a visual card with a "Copy" button
+
+**No wizard. No terminal interaction. No environment variables needed.** User opens Portainer → deploys → opens the server URL → sees credentials → copies into mino.ink → done.
+
+### Server-Link Flow (Connecting mino.ink to a Server)
+
+```
+1. User deploys Docker → server auto-bootstraps
+2. Server generates credentials + displays at /setup
+3. User navigates to mino.ink
+   a. Option A: Just paste the Server URL + API Key → stored in localStorage
+   b. Option B: Sign in with Google → link the server to their Google account
+      → credentials persist across devices
+4. mino.ink calls: POST https://server/api/v1/auth/link
+   → Server validates credentials → exchanges for a session JWT
+5. All future API calls: Browser (mino.ink) → User's server directly
+6. Mobile app: same flow — sign in with Google (auto-discovers linked servers)
+   OR enter server URL + API key manually
+```
+
+### Built-in Web UI
+
+The server bundles the same web interface as mino.ink:
+
+```
+http://localhost:3000/           → Full web UI (identical to mino.ink)
+http://localhost:3000/setup      → First-run credentials page
+http://localhost:3000/api/v1/    → REST API
+http://localhost:3000/ws         → WebSocket
+```
+
+**Build process:** GitHub Actions builds the Next.js frontend as a static export → the static files are embedded into the Docker image → Hono serves them at `/`.
+
+This means:
+- **Remote server:** User accesses via mino.ink → API calls go to their server
+- **Local server:** User opens `http://localhost:3000` → full UI + API in one
+- **Air-gapped:** Everything works offline with no external dependencies
+
+### Free Tier (mino.ink Managed Instance)
+
+Users who don't want to self-host get a **free limited instance** automatically:
+
+| Feature | Free Tier | Self-Hosted |
+|---------|-----------|-------------|
+| **Storage** | Limited (e.g. 100MB / 1000 notes) | Unlimited (your disk) |
+| **AI Agent** | Bring your own API key only | Install Whisper, OCR, local LLMs directly |
+| **Transcription (Whisper)** | Via API key (OpenAI Whisper API) | Install locally on server (free, unlimited) |
+| **OCR** | Via API key | Install Tesseract locally (free, unlimited) |
+| **Local AI tools** | ❌ Not available | ✅ If server resources allow |
+| **Plugins** | Core plugins only | All plugins + custom plugins |
+| **Sandbox / code execution** | ❌ Not available | ✅ Full sandbox container |
+| **Cloudflare Tunnel** | N/A (already hosted) | ✅ Optional sidecar |
+| **Custom domain** | ❌ | ✅ Your own domain |
+
+The server auto-detects available resources (CPU, RAM, GPU) and enables/disables features accordingly. For example, if a self-hosted server has a GPU, it can run Whisper locally for free transcription instead of requiring an API key.
+
+### Cloudflare Tunnel (Free Remote Access)
+
+For users whose server ports are closed (behind NAT, no port forwarding):
+
+1. User creates a free Cloudflare Tunnel in their dashboard
+2. Gets a tunnel token
+3. Adds `CF_TUNNEL_TOKEN=xxx` to docker-compose environment
+4. Starts the `cloudflared` sidecar with `--profile tunnel`
+5. Server is accessible at `https://random-slug.cfargotunnel.com`
+6. Zero ports exposed, traffic encrypted end-to-end
+
+### CI/CD Pipeline (All Free)
+
+```
+GitHub repo (mino-ink/server)
+  │
+  ├─ On push to main / create version tag
+  │   │
+  │   ├─ GitHub Actions
+  │   │   ├─ Lint + typecheck + test
+  │   │   ├─ Build multi-arch Docker image (amd64 + arm64)
+  │   │   ├─ Build Next.js static export → embed in Docker image
+  │   │   └─ Push to ghcr.io/mino-ink/server:latest + :vX.Y.Z
+  │   │
+  │   └─ Cloudflare Pages (auto-deploy)
+  │       └─ Builds + deploys mino.ink frontend (static site)
+  │
+  └─ On user's server
+      └─ Watchtower detects new ghcr.io tag → pulls + restarts → zero-downtime update
+```
+
+**Total cost: $0.** GHCR free for public images, GitHub Actions free for open-source, Cloudflare Pages free tier, Watchtower is just a container.
 
 ---
 
@@ -57,18 +240,20 @@ mino/
 │       ├── primitives/      # Button, Input, Card, etc.
 │       └── features/        # Editor, Sidebar, NoteList, etc.
 ├── apps/
-│   ├── server/              # Bun + Hono API server
-│   ├── web/                 # Next.js web application
+│   ├── server/              # Bun + Hono API server (+ bundled web UI)
+│   ├── web/                 # Next.js web application (mino.ink + bundled UI)
 │   └── mobile/              # React Native + Expo app
 ├── tools/
 │   ├── mcp-server/          # MCP tool server for AI agents
 │   └── cli/                 # CLI tool for server management
-├── docs/                    # Documentation site
-├── docker/                  # Docker configs
+├── docker/                  # Dockerfiles, docker-compose.yml
+│   ├── Dockerfile           # Multi-stage: build web → embed in server image
+│   └── docker-compose.yml   # One-paste Portainer deployment
+├── docs/                    # Documentation (this folder)
 ├── pnpm-workspace.yaml
 ├── turbo.json
 ├── README.md
-└── MASTER_PLAN.md           # This file
+└── MASTER_PLAN.md
 ```
 
 ---
@@ -76,34 +261,42 @@ mino/
 ## Three-Layer Architecture
 
 ```
-┌─ Layer 1: INTERFACES ──────────────────────────────────────┐
-│  Web App │ Mobile App │ CLI │ MCP Tools │ Raw API Clients   │
-│  (Next.js)  (Expo/RN)   (Bun)  (Agent SDK)  (curl/fetch)  │
-└───────────────────────────┬─────────────────────────────────┘
-                            │  HTTPS + WebSocket
-                            ▼
-┌─ Layer 2: MINO SERVER ──────────────────────────────────────┐
-│                                                              │
-│  ┌─────────────┐  ┌──────────────┐  ┌──────────────────┐   │
-│  │  HTTP Router │  │  WebSocket   │  │  Agent Runtime   │   │
-│  │  (Hono)      │  │  (ws + Yjs)  │  │  (LLM + Tools)   │   │
-│  └──────┬───────┘  └──────┬───────┘  └────────┬─────────┘   │
-│         │                 │                    │              │
-│  ┌──────┴─────────────────┴────────────────────┴─────────┐  │
-│  │                   SERVICE LAYER                         │  │
-│  │  NoteService │ FolderService │ SearchService │ Auth     │  │
-│  └──────────────────────┬──────────────────────────────────┘  │
-│                         │                                     │
-│  ┌──────────────────────┴──────────────────────────────────┐  │
-│  │                   DATA LAYER                             │  │
-│  │    FileManager (R/W .md)  │  IndexDB (SQLite FTS+Vec)   │  │
-│  └──────────────────────────────────────────────────────────┘  │
-│                                                              │
-└─ Layer 3: STORAGE ───────────────────────────────────────────┘
+┌─ Layer 1: INTERFACES ──────────────────────────────────────────┐
+│  mino.ink    │ Built-in UI │ Mobile │ CLI │ MCP │ API Clients   │
+│  (CF Pages)   (localhost)   (Expo)  (Bun) (SDK)  (curl/fetch)  │
+└──────────────────────────────┬──────────────────────────────────┘
+                               │  HTTPS + WebSocket
+                               ▼
+┌─ Layer 2: MINO SERVER ──────────────────────────────────────────┐
+│                                                                  │
+│  ┌─────────────┐  ┌──────────────┐  ┌──────────────────┐       │
+│  │  HTTP Router │  │  WebSocket   │  │  Agent Runtime   │       │
+│  │  (Hono)      │  │  (ws + Yjs)  │  │  (LLM + Tools)   │       │
+│  └──────┬───────┘  └──────┬───────┘  └────────┬─────────┘       │
+│         │                 │                    │                  │
+│  ┌──────┴─────────────────┴────────────────────┴─────────┐      │
+│  │                   SERVICE LAYER                         │      │
+│  │  NoteService │ FolderService │ SearchService │ Auth     │      │
+│  │  PluginService │ SandboxService │ ResourceDetector      │      │
+│  └──────────────────────┬──────────────────────────────────┘      │
+│                         │                                         │
+│  ┌──────────────────────┴──────────────────────────────────┐      │
+│  │                   DATA LAYER                             │      │
+│  │    FileManager (R/W .md)  │  IndexDB (SQLite FTS+Vec)   │      │
+│  └──────────────────────────────────────────────────────────┘      │
+│                                                                  │
+│  ┌──────────────────────────────────────────────────────────┐      │
+│  │                   STATIC FILES                           │      │
+│  │    Built-in Web UI (Next.js static export, served at /)  │      │
+│  └──────────────────────────────────────────────────────────┘      │
+│                                                                  │
+└─ Layer 3: STORAGE ──────────────────────────────────────────────┘
    📁 /data/notes/**/*.md       (source of truth)
    📁 /data/assets/**           (images, attachments)
+   📁 /data/plugins/**          (installed plugins)
    📁 /data/mino.db             (SQLite index)
    📁 /data/config.json         (server config)
+   📁 /data/credentials.json    (auto-generated on first boot)
 ```
 
 ### Data Flow: How a Note Gets Created
@@ -125,17 +318,17 @@ sequenceDiagram
 
 ### Multi-Server Architecture
 
-Users can run multiple independent Mino servers:
+Users can link multiple independent Mino servers to one Google account:
 
 ```
 Server A (Personal)          Server B (Work)           Server C (Shared Team)
   └── ~/personal-notes/        └── ~/work-notes/          └── /shared/team-notes/
         ↓                            ↓                            ↓
-  https://home.mino.ink       https://work.mino.ink       https://team.mino.ink
+  Docker on home NAS           Docker on work server      Docker on cloud VPS
         ↓                            ↓                            ↓
-  ┌─── Mobile App (switch between servers in settings) ──────────────┐
-  │  Server picker → select endpoint → enter API key → connected    │
-  └──────────────────────────────────────────────────────────────────┘
+  ┌─── mino.ink (server picker — switch between linked servers) ──────────┐
+  │  Sign in with Google → see all linked servers → select one → connected│
+  └───────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -144,7 +337,7 @@ Server A (Personal)          Server B (Work)           Server C (Shared Team)
 
 ### The Hybrid Approach
 
-**Source of truth:** `.md` files on disk  
+**Source of truth:** `.md` files on disk
 **Index for speed:** SQLite database
 
 ```
@@ -165,6 +358,10 @@ Server A (Personal)          Server B (Work)           Server C (Shared Team)
 │  /data/assets/                                    │
 │  ├── images/                                      │
 │  └── attachments/                                 │
+│                                                   │
+│  /data/plugins/                                   │
+│  ├── web-search/                                  │
+│  └── whisper-local/                               │
 └──────────────────┬──────────────────────────────┘
                    │  File watcher + on-demand re-index
                    ▼

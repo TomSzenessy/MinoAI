@@ -9,26 +9,37 @@
 | Document | Contents |
 |----------|----------|
 | [**Design System**](./design-system.md) | Colors, typography, components, logo usage, glassmorphism effects |
-| [**Architecture**](./architecture.md) | Tech stack, three-layer model, data storage, sync strategy |
-| [**Server**](./server.md) | Mino server, REST API, MCP tools, Agent SDK |
-| [**Frontend**](./frontend.md) | Web app (mino.ink) and mobile apps (iOS & Android) |
-| [**AI Agent**](./ai-agent.md) | "The Organizer" agent, plugins, integrations, token strategy |
-| [**Security**](./security.md) | Authentication, security hardening, code quality, CI/CD |
-| [**Roadmap**](./roadmap.md) | Phased plan, deployment, risk analysis, open questions |
+| [**Architecture**](./architecture.md) | Tech stack, three-layer model, deployment, hosting, Docker, CI/CD |
+| [**Server**](./server.md) | Mino server, auto-bootstrap, REST API, built-in UI, plugins, sandbox |
+| [**Frontend**](./frontend.md) | mino.ink (Cloudflare Pages), local UI, mobile apps, hybrid auth |
+| [**AI Agent**](./ai-agent.md) | "The Organizer" agent, server-hosted runtime, plugin install, MCP |
+| [**Security**](./security.md) | Hybrid auth, credential flow, Cloudflare Tunnel, security hardening |
+| [**Roadmap**](./roadmap.md) | Phased plan, deployment priorities, risk analysis, open questions |
 
 ---
 
 ## What Mino Is
 
-Mino is an **open-source, markdown-based knowledge platform** where your notes live as plain `.md` files in folder trees, managed by a server, accessible through beautiful interfaces, and maintained by AI agents.
+Mino is an **open-source, markdown-based knowledge platform** where your notes live as plain `.md` files in folder trees, managed by a self-hosted server, accessible through beautiful interfaces (web + mobile), and maintained by AI agents.
 
 ### Three Pillars
 
 | Pillar | Meaning |
 |--------|---------|
-| **Modularity** | Server, web, mobile, agent — all independent. Swap any piece. |
-| **Agent-Native** | The AI coding agent is not bolted on — it's the primary way power users interact. The API is designed for agents first, humans second. |
-| **Open-Source First** | Every component is open-source. Documentation is a first-class product. Self-hosting is trivially easy. |
+| **Modularity** | Server, web, mobile, agent — all independent. Swap any piece. Run everything locally or split across services. |
+| **Agent-Native** | The AI agent is not bolted on — it runs server-side as the primary way power users interact. The API is designed for agents first, humans second. |
+| **Open-Source First** | Every component is open-source. Self-hosting is a first-class experience. One Docker Compose = fully running server. |
+
+### Hosting Model
+
+Mino follows a **hybrid hosting model** — the server runs on your infrastructure, and the web UI can come from anywhere:
+
+| Mode | Description | Requires Account? |
+|------|-------------|-------------------|
+| **mino.ink + self-hosted server** | Use the hosted web UI at mino.ink, link your own server via credentials | Optional (Google sign-in to persist across devices, or just localStorage) |
+| **mino.ink free tier** | Use a limited managed server hosted by mino.ink — no self-hosting, no setup | Optional (Google sign-in for persistence) |
+| **Fully self-hosted** | Run the Docker image, which includes the full web UI at `http://server:3000` | ❌ No account needed |
+| **API / CLI / MCP only** | Talk directly to the server API using generated credentials | ❌ No account needed |
 
 ### Target Audience
 

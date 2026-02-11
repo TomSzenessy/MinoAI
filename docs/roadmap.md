@@ -1,6 +1,6 @@
 # Roadmap
 
-> Deployment, phased implementation, risk analysis, and open questions.
+> Deployment priorities, phased implementation, risk analysis, and open questions.
 
 [← Back to docs](./README.md)
 
@@ -12,53 +12,37 @@
 
 | Method | Complexity | Best For |
 |--------|------------|----------|
-| **Docker** | ⭐ Easy | Production self-hosting |
-| **Single binary** | ⭐ Easy | Minimal servers, Raspberry Pi |
-| **From source** | ⭐⭐ Medium | Development, customization |
-| **Managed (mino.ink)** | ⭐ Easy | Users who don't want to self-host |
+| **Docker Compose (Portainer)** | ⭐ Easy | Copy-paste → deploy → running in 10s |
+| **Docker CLI** | ⭐ Easy | `docker compose up -d` on any server |
+| **Single binary** | ⭐ Easy | Minimal servers, Raspberry Pi, NAS |
+| **From source (git clone)** | ⭐⭐ Medium | Development, customization, local UI only |
+| **npm / curl** | ⭐⭐ Medium | Quick local install for development |
+| **Free tier (mino.ink)** | ⭐ Easy | No self-hosting, limited features |
 
-### Docker Compose (Recommended Self-Host)
-
-```yaml
-# docker-compose.yml
-version: "3.8"
-services:
-  mino:
-    image: ghcr.io/mino-ink/mino-server:latest
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./notes:/data/notes       # Your markdown files
-      - ./mino-data:/data/db      # SQLite index + config
-    environment:
-      - MINO_AUTH_MODE=jwt
-      - MINO_JWT_SECRET=change-me-in-production
-      - MINO_AGENT_ENABLED=true
-      - MINO_AGENT_API_KEY=sk-...  # Your LLM API key
-    restart: unless-stopped
-
-  # Optional: reverse proxy with automatic HTTPS
-  caddy:
-    image: caddy:latest
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile
-```
-
-### One-Line Install
+### Installation Methods
 
 ```bash
+# Method 1: Docker Compose (recommended — paste into Portainer or run manually)
+curl -fsSL https://mino.ink/docker-compose.yml -o docker-compose.yml
+docker compose up -d
+
+# Method 2: One-line install script
 curl -fsSL https://mino.ink/install.sh | bash
+
+# Method 3: npm global install (for development / local use)
+npm install -g @mino-ink/server
+mino start
+
+# Method 4: Git clone (for development / running your own UI)
+git clone https://github.com/mino-ink/mino.git
+cd mino && pnpm install && pnpm dev
 ```
 
-This script:
-1. Installs Docker if not present
-2. Pulls the Mino server image
-3. Creates the data directory
-4. Starts the server
-5. Prints the URL and default credentials
+All methods result in:
+1. Server running at `http://localhost:3000`
+2. Built-in web UI accessible immediately
+3. Credentials auto-generated and displayed at `/setup`
+4. Ready to link with mino.ink or use directly
 
 ---
 
@@ -69,40 +53,52 @@ This script:
 - [ ] Set up monorepo structure (pnpm + Turborepo)
 - [ ] Create `@mino-ink/shared` package (types, utils)
 - [ ] Create `@mino-ink/design-tokens` (CSS variables, Tailwind preset)
-- [ ] Set up CI/CD pipeline
+- [ ] Set up CI/CD pipeline (GitHub Actions → GHCR + Cloudflare Pages)
 - [ ] Write `design-tokens.css` and `tailwind.preset.js`
+- [ ] Create Dockerfile (multi-stage: build web → embed in server)
 
 ### Phase 1: Server Core (Weeks 3-5)
 
 - [ ] Bun + Hono server scaffolding
+- [ ] Auto-bootstrap on first run (credentials, config, folder structure)
 - [ ] File system manager (CRUD on .md files)
 - [ ] SQLite index with FTS5
 - [ ] REST API for notes, folders, search
-- [ ] JWT authentication
+- [ ] API key authentication (from auto-generated credentials)
+- [ ] Server-link endpoint (`POST /api/v1/auth/link`)
 - [ ] File watcher for external changes
-- [ ] API key authentication
+- [ ] Resource detection (CPU/RAM/GPU/disk)
+- [ ] Plugin loader (discovery, install, load, registry)
 - [ ] OpenAPI spec auto-generation
-- [ ] Docker image
+- [ ] Docker image with multi-arch support (amd64 + arm64)
+- [ ] Publish to `ghcr.io/mino-ink/server`
 
-### Phase 2: Web App (Weeks 5-8)
+### Phase 2: Web App + Built-in UI (Weeks 5-8)
 
 - [ ] Next.js app with landing page (from mino.ink design)
-- [ ] Authentication flows (login, register, Google OAuth)
+- [ ] Deploy to Cloudflare Pages (mino.ink)
+- [ ] Hybrid auth: Google sign-in + anonymous localStorage mode
+- [ ] Server-link page (paste URL + API key, or sign in with Google)
+- [ ] Free tier managed instance for non-self-hosters
 - [ ] Workspace layout (sidebar + note list + editor)
 - [ ] Markdown editor (CodeMirror 6 or TipTap)
 - [ ] File tree with drag-and-drop
 - [ ] Command palette (Cmd+K)
 - [ ] Theme switching (dark/light)
+- [ ] Settings UI (agent config, API keys, server info — all visual)
+- [ ] Plugin marketplace UI (browse, install, configure)
+- [ ] Bundle static export into Docker image (built-in UI)
 - [ ] Real-time sync via WebSocket
 
 ### Phase 3: AI Agent (Weeks 8-11)
 
-- [ ] Agent runtime with tool system
+- [ ] Agent runtime with tool system (server-side)
 - [ ] Core tools (search, read, write, edit, move, tree)
 - [ ] Context strategy (compact tree, snippets, search-and-replace)
-- [ ] Chat panel in web app
+- [ ] Chat panel in web app (slide-out)
 - [ ] Auto-organization suggestions
-- [ ] Permission model
+- [ ] Permission model (visual config in Settings)
+- [ ] Sandbox container for code execution (optional Docker sidecar)
 
 ### Phase 4: MCP & Agent SDK (Weeks 11-12)
 
@@ -117,27 +113,34 @@ This script:
 - [ ] React Native + Expo setup
 - [ ] Local SQLite for offline storage
 - [ ] Yjs sync engine
+- [ ] Mobile auth: Google sign-in or manual server credentials
 - [ ] Note editor (mobile-optimized)
 - [ ] File browser
-- [ ] Multi-server picker
+- [ ] Multi-server picker (auto-discovered if Google linked)
 - [ ] Push notifications
 
 ### Phase 6: Plugins (Weeks 16-20)
 
-- [ ] Plugin SDK and registry
+- [ ] Plugin SDK (`definePlugin()` API)
+- [ ] Plugin marketplace / registry
+- [ ] One-click install from web UI
+- [ ] Resource-aware plugins (auto-detect local capabilities)
 - [ ] Web search plugin
 - [ ] YouTube transcript plugin
-- [ ] Voice notes plugin (Whisper)
+- [ ] Whisper plugin (local + API versions)
+- [ ] OCR plugin (local Tesseract + API versions)
 - [ ] Email import plugin
 - [ ] Obsidian vault import tool
 
-### Phase 7: Polish & Launch (Weeks 20-24)
+### Phase 7: Infrastructure & Polish (Weeks 20-24)
 
-- [ ] Semantic search (embeddings)
+- [ ] Cloudflare Tunnel sidecar integration + setup UI
+- [ ] Watchtower auto-update documentation
+- [ ] Semantic search (embeddings — local + cloud)
 - [ ] End-to-end encryption (optional)
 - [ ] Performance optimization
 - [ ] Security audit
-- [ ] Documentation site
+- [ ] Documentation site (Mintlify/Starlight)
 - [ ] Open-source launch (GitHub, Product Hunt, Hacker News)
 
 ---
@@ -154,6 +157,8 @@ This script:
 | **Mobile offline complexity** | Bugs, data inconsistency | Medium | Extensive testing. Yjs is battle-tested. Start with read-only offline, add write later. |
 | **Plugin ecosystem** | Fragmentation, quality issues | Low | Curated plugin registry. Official plugins first. Community plugins later. |
 | **Competing with Obsidian** | Adoption challenges | Medium | Don't compete on features. Compete on AI-native experience. Different audience. |
+| **Free tier abuse** | Resource costs | Medium | Rate limits, storage caps, require Google sign-in for free tier. |
+| **Cloudflare Tunnel reliability** | Remote access downtime | Low | Tunnel auto-reconnects. Fallback to direct access if available. |
 
 ---
 
@@ -170,14 +175,23 @@ This script:
 | Sync protocol | CRDTs (Yjs) | Offline-first, conflict-free |
 | CSS framework | Tailwind CSS | Consistent design tokens |
 | Component library | shadcn/ui | Accessible, customizable |
+| **Container registry** | **GitHub Container Registry (ghcr.io)** | No pull limits, native Actions integration, free |
+| **Web hosting** | **Cloudflare Pages** | Free, global CDN, static export |
+| **Auth model** | **Hybrid (API key + Google OAuth + localStorage)** | No account required, multi-device optional |
+| **Server deployment** | **Docker Compose (Portainer-friendly)** | One-paste deploy, auto-bootstrap, zero config |
+| **Remote access** | **Cloudflare Tunnel (free, optional)** | Zero ports, encrypted, DDoS protection |
+| **Auto-updates** | **Watchtower** | Watches GHCR for new tags, zero-downtime |
+| **Agent hosting** | **Server-side** | File access, sandbox, multi-channel, security |
+| **Plugin install** | **One-click from web UI** | npm/GitHub download, hot-load, no restart |
+| **Free tier** | **Limited managed instance on mino.ink** | No self-hosting needed, upgrade path to self-hosted |
 
 ### Open Questions for Discussion
 
 1. **Markdown editor choice:** CodeMirror 6 (more control, better for code) vs TipTap (better WYSIWYG, extensions)? Recommendation: **CodeMirror 6** for the developer audience.
 
-2. **Embedding model:** Cloud (OpenAI `text-embedding-3-small`, fast but costs money) vs local (`all-MiniLM-L6-v2`, free but slower)? Recommendation: **Support both**, default to cloud if API key provided.
+2. **Embedding model:** Cloud (OpenAI `text-embedding-3-small`, fast but costs money) vs local (`all-MiniLM-L6-v2`, free but slower)? Recommendation: **Support both**, default to local if resources allow, cloud if API key provided.
 
-3. **Monetization for mino.ink hosted service:** Freemium (free up to X notes, pay for more)? Or free with paid AI features? Open question.
+3. **Free tier limits:** What's the right storage cap? 100MB? 1000 notes? How to prevent abuse? Need to define pricing tiers.
 
 4. **Graph view:** Should Mino have an Obsidian-like graph view showing connections between notes? If yes, use D3.js or react-force-graph. Recommendation: **Yes, Phase 3+ feature.**
 

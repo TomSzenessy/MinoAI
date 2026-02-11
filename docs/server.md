@@ -1,6 +1,6 @@
 # The Mino Server
 
-> Core responsibilities, REST API, MCP tools, and Agent SDK.
+> Core responsibilities, auto-bootstrap, REST API, built-in UI, plugin host, sandbox, and resource detection.
 
 [← Back to docs](./README.md)
 
@@ -11,10 +11,100 @@
 1. **File Management** — CRUD operations on `.md` files and folders
 2. **Indexing** — Maintain SQLite FTS5 index of all note content, titles, tags, links
 3. **Search** — Full-text search, tag search, semantic search (embeddings)
-4. **Authentication** — JWT tokens, API keys, OAuth proxy
+4. **Authentication** — JWT tokens, API keys, server-link credentials
 5. **Real-time Sync** — WebSocket connections for live collaboration and sync
-6. **Agent Runtime** — Host the AI organizer agent (optional, can be disabled)
-7. **Plugin Host** — Load and execute plugins (web search, email import, etc.)
+6. **Agent Runtime** — Host the AI organizer agent (server-side, with sandbox)
+7. **Plugin Host** — Install, load, update, and execute plugins at runtime
+8. **Built-in Web UI** — Serve the full mino.ink interface at `/` (static files embedded in Docker image)
+9. **Resource Detection** — Auto-detect CPU, RAM, GPU and enable/disable features accordingly
+
+---
+
+## Auto-Bootstrap (Zero Console Setup)
+
+On first boot, the server detects `/data` is empty and bootstraps automatically:
+
+```
+First boot sequence:
+  1. Detect /data is empty → enter FIRST_RUN mode
+  2. Generate Admin API Key (mino_sk_xxxxxxxxxxxx)
+  3. Generate Server ID (unique UUID)
+  4. Generate JWT signing secret
+  5. Write default config.json
+  6. Create /data/notes/ folder structure
+  7. Initialize SQLite index (mino.db)
+  8. Write credentials to /data/credentials.json
+  9. Start API + built-in UI
+ 10. Serve setup page at http://server:3000/setup
+     → Visual card with credentials, "Copy" button, QR code
+```
+
+**No wizard. No terminal. No interactive prompts.** The user opens Portainer, hits deploy, waits 10 seconds, opens the server URL, and sees their credentials on a beautiful page.
+
+### Credentials File
+
+```jsonc
+// /data/credentials.json (auto-generated on first boot, never overwritten)
+{
+  "serverId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "adminApiKey": "mino_sk_xxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  "jwtSecret": "auto-generated-secret",
+  "createdAt": "2026-02-11T19:01:28Z",
+  "setupComplete": false  // becomes true after first link from mino.ink
+}
+```
+
+---
+
+## Built-in Web UI
+
+The server bundles the same web interface as mino.ink:
+
+```
+http://localhost:3000/           → Full web UI (identical to mino.ink)
+http://localhost:3000/setup      → First-run credentials page
+http://localhost:3000/api/v1/    → REST API
+http://localhost:3000/ws         → WebSocket
+```
+
+**How it works:** GitHub Actions builds the Next.js frontend as a static export → the static files are COPY'd into the Docker image during the multi-stage build → Hono serves them at `/` as static files.
+
+This means the server is fully self-contained: one Docker container = API + UI + Agent + Plugins. Nothing else needed.
+
+---
+
+## Resource Detection
+
+The server auto-detects available system resources and enables/disables features accordingly:
+
+```typescript
+interface ResourceProfile {
+  cpu: { cores: number; model: string };
+  ram: { totalMB: number; availableMB: number };
+  gpu: { available: boolean; name?: string; vramMB?: number };
+  disk: { totalGB: number; availableGB: number };
+}
+
+// Auto-detected capabilities
+interface ServerCapabilities {
+  localWhisper: boolean;      // true if RAM > 4GB + model downloaded
+  localOCR: boolean;          // true if Tesseract installed
+  localEmbeddings: boolean;   // true if RAM > 2GB
+  localLLM: boolean;          // true if GPU available + model downloaded
+  sandbox: boolean;           // true if Docker-in-Docker available
+  maxConcurrentRequests: number;
+}
+```
+
+| Resource | Feature Enabled |
+|----------|-----------------|
+| **RAM > 4GB + Whisper model** | Local speech-to-text transcription (free, unlimited) |
+| **Tesseract installed** | Local OCR for image text extraction (free) |
+| **RAM > 2GB** | Local embedding generation (`all-MiniLM-L6-v2`) |
+| **GPU + VRAM > 6GB** | Local LLM inference (Llama, Mistral, etc.) |
+| **Docker socket available** | Sandbox container for code execution |
+
+The resource profile is exposed via `GET /api/v1/system/capabilities` so the UI can show what's available and suggest local vs API options.
 
 ---
 
@@ -36,38 +126,103 @@ This is critical: notes can be edited OUTSIDE of Mino (in any text editor, via g
 ## Configuration
 
 ```jsonc
-// /data/config.json
+// /data/config.json (auto-generated on first boot, editable via UI)
 {
   "server": {
     "port": 3000,
     "host": "0.0.0.0",
-    "cors": ["https://mino.ink"]
+    "cors": ["https://mino.ink", "http://localhost:3000"]
   },
   "auth": {
-    "mode": "jwt",                // "jwt" | "api-key" | "oauth" | "none"
-    "jwtSecret": "...",
-    "oauthProviders": ["google"]
+    "mode": "api-key",           // "api-key" | "jwt" | "none"
+    "allowedOrigins": ["https://mino.ink"]
   },
   "agent": {
     "enabled": true,
-    "model": "anthropic/claude-sonnet-4-20250514",
-    "apiKey": "...",
+    "provider": "anthropic",     // "anthropic" | "openai" | "google" | "local"
+    "model": "claude-sonnet-4-20250514",
+    "apiKey": "",                // set via UI, never stored in git
     "maxTokensPerRequest": 4096
   },
   "search": {
     "fts": true,
     "embeddings": true,
-    "embeddingModel": "text-embedding-3-small"
+    "embeddingProvider": "auto"  // "openai" | "local" | "auto" (local if resources allow)
   },
   "sync": {
     "websocket": true,
     "fileWatcher": true
   },
   "plugins": {
-    "enabled": ["web-search", "youtube-transcript"],
-    "directory": "./plugins"
+    "enabled": ["web-search"],
+    "directory": "/data/plugins"
+  },
+  "resources": {
+    "autoDetect": true,           // auto-detect and enable local AI tools
+    "localWhisper": "auto",       // "auto" | "enabled" | "disabled"
+    "localOCR": "auto",
+    "localEmbeddings": "auto"
   }
 }
+```
+
+All configuration is editable through the web UI (**Settings** page). No need to SSH into the server or edit files manually.
+
+---
+
+## Plugin System
+
+### Plugin Lifecycle
+
+Inspired by the OpenClaw plugin architecture (`discovery.ts` → `install.ts` → `loader.ts` → `registry.ts`):
+
+```
+Browse marketplace (UI)  →  "Install" button click
+  → POST /api/v1/plugins/install { name: "web-search" }
+    → Server downloads plugin from npm / GitHub
+      → Extracts to /data/plugins/web-search/
+        → Loads plugin, registers tools with Agent Runtime
+          → WebSocket push: "Plugin installed ✓"
+            → Immediately available on ALL channels
+```
+
+### Plugin Install API
+
+```yaml
+# === PLUGINS ===
+GET    /api/v1/plugins                    # List installed plugins
+GET    /api/v1/plugins/marketplace        # Browse available plugins
+POST   /api/v1/plugins/install            # Install a plugin by name
+DELETE /api/v1/plugins/:name              # Uninstall a plugin
+POST   /api/v1/plugins/:name/update       # Update a plugin
+GET    /api/v1/plugins/:name/config       # Get plugin config
+PUT    /api/v1/plugins/:name/config       # Update plugin config
+```
+
+### Plugin Example
+
+```typescript
+// /data/plugins/whisper-local/index.ts
+import { definePlugin } from '@mino-ink/plugin-sdk';
+
+export default definePlugin({
+  name: 'whisper-local',
+  description: 'Transcribe audio files using locally-installed Whisper',
+  requiresResources: { ram: '4GB', binary: 'whisper' },
+  tools: [
+    {
+      name: 'transcribe_audio',
+      description: 'Transcribe an audio file to text',
+      parameters: {
+        filePath: { type: 'string', description: 'Path to audio file' },
+        language: { type: 'string', default: 'en' },
+      },
+      execute: async ({ filePath, language }) => {
+        // Uses locally installed Whisper binary
+      },
+    },
+  ],
+});
 ```
 
 ---
@@ -115,18 +270,26 @@ POST   /api/v1/agent/chat               # Send message to AI agent
 GET    /api/v1/agent/suggestions         # Get organization suggestions
 POST   /api/v1/agent/organize            # Trigger auto-organization
 
+# === PLUGINS ===
+GET    /api/v1/plugins                   # List installed plugins
+GET    /api/v1/plugins/marketplace       # Browse available plugins
+POST   /api/v1/plugins/install           # Install a plugin
+DELETE /api/v1/plugins/:name             # Uninstall a plugin
+POST   /api/v1/plugins/:name/update      # Update a plugin
+
 # === AUTH ===
-POST   /api/v1/auth/login               # Login (email/password)
-POST   /api/v1/auth/register            # Register
+POST   /api/v1/auth/link                # Link server to mino.ink account
+POST   /api/v1/auth/verify              # Verify API key / credentials
 POST   /api/v1/auth/refresh             # Refresh JWT token
-POST   /api/v1/auth/api-keys            # Generate API key
+POST   /api/v1/auth/api-keys            # Generate additional API key
 DELETE /api/v1/auth/api-keys/:id        # Revoke API key
-GET    /api/v1/auth/oauth/google        # Google OAuth redirect
 
 # === SYSTEM ===
 GET    /api/v1/health                    # Health check
 GET    /api/v1/stats                     # Server stats (note count, storage)
 GET    /api/v1/config                    # Public server config
+GET    /api/v1/system/capabilities       # Detected resources & enabled features
+GET    /api/v1/system/setup              # First-run setup info + credentials
 ```
 
 ### Note Object Schema

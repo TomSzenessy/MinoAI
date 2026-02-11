@@ -1,6 +1,6 @@
 # AI Agent ("The Organizer")
 
-> The killer feature of Mino — an AI knowledge steward with plugins and integrations.
+> The killer feature of Mino — a server-hosted AI knowledge steward with plugins, sandbox, and integrations.
 
 [← Back to docs](./README.md)
 
@@ -8,7 +8,7 @@
 
 ## What the Agent Does
 
-The agent is a **knowledge steward**, not a general-purpose chatbot. Its job:
+The agent is a **knowledge steward**, not a general-purpose chatbot. It runs **server-side** (never in the browser) for full access to files, plugins, and local AI tools. Its job:
 
 1. **Organize** — Auto-tag, categorize, and file notes into the right folders
 2. **Connect** — Find and create links between related notes (like Obsidian's graph view, but automatic)
@@ -16,13 +16,28 @@ The agent is a **knowledge steward**, not a general-purpose chatbot. Its job:
 4. **Clean** — Find duplicate notes, merge related ones, archive stale ones
 5. **Answer** — When asked a question, search through all notes and synthesize an answer
 6. **Import** — Process imports (web pages, emails, voice memos) into properly formatted notes
+7. **Execute** — Run plugins (web search, transcription, OCR) via the sandbox
 
 ---
 
-## Agent Architecture (from OpenClaw learnings)
+## Why Server-Hosted
+
+| Reason | Details |
+|--------|---------|
+| **LLM API keys stay server-side** | No keys leak to the browser |
+| **File system access** | Agent reads/writes `.md` files directly — no network overhead |
+| **Sandbox / code execution** | Agent can run scripts, install tools, execute plugins in isolation |
+| **Multi-channel** | Agent is accessible from web, mobile, CLI, MCP — all through the same server API |
+| **Background processing** | Auto-organization, auto-tagging, embedding generation run asynchronously |
+| **Local AI tools** | If server has resources, agent can use Whisper, OCR, local embeddings for free |
+| **Token efficiency** | Agent queries local SQLite directly (zero network), reads files locally |
+
+---
+
+## Agent Architecture
 
 ```
-┌─ Agent Runtime ──────────────────────────────────────────┐
+┌─ Agent Runtime (server-side) ────────────────────────────┐
 │                                                           │
 │  ┌───────────────────────────────────────────────────┐   │
 │  │                   LLM (Claude / GPT / etc.)        │   │
@@ -42,8 +57,12 @@ The agent is a **knowledge steward**, not a general-purpose chatbot. Its job:
 │  │  mino.tags         — list/manage tags               │   │
 │  │  mino.recent       — get recently modified notes    │   │
 │  │  mino.links        — find backlinks / forward links │   │
+│  │                                                     │   │
+│  │  --- PLUGIN TOOLS (dynamically loaded) ---          │   │
 │  │  web.search        — search the web (plugin)        │   │
 │  │  youtube.transcript— get video transcript (plugin)  │   │
+│  │  whisper.transcribe— speech-to-text (plugin)        │   │
+│  │  ocr.extract       — extract text from image        │   │
 │  │  email.fetch       — fetch emails (plugin)          │   │
 │  └───────────────────────────────────────────────────┘   │
 │                                                           │
@@ -140,11 +159,30 @@ Instead of listing all 131 individual files. The agent can "drill down" by calli
 | `move` | Move/rename notes | ✅ Enabled |
 | `delete` | Delete notes | ❌ Disabled (requires explicit enable) |
 | `organize` | Auto-organize (batch operations) | ❌ Disabled |
+| `plugins` | Use installed plugins | ✅ Enabled |
+| `sandbox` | Execute code in sandbox | ❌ Disabled |
 | `scope` | Restrict to specific folders | All folders |
 
 ---
 
-## Plugins & Integrations
+## Plugin System (One-Click Install)
+
+### Install Flow (from the Web UI)
+
+Inspired by the OpenClaw plugin architecture:
+
+```
+User opens Settings → Plugins → Marketplace
+  → Browses available plugins (fetched from registry)
+    → Clicks "Install" on "whisper-local"
+      → POST /api/v1/plugins/install { name: "whisper-local" }
+        → Server downloads from npm/@mino-ink scope or GitHub
+          → Extracts to /data/plugins/whisper-local/
+            → Loads plugin, registers tools with Agent Runtime
+              → WebSocket push: "whisper-local installed ✓"
+                → Agent immediately has whisper.transcribe tool
+                → Works from web, mobile, CLI, MCP — all channels
+```
 
 ### Plugin Architecture
 
@@ -173,22 +211,53 @@ export default definePlugin({
 });
 ```
 
+### Plugin Categories
+
+| Category | Examples | Requires |
+|----------|----------|----------|
+| **Core** | Web search, YouTube transcript | API key or free API |
+| **Local AI** | Whisper transcription, OCR, local embeddings | Server resources (auto-detected) |
+| **Import** | Email, RSS, social media, Obsidian vault | API key / OAuth |
+| **Export** | Git sync, backup, static site generation | Config |
+| **Integrations** | Calendar, task manager, bookmarks | API key / OAuth |
+
 ### Planned Plugins
 
 | Plugin | Description | Priority |
 |--------|-------------|----------|
 | **Web Search** | Search the web via Perplexity/Google/DuckDuckGo | P0 |
 | **YouTube Transcript** | Import video transcripts as notes | P1 |
+| **Whisper (local)** | Local speech-to-text (if server resources allow) | P1 |
+| **Whisper (API)** | Speech-to-text via OpenAI Whisper API | P1 |
+| **Image OCR** | Extract text from images (local Tesseract or API) | P2 |
 | **Email Import** | Import emails (Gmail API) as notes | P1 |
-| **Voice Notes** | Speech-to-text via Whisper | P1 |
-| **Image OCR** | Extract text from images | P2 |
 | **RSS/News** | Follow feeds and clip articles | P2 |
 | **Social Media** | Save tweets/posts/threads | P2 |
 | **Calendar** | Import calendar events as daily notes | P2 |
 | **Git Integration** | Auto-commit note changes to a git repo | P1 |
 | **Obsidian Import** | Import existing Obsidian vaults | P0 |
 
-### MCP Integration
+### Agent Setup Flow (via UI)
+
+Everything is configured through the visual interface — no terminal needed:
+
+```
+Settings → Agent
+  ├─ Provider: [Anthropic ▼] [OpenAI] [Google] [Local]
+  ├─ Model: [claude-sonnet-4-20250514 ▼]
+  ├─ API Key: [••••••••••••] [Show] [Test Connection]
+  ├─ Permissions: [✓ read] [✓ write] [✓ edit] [✗ delete] [✗ organize]
+  └─ Status: ● Connected — 3 tools + 2 plugins loaded
+
+Settings → Plugins
+  ├─ Installed: web-search ✓, whisper-local ✓
+  ├─ [Browse Marketplace]
+  └─ Plugin config: whisper-local → Language: [en ▼], Model: [base ▼]
+```
+
+---
+
+## MCP Integration
 
 Every Mino server can expose its API as an **MCP (Model Context Protocol) server**, so AI agents like Antigravity, Cursor, and Claude Code can directly read/write notes:
 
