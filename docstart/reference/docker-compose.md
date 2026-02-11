@@ -63,7 +63,9 @@ services:
     profiles: ["tunnel", "full"]
     command: tunnel run
     environment:
-      - TUNNEL_TOKEN=${CF_TUNNEL_TOKEN:?Set CF_TUNNEL_TOKEN to your Cloudflare Tunnel token}
+      # Keep optional so base stack deploys without tunnel config.
+      # When enabling the tunnel profile, set CF_TUNNEL_TOKEN in Portainer env vars.
+      - TUNNEL_TOKEN=${CF_TUNNEL_TOKEN:-}
     depends_on:
       mino:
         condition: service_healthy
