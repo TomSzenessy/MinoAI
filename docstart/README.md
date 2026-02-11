@@ -27,6 +27,7 @@ This folder is the practical documentation track for:
 - `reference/setup-response.md`
 - `reference/link-handler-spec.md`
 - `reference/relay.md`
+- `reference/relay-docker-compose.md`
 
 ### Frontend Integration Notes
 - `frontend.md`

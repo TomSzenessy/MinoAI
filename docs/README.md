@@ -10,6 +10,7 @@
 |----------|----------|
 | [**Design System**](./design-system.md) | Colors, typography, components, logo usage, glassmorphism effects |
 | [**Architecture**](./architecture.md) | Tech stack, three-layer model, deployment, hosting, Docker, CI/CD |
+| [**Relay**](./relay.md) | Managed relay design, required env vars, deployment flow, open-port fallback |
 | [**Server**](./server.md) | Mino server, auto-bootstrap, REST API, built-in UI, plugins, sandbox |
 | [**Frontend**](./frontend.md) | mino.ink (Cloudflare Pages), local UI, mobile apps, hybrid auth |
 | [**AI Agent**](./ai-agent.md) | "The Organizer" agent, server-hosted runtime, plugin install, MCP |

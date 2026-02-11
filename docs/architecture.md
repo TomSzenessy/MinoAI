@@ -51,6 +51,11 @@
 
 ## Deployment & Hosting Architecture
 
+Connection policy:
+- default: `relay` mode (managed relay connectivity)
+- optional: `open-port` mode (direct public endpoint)
+- relay deployment details: `docs/relay.md`
+
 ### Overview
 
 ```

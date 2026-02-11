@@ -83,6 +83,10 @@ If params are missing or invalid, `/link` shows a manual fallback form.
 
 Use two Pages projects (test + production) with the same build pipeline.
 
+Relay note:
+- The `/link?relayCode=...` flow depends on a running relay backend.
+- See `docs/relay.md` for relay deployment and required server variables.
+
 #### Test project (`test.mino.ink`)
 
 - Framework preset: `None`
