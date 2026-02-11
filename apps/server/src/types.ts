@@ -17,5 +17,7 @@ export type AppContext = {
     dataDir: string;
     /** Server version string. */
     version: string;
+    /** Optional static web dist directory for built-in UI serving. */
+    webDistDir: string | null;
   };
 };

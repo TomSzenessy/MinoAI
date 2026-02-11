@@ -13,11 +13,12 @@
 The mino.ink website is a **static Next.js export** deployed to Cloudflare Pages. It's a thin shell — all data processing, storage, and AI happen on the user's linked server.
 
 ```
-mino.ink (Cloudflare Pages)
+mino.ink / test.mino.ink (Cloudflare Pages)
   ├─ Static HTML/JS/CSS (Next.js static export)
-  ├─ Landing page, docs, marketing
-  ├─ Auth: Google sign-in (optional) or anonymous (localStorage)
-  ├─ Server linker: paste credentials or use linked account
+  ├─ Landing page + workspace shell
+  ├─ Dedicated /link handler (prefilled URL support)
+  ├─ Local profile auth (API key in localStorage)
+  ├─ Unified docs explorer (reads /docs + /docstart)
   └─ All API calls → user's server (direct HTTPS or Cloudflare Tunnel)
 ```
 
@@ -27,7 +28,7 @@ The exact same Next.js app is served from two places:
 
 | Source | URL | When to use |
 |--------|-----|-------------|
-| **Cloudflare Pages** | `https://mino.ink/w/...` | Remote access to any linked server |
+| **Cloudflare Pages** | `https://test.mino.ink` / `https://mino.ink` | Remote access to any linked server |
 | **Built-in server UI** | `http://localhost:3000/` | Local access, air-gapped, no internet needed |
 
 The built-in UI works identically to mino.ink — it's the same code, just served from the Docker container's static files instead of Cloudflare.
@@ -38,7 +39,7 @@ No account is ever required. Users have three options:
 
 | Mode | How it works | Credentials stored | Multi-device? |
 |------|-------------|-------------------|---------------|
-| **Anonymous** | Paste server URL + API key into mino.ink | `localStorage` only | ❌ Manual per device |
+| **Anonymous** | Open `/link` (prefilled URL or manual) and link with API key | `localStorage` only | ❌ Manual per device |
 | **Google sign-in** | Sign in with Google → link server(s) to account | Server-side (mino.ink DB) | ✅ Auto-syncs linked servers |
 | **Local instance** | Open `http://localhost:3000` → auto-connected | Server's own credentials | ❌ One device |
 
@@ -59,13 +60,49 @@ When a user signs into mino.ink with Google but doesn't link a server, they get 
 
 | Page | Path | Description |
 |------|------|-------------|
-| **Landing** | `/` | Marketing site with features, use cases, pricing |
-| **Login** | `/login` | Google OAuth or skip (anonymous credentials mode) |
-| **Link Server** | `/link` | Paste server URL + API key, or scan QR code |
-| **Workspace** | `/w/:workspace` | Main editor + sidebar + note list |
-| **Settings** | `/settings` | Server config, theme, plugins, agent setup, API keys |
-| **Plugin Marketplace** | `/settings/plugins` | Browse, install, configure plugins |
-| **API Docs** | `/docs` | Interactive API documentation |
+| **Landing** | `/` | Marketing + onboarding entrypoint |
+| **Link Server** | `/link` | Dedicated handler that parses `serverUrl` + `apiKey`, verifies, links, stores profile, and redirects |
+| **Workspace** | `/workspace?profile=<id>` | Main shell with linked-server status and authenticated note list |
+| **Docs Explorer** | `/docs` | Serves both blueprint docs (`/docs`) and implementation docs (`/docstart`) |
+
+### `/link` Handler Contract
+
+Flow for `GET /link?serverUrl=...&apiKey=...`:
+
+1. Parse query params.
+2. Normalize and validate `serverUrl`.
+3. Call `POST /api/v1/auth/verify` using `X-Mino-Key`.
+4. Call `POST /api/v1/auth/link`.
+5. Persist linked server profile in localStorage.
+6. Remove `apiKey` from browser URL (`history.replaceState`).
+7. Redirect to `/workspace?profile=<id>`.
+
+If params are missing or invalid, `/link` shows a manual fallback form.
+
+### Cloudflare Pages Build Settings
+
+Use two Pages projects (test + production) with the same build pipeline.
+
+#### Test project (`test.mino.ink`)
+
+- Framework preset: `None`
+- Build command: `pnpm install --frozen-lockfile && pnpm --filter @mino-ink/web build`
+- Build output directory: `apps/web/out`
+- Root directory: `/`
+- Environment variables:
+  - `NODE_VERSION=20`
+  - `NEXT_PUBLIC_APP_ENV=test`
+  - `NEXT_PUBLIC_APP_ORIGIN=https://test.mino.ink`
+  - `NEXT_PUBLIC_DEFAULT_LINK_TARGET=https://test.mino.ink`
+
+#### Production project (`mino.ink`)
+
+- Same build settings as test
+- Environment variables:
+  - `NODE_VERSION=20`
+  - `NEXT_PUBLIC_APP_ENV=production`
+  - `NEXT_PUBLIC_APP_ORIGIN=https://mino.ink`
+  - `NEXT_PUBLIC_DEFAULT_LINK_TARGET=https://mino.ink`
 
 ### Workspace Layout (from screen.png mockup)
 

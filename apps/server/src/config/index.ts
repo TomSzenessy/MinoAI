@@ -49,10 +49,10 @@ export function loadConfig(dataDir: string): ServerConfig {
   if (!result.success) {
     logger.warn("Config validation warnings:", result.error.flatten());
     // Return merged config even with validation issues (Zod defaults fill gaps)
-    return merged as ServerConfig;
+    return merged;
   }
 
-  return result.data as ServerConfig;
+  return result.data;
 }
 
 /**
@@ -61,16 +61,27 @@ export function loadConfig(dataDir: string): ServerConfig {
  *   MINO_SERVER__PORT=8080 → config.server.port = 8080
  *   MINO_SERVER__CORS=https://mino.ink,https://test.mino.ink → config.server.cors = [...]
  */
-function applyEnvOverrides(config: Record<string, unknown>): void {
+function applyEnvOverrides(config: ServerConfig): void {
+  const isAuthMode = (value: string): value is ServerConfig["auth"]["mode"] =>
+    value === "api-key" || value === "jwt" || value === "none";
+  const isAgentProvider = (
+    value: string,
+  ): value is ServerConfig["agent"]["provider"] =>
+    value === "" ||
+    value === "anthropic" ||
+    value === "openai" ||
+    value === "google" ||
+    value === "local";
+
   const envMap: Record<string, (val: string) => void> = {
-    MINO_PORT:             (v) => { (config.server as Record<string, unknown>).port = parseInt(v, 10); },
-    MINO_HOST:             (v) => { (config.server as Record<string, unknown>).host = v; },
-    MINO_CORS_ORIGINS:     (v) => { (config.server as Record<string, unknown>).cors = v.split(",").map(s => s.trim()); },
-    MINO_AUTH_MODE:        (v) => { (config.auth as Record<string, unknown>).mode = v; },
-    MINO_AGENT_ENABLED:    (v) => { (config.agent as Record<string, unknown>).enabled = v === "true"; },
-    MINO_AGENT_PROVIDER:   (v) => { (config.agent as Record<string, unknown>).provider = v; },
-    MINO_AGENT_MODEL:      (v) => { (config.agent as Record<string, unknown>).model = v; },
-    MINO_AGENT_API_KEY:    (v) => { (config.agent as Record<string, unknown>).apiKey = v; },
+    MINO_PORT:             (v) => { config.server.port = parseInt(v, 10); },
+    MINO_HOST:             (v) => { config.server.host = v; },
+    MINO_CORS_ORIGINS:     (v) => { config.server.cors = v.split(",").map(s => s.trim()); },
+    MINO_AUTH_MODE:        (v) => { if (isAuthMode(v)) config.auth.mode = v; },
+    MINO_AGENT_ENABLED:    (v) => { config.agent.enabled = v === "true"; },
+    MINO_AGENT_PROVIDER:   (v) => { if (isAgentProvider(v)) config.agent.provider = v; },
+    MINO_AGENT_MODEL:      (v) => { config.agent.model = v; },
+    MINO_AGENT_API_KEY:    (v) => { config.agent.apiKey = v; },
     MINO_LOG_LEVEL:        () => { /* handled by logger directly */ },
   };
 
@@ -89,30 +100,28 @@ function applyEnvOverrides(config: Record<string, unknown>): void {
  * Deep-merges two objects. Source values override target values.
  * Arrays are replaced entirely (not concatenated).
  */
-function deepMerge<T extends Record<string, unknown>>(target: T, source: Partial<T>): T {
-  const result = { ...target };
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
 
-  for (const key of Object.keys(source) as (keyof T)[]) {
-    const sourceVal = source[key];
+function deepMerge<T extends object>(target: T, source: Partial<T>): T {
+  const result: Record<string, unknown> = { ...(target as Record<string, unknown>) };
+  const sourceEntries = Object.entries(source as Record<string, unknown>);
+
+  for (const [key, sourceVal] of sourceEntries) {
     const targetVal = result[key];
 
-    if (
-      sourceVal !== undefined &&
-      sourceVal !== null &&
-      typeof sourceVal === "object" &&
-      !Array.isArray(sourceVal) &&
-      typeof targetVal === "object" &&
-      !Array.isArray(targetVal) &&
-      targetVal !== null
-    ) {
-      result[key] = deepMerge(
-        targetVal as Record<string, unknown>,
-        sourceVal as Record<string, unknown>,
-      ) as T[keyof T];
-    } else if (sourceVal !== undefined) {
-      result[key] = sourceVal as T[keyof T];
+    if (sourceVal === undefined) {
+      continue;
     }
+
+    if (isRecord(targetVal) && isRecord(sourceVal)) {
+      result[key] = deepMerge(targetVal, sourceVal);
+      continue;
+    }
+
+    result[key] = sourceVal;
   }
 
-  return result;
+  return result as T;
 }

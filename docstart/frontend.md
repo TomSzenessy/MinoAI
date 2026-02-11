@@ -6,7 +6,9 @@
 
 - `https://mino.ink` (production client)
 - `https://test.mino.ink` (test client)
-- local prototype in this repo (`prototype/`)
+- built-in server UI (`http://<SERVER_IP>:3000`)
+- local prototype reference in this repo (`prototype/`)
+- local Next.js dev app (`apps/web`, default port `5173`)
 
 ## Client-To-Server Contract
 
@@ -14,9 +16,9 @@ Clients connect to a Mino server URL and use:
 - setup endpoint: `GET /api/v1/system/setup`
 - auth header: `X-Mino-Key`
 
-## Required Future Route: `/link`
+## Dedicated Route: `/link`
 
-`/link` must be implemented in each web client (`mino.ink`, `test.mino.ink`, local client) so setup URLs work without manual typing.
+`/link` is implemented in `apps/web` and must remain available on each web client (`mino.ink`, `test.mino.ink`, built-in UI, and local dev) so setup URLs work without manual typing.
 
 Required flow:
 1. Read `serverUrl` and `apiKey` from query params.
@@ -37,6 +39,14 @@ python3 -m http.server 5173
 
 Open `http://localhost:5173`.
 
+## Local Development (Next.js App)
+
+```bash
+pnpm --filter @mino-ink/web dev
+```
+
+Open `http://localhost:5173/link`.
+
 ## Local Server Integration
 
 1. Run server on `http://localhost:3000`.
@@ -46,5 +56,5 @@ Open `http://localhost:5173`.
    - `apiKey`
 
 Current state:
-- this route is documented and required
-- implementation is still pending in the frontend codebase
+- route is implemented and active
+- URL prefill + verify/link + localStorage persistence + workspace redirect are in place

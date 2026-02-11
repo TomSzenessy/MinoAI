@@ -1,129 +1,127 @@
-# Mino Server (Portainer-First Setup)
+# Mino (Portainer-First + Web Link Handler)
 
-This repository is set up so users can deploy with **one copy/paste Docker Compose stack in Portainer**.
+Deploy first, then connect from `test.mino.ink` (or built-in local UI) with zero manual setup.
 
-If you do not want to clone the repo, that is fine. Use the compose YAML in `docker/docker-compose.yml` (or the copy in `docstart/reference/docker-compose.md`) and deploy it as a Portainer stack.
+## 1. Portainer Deployment (Copy/Paste Only)
 
-## 1. Deploy In Portainer (Copy/Paste Only)
+You do **not** need to clone this repo to deploy.
 
 1. Open Portainer.
 2. Go to `Stacks` -> `Add stack`.
-3. Name it (example: `mino`).
-4. Paste the compose YAML from `docstart/reference/docker-compose.md`.
-5. Click `Deploy the stack`.
+3. Paste compose from `docstart/reference/docker-compose.md`.
+4. Deploy.
 
-After deploy, Portainer will start `mino-server` (and optional sidecars if profiles are enabled).
+Default service:
+- `mino-server` on port `3000`
 
-## 2. First-Run Output (Auth + Links)
+Optional profiles:
+- `tunnel` (Cloudflare Tunnel)
+- `autoupdate` (Watchtower)
+- `full` (all sidecars)
 
-On first boot, Mino auto-generates:
+## 2. First Run: Get Auth + Links
+
+After startup, open:
+- `http://<SERVER_IP>:3000/api/v1/system/setup`
+
+You get:
 - `serverId`
-- `adminApiKey`
-- `jwtSecret`
-- `/data/config.json`
-- `/data/credentials.json`
+- `apiKey` (redacted after setup completes)
+- auth method (`X-Mino-Key`)
+- generated connect links:
+  - `links.connect.testMinoInk`
+  - `links.connect.minoInk`
+  - `links.connect.localUi` (built-in UI, same server)
+  - `links.connect.localDevUi` (`localhost:5173` dev client)
 
-Use either of these to get setup details:
-- Container logs in Portainer (`mino-server`)
-- Setup endpoint: `http://<YOUR_SERVER>:3000/api/v1/system/setup`
+## 3. Linking Flow (Now Implemented)
 
-The setup payload now includes:
-- Auth method (`X-Mino-Key`)
-- API key (redacted after setup is complete)
-- Clickable connection links for:
-  - `https://test.mino.ink`
-  - `https://mino.ink`
-  - local UI (`http://localhost:5173`)
+`/link` is implemented in `apps/web` and supports prefilled URLs:
 
-## 3. Link The Server
+`/link?serverUrl=...&apiKey=...`
 
-Use one of the links returned by `/api/v1/system/setup`:
-- `links.connect.testMinoInk`
-- `links.connect.minoInk`
-- `links.connect.localUi`
+Behavior:
+1. Parse params.
+2. Validate + normalize `serverUrl`.
+3. Call `POST /api/v1/auth/verify`.
+4. Call `POST /api/v1/auth/link`.
+5. Persist profile locally.
+6. Remove `apiKey` from URL.
+7. Redirect to `/workspace?profile=<id>`.
 
-If your UI does not support prefilled query params yet, copy these manually:
-- `server.server.url`
-- `apiKey`
+Manual form fallback is shown if params are missing/invalid.
 
-Planned frontend requirement:
-- dedicated `/link` route auto-parses `serverUrl` + `apiKey`, verifies the server, calls `/api/v1/auth/link`, and opens the workspace with no manual input.
-- spec: `docstart/reference/link-handler-spec.md`
+## 4. Cloudflare Pages Settings
 
-Then verify auth:
+Use two projects: one for testing, one for production.
 
-```bash
-curl -X POST http://<YOUR_SERVER>:3000/api/v1/auth/verify \
-  -H "X-Mino-Key: <YOUR_API_KEY>"
-```
+### Test project (`test.mino.ink`) — use now
+- Framework preset: `None`
+- Build command: `pnpm install --frozen-lockfile && pnpm --filter @mino-ink/web build`
+- Build output directory: `apps/web/out`
+- Root directory: `/`
+- Environment variables:
+  - `NODE_VERSION=20`
+  - `NEXT_PUBLIC_APP_ENV=test`
+  - `NEXT_PUBLIC_APP_ORIGIN=https://test.mino.ink`
+  - `NEXT_PUBLIC_DEFAULT_LINK_TARGET=https://test.mino.ink`
 
-## 4. Optional Profiles
+### Production template (`mino.ink`) — prepare now, cut over later
+- Same build settings
+- Environment variables:
+  - `NODE_VERSION=20`
+  - `NEXT_PUBLIC_APP_ENV=production`
+  - `NEXT_PUBLIC_APP_ORIGIN=https://mino.ink`
+  - `NEXT_PUBLIC_DEFAULT_LINK_TARGET=https://mino.ink`
 
-The compose file includes optional services:
-- `cloudflared` (`tunnel` profile)
-- `watchtower` (`autoupdate` profile)
+## 5. Documentation Endpoint
 
-Examples:
-- Server only: default deploy (no profile)
-- Server + tunnel: set `COMPOSE_PROFILES=tunnel`
-- Server + auto-update: set `COMPOSE_PROFILES=autoupdate`
-- Everything: set `COMPOSE_PROFILES=full`
+The web `/docs` endpoint now shows **both** tracks:
+- Blueprint docs from `/docs`
+- Implementation docs from `/docstart`
 
-If you enable `tunnel`, set `CF_TUNNEL_TOKEN` in Portainer environment variables.
+So users can browse architecture and setup runbooks from one place (`test.mino.ink/docs`).
 
-## 5. Local Build / Development (For Contributors)
+## 6. Local Build (Contributors)
 
-For development/customization:
+Install dependencies:
 
 ```bash
 bun install
-cd packages/shared && bun run build
-cd ../../apps/server && bun run dev
+```
+
+Run server:
+
+```bash
+cd apps/server
+bun run dev
+```
+
+Run web client:
+
+```bash
+pnpm --filter @mino-ink/web dev
+```
+
+Build web static export:
+
+```bash
+pnpm --filter @mino-ink/web build
 ```
 
 Run tests:
 
 ```bash
-cd apps/server
-bun test
+cd apps/server && bun test
+cd ../../apps/web && bun test
 ```
 
-Build Docker image locally:
+## 7. Docs Policy
 
-```bash
-docker build -f docker/Dockerfile -t mino-server .
-docker run --rm -p 3000:3000 -v mino-data:/data mino-server
-```
+Docs governance is defined in `DOCS_POLICY.md`:
+- `/docs` = blueprint
+- `/docstart` = implementation/use
 
-## 6. Local Interface Options
+## 8. Canonical Repository
 
-Current options:
-- Hosted clients: `https://mino.ink` and `https://test.mino.ink`
-- Prototype UI in this repo: `prototype/` (static frontend preview)
-
-To run the prototype locally:
-
-```bash
-cd prototype
-python3 -m http.server 5173
-```
-
-Then open `http://localhost:5173`.
-
-## 7. Docs
-
-Two docs tracks:
-- Blueprint/planning docs: `docs/README.md`
-- Implementation/use docs: `docstart/README.md`
-
-Implementation docs (`docstart`):
-- Portainer deployment: `docstart/getting-started/portainer-stack.md`
-- Linking/auth flow: `docstart/getting-started/linking-and-auth.md`
-- Local build/interface: `docstart/getting-started/local-build.md`
-- Troubleshooting: `docstart/getting-started/troubleshooting.md`
-- `/link` auto-linking spec: `docstart/reference/link-handler-spec.md`
-
-## 8. Repository
-
-Canonical GitHub repository:
 - `https://github.com/TomSzenessy/MinoAI`

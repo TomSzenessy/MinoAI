@@ -69,7 +69,7 @@
             └──────────────┬──────────────┘
                            ▼
 ┌─ User's Server (Docker, self-hosted) ───────────────────────┐
-│  ghcr.io/mino-ink/server:latest                              │
+│  ghcr.io/tomszenessy/mino-server:latest                      │
 │                                                              │
 │  ├─ Hono API server (:3000)                                  │
 │  ├─ Built-in Web UI (same as mino.ink, served at /)          │
@@ -90,7 +90,7 @@
 ```yaml
 services:
   mino:
-    image: ghcr.io/mino-ink/server:latest
+    image: ghcr.io/tomszenessy/mino-server:latest
     volumes:
       - mino-data:/data
     ports:
@@ -135,24 +135,21 @@ On first boot, the server detects `/data` is empty and bootstraps automatically:
 6. Initializes SQLite index (`mino.db`)
 7. Writes credentials to `/data/credentials.json`
 8. Starts the API + built-in UI immediately
-9. Serves a **setup page** at `http://server:3000/setup` showing credentials in a visual card with a "Copy" button
+9. Exposes `GET /api/v1/system/setup` with auth details + generated `/link` URLs
 
-**No wizard. No terminal interaction. No environment variables needed.** User opens Portainer → deploys → opens the server URL → sees credentials → copies into mino.ink → done.
+**No wizard. No terminal interaction. No environment variables needed.** User opens Portainer → deploys → opens `/api/v1/system/setup` → clicks generated `/link` URL → done.
 
 ### Server-Link Flow (Connecting mino.ink to a Server)
 
 ```
 1. User deploys Docker → server auto-bootstraps
-2. Server generates credentials + displays at /setup
-3. User navigates to mino.ink
-   a. Option A: Just paste the Server URL + API Key → stored in localStorage
-   b. Option B: Sign in with Google → link the server to their Google account
-      → credentials persist across devices
-4. mino.ink calls: POST https://server/api/v1/auth/link
-   → Server validates credentials → exchanges for a session JWT
-5. All future API calls: Browser (mino.ink) → User's server directly
-6. Mobile app: same flow — sign in with Google (auto-discovers linked servers)
-   OR enter server URL + API key manually
+2. Server returns setup payload at /api/v1/system/setup
+3. User opens one of the generated `/link?serverUrl=...&apiKey=...` URLs
+4. Web client calls:
+   a. POST {serverUrl}/api/v1/auth/verify
+   b. POST {serverUrl}/api/v1/auth/link
+5. Web client stores linked profile locally and redirects to `/workspace?profile=<id>`
+6. All future API calls: Browser (mino.ink/test.mino.ink/local UI) → User's server directly
 ```
 
 ### Built-in Web UI
@@ -161,7 +158,10 @@ The server bundles the same web interface as mino.ink:
 
 ```
 http://localhost:3000/           → Full web UI (identical to mino.ink)
-http://localhost:3000/setup      → First-run credentials page
+http://localhost:3000/link       → Dedicated link handler
+http://localhost:3000/workspace  → Workspace shell
+http://localhost:3000/docs       → Docs explorer (`/docs` + `/docstart`)
+http://localhost:3000/api/v1/system/setup → First-run setup payload
 http://localhost:3000/api/v1/    → REST API
 http://localhost:3000/ws         → WebSocket
 ```
@@ -205,7 +205,7 @@ For users whose server ports are closed (behind NAT, no port forwarding):
 ### CI/CD Pipeline (All Free)
 
 ```
-GitHub repo (mino-ink/server)
+GitHub repo (TomSzenessy/MinoAI)
   │
   ├─ On push to main / create version tag
   │   │
@@ -213,7 +213,7 @@ GitHub repo (mino-ink/server)
   │   │   ├─ Lint + typecheck + test
   │   │   ├─ Build multi-arch Docker image (amd64 + arm64)
   │   │   ├─ Build Next.js static export → embed in Docker image
-  │   │   └─ Push to ghcr.io/mino-ink/server:latest + :vX.Y.Z
+  │   │   └─ Push to ghcr.io/tomszenessy/mino-server:latest + :vX.Y.Z
   │   │
   │   └─ Cloudflare Pages (auto-deploy)
   │       └─ Builds + deploys mino.ink frontend (static site)

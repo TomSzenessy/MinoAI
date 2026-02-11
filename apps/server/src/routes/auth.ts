@@ -36,7 +36,7 @@ export function authRoutes(): Hono<AppContext> {
   /**
    * POST /api/v1/auth/link
    * Links a frontend (mino.ink or self-hosted UI) to this server.
-   * Marks setup as complete so credentials are redacted in /setup.
+   * Marks setup as complete so credentials are redacted in /api/v1/system/setup.
    */
   router.post("/link", async (c) => {
     const credentials = c.get("credentials");

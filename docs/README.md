@@ -55,4 +55,6 @@ Most note-taking apps treat AI as a feature. **Mino treats the AI agent as a fir
 
 > **This is a living blueprint.** Update individual docs as decisions are made and the project evolves.
 >
+> Web docs endpoint: `test.mino.ink/docs` now renders this blueprint track (`/docs`) together with implementation docs from `/docstart`.
+>
 > *Last updated: 2026-02-11*

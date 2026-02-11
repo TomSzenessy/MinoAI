@@ -15,7 +15,7 @@ on:
 
 jobs:
   ci:
-    name: Lint, Typecheck, Test
+    name: Typecheck, Test, Build
     runs-on: ubuntu-latest
 
     steps:
@@ -36,8 +36,17 @@ jobs:
       - name: Typecheck server
         run: cd apps/server && bun run typecheck
 
-      - name: Run tests
+      - name: Typecheck web
+        run: cd apps/web && bun run typecheck
+
+      - name: Run server tests
         run: cd apps/server && bun test
+
+      - name: Run web tests
+        run: cd apps/web && bun test
+
+      - name: Build web
+        run: cd apps/web && bun run build
 
       - name: Build server
         run: cd apps/server && bun run build

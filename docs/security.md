@@ -51,8 +51,8 @@ Mino uses a three-tier auth model — **no account is ever required**:
 ```
 1. Deploy Docker → server auto-bootstraps
 2. Server generates: API Key + Server ID + JWT Secret
-3. Credentials shown at http://server:3000/setup
-   (visual card + QR code + copy button)
+3. Credentials available at `GET /api/v1/system/setup`
+   (includes generated connect URLs for `/link`)
 
 4. User goes to mino.ink (or localhost:3000)
 5. Enters Server URL + API Key
@@ -209,7 +209,7 @@ jobs:
   docker:
     # Build multi-arch Docker image (amd64 + arm64)
     # Embed Next.js static export into server image
-    # Push to ghcr.io/mino-ink/server:latest + :vX.Y.Z
+    # Push to ghcr.io/tomszenessy/mino-server:latest + :vX.Y.Z
 
   deploy-web:
     # Cloudflare Pages auto-deploy (mino.ink frontend)

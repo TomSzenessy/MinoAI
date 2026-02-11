@@ -41,7 +41,7 @@ cd mino && pnpm install && pnpm dev
 All methods result in:
 1. Server running at `http://localhost:3000`
 2. Built-in web UI accessible immediately
-3. Credentials auto-generated and displayed at `/setup`
+3. Credentials auto-generated and exposed via `/api/v1/system/setup`
 4. Ready to link with mino.ink or use directly
 
 ---
@@ -71,7 +71,7 @@ All methods result in:
 - [ ] Plugin loader (discovery, install, load, registry)
 - [ ] OpenAPI spec auto-generation
 - [ ] Docker image with multi-arch support (amd64 + arm64)
-- [ ] Publish to `ghcr.io/mino-ink/server`
+- [ ] Publish to `ghcr.io/tomszenessy/mino-server`
 
 ### Phase 2: Web App + Built-in UI (Weeks 5-8)
 

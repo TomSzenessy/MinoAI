@@ -33,14 +33,15 @@ From setup response (`links.connect`):
 - `testMinoInk`
 - `minoInk`
 - `localUi`
+- `localDevUi`
 
 If query-prefill is unsupported by the client, manually enter:
 - `serverUrl`
 - `apiKey`
 
-## Planned `/link` Auto-Linking (Required)
+## `/link` Auto-Linking (Implemented)
 
-This is a required frontend implementation target:
+This flow is active in `apps/web`:
 - route: `/link`
 - input: `serverUrl` + `apiKey` query params
 - behavior: auto-verify key, call `/api/v1/auth/link`, persist session/server config, then redirect to workspace
@@ -48,7 +49,7 @@ This is a required frontend implementation target:
 Detailed spec:
 - `../reference/link-handler-spec.md`
 
-Until `/link` exists in the client, manual entry is the fallback.
+If params are missing or invalid, manual entry is the fallback.
 
 ## Mark Setup Complete
 

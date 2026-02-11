@@ -33,7 +33,8 @@ Endpoint:
       "connect": {
         "testMinoInk": "https://test.mino.ink/link?...",
         "minoInk": "https://mino.ink/link?...",
-        "localUi": "http://localhost:5173/link?..."
+        "localUi": "http://localhost:3000/link?...",
+        "localDevUi": "http://localhost:5173/link?..."
       }
     },
     "instructions": [

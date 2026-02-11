@@ -59,7 +59,8 @@ export function setupRoutes(): Hono<AppContext> {
           connect: {
             testMinoInk: `https://test.mino.ink/link?${linkParams.toString()}`,
             minoInk: `https://mino.ink/link?${linkParams.toString()}`,
-            localUi: `http://localhost:5173/link?${linkParams.toString()}`,
+            localUi: `${serverUrl}/link?${linkParams.toString()}`,
+            localDevUi: `http://localhost:5173/link?${linkParams.toString()}`,
           },
         },
         instructions: credentials.setupComplete

@@ -21,6 +21,7 @@ WORKDIR /app
 COPY package.json pnpm-workspace.yaml .npmrc ./
 COPY packages/shared/package.json ./packages/shared/
 COPY apps/server/package.json ./apps/server/
+COPY apps/web/package.json ./apps/web/
 
 # Install dependencies using Bun (faster than pnpm in Docker)
 RUN bun install --frozen-lockfile || bun install
@@ -35,14 +36,21 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/packages/shared/node_modules ./packages/shared/node_modules
 COPY --from=deps /app/apps/server/node_modules ./apps/server/node_modules
+COPY --from=deps /app/apps/web/node_modules ./apps/web/node_modules
 
 # Copy source code
 COPY tsconfig.base.json ./
 COPY packages/shared/ ./packages/shared/
 COPY apps/server/ ./apps/server/
+COPY apps/web/ ./apps/web/
+COPY docs/ ./docs/
+COPY docstart/ ./docstart/
 
 # Build shared package first (server depends on it)
 RUN cd packages/shared && bun run build
+
+# Build static web app for Cloudflare + built-in UI
+RUN cd apps/web && bun run build
 
 # Build server
 RUN cd apps/server && bun run build
@@ -54,7 +62,7 @@ FROM oven/bun:1-slim AS runtime
 
 LABEL org.opencontainers.image.title="Mino Server"
 LABEL org.opencontainers.image.description="Agent-first, markdown-based knowledge platform"
-LABEL org.opencontainers.image.source="https://github.com/TomSzenessy/Mino2"
+LABEL org.opencontainers.image.source="https://github.com/TomSzenessy/MinoAI"
 LABEL org.opencontainers.image.url="https://mino.ink"
 
 WORKDIR /app
@@ -65,6 +73,7 @@ COPY --from=deps /app/packages/shared/node_modules ./packages/shared/node_module
 COPY --from=deps /app/apps/server/node_modules ./apps/server/node_modules
 COPY --from=build /app/packages/shared/dist ./packages/shared/dist
 COPY --from=build /app/apps/server/src ./apps/server/src
+COPY --from=build /app/apps/web/out ./apps/web/out
 COPY packages/shared/package.json ./packages/shared/
 COPY apps/server/package.json ./apps/server/
 
@@ -81,6 +90,7 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
 # Set production mode
 ENV NODE_ENV=production
 ENV MINO_DATA_DIR=/data
+ENV MINO_WEB_DIST=/app/apps/web/out
 
 # Start the server
 CMD ["bun", "run", "apps/server/src/index.ts"]

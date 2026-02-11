@@ -65,15 +65,7 @@ function extractTitle(content: string, frontmatter: NoteFrontmatter): string {
 function extractTags(frontmatter: NoteFrontmatter): string[] {
   if (!frontmatter.tags) return [];
 
-  if (Array.isArray(frontmatter.tags)) {
-    return frontmatter.tags.filter((t): t is string => typeof t === "string");
-  }
-
-  if (typeof frontmatter.tags === "string") {
-    return frontmatter.tags.split(",").map((t) => t.trim()).filter(Boolean);
-  }
-
-  return [];
+  return frontmatter.tags.filter((t): t is string => typeof t === "string");
 }
 
 /**

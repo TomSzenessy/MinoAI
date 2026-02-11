@@ -35,11 +35,11 @@ First boot sequence:
   7. Initialize SQLite index (mino.db)
   8. Write credentials to /data/credentials.json
   9. Start API + built-in UI
- 10. Serve setup page at http://server:3000/setup
-     → Visual card with credentials, "Copy" button, QR code
+ 10. Expose setup API at http://server:3000/api/v1/system/setup
+     → JSON response with auth details and generated /link URLs
 ```
 
-**No wizard. No terminal. No interactive prompts.** The user opens Portainer, hits deploy, waits 10 seconds, opens the server URL, and sees their credentials on a beautiful page.
+**No wizard. No terminal. No interactive prompts.** The user opens Portainer, deploys, then opens `/api/v1/system/setup` to copy auth details and click generated link URLs.
 
 ### Credentials File
 
@@ -62,7 +62,10 @@ The server bundles the same web interface as mino.ink:
 
 ```
 http://localhost:3000/           → Full web UI (identical to mino.ink)
-http://localhost:3000/setup      → First-run credentials page
+http://localhost:3000/link       → Dedicated server-link handler
+http://localhost:3000/workspace  → Workspace shell
+http://localhost:3000/docs       → Docs explorer (blueprint + docstart)
+http://localhost:3000/api/v1/system/setup → First-run setup payload
 http://localhost:3000/api/v1/    → REST API
 http://localhost:3000/ws         → WebSocket
 ```
