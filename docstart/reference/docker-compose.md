@@ -83,20 +83,7 @@ services:
     image: cloudflare/cloudflared:latest
     container_name: mino-tunnel
     restart: unless-stopped
-    entrypoint: ["/bin/sh"]
-    command:
-      - -c
-      - |
-        if [ -n "$${TUNNEL_TOKEN:-}" ]; then
-          echo "Cloudflare Tunnel enabled"
-          exec cloudflared tunnel --no-autoupdate run --token "$${TUNNEL_TOKEN}"
-        fi
-        echo "Cloudflare Tunnel disabled (CF_TUNNEL_TOKEN not set)"
-        exec tail -f /dev/null
-    environment:
-      # Keep optional so base stack deploys without tunnel config.
-      # Set CF_TUNNEL_TOKEN in Portainer env vars to enable the tunnel.
-      - TUNNEL_TOKEN=${CF_TUNNEL_TOKEN:-}
+    command: tunnel --no-autoupdate run --token ${CF_TUNNEL_TOKEN}
     depends_on:
       mino:
         condition: service_started

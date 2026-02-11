@@ -59,9 +59,9 @@ services:
 
   # ---------------------------------------------------------------------------
   # Cloudflare Tunnel — Secure remote access (no open ports)
-  # Auto behavior:
-  #   - CF_TUNNEL_TOKEN set     -> tunnel starts, exposes relay externally
-  #   - CF_TUNNEL_TOKEN missing -> tunnel service stays idle
+  #
+  # CF_TUNNEL_TOKEN is required. Without it the container will exit.
+  # Remove this service entirely if you don't need tunnel access.
   #
   # Setup:
   #   1. Go to https://one.dash.cloudflare.com
@@ -74,18 +74,8 @@ services:
     image: cloudflare/cloudflared:latest
     container_name: mino-relay-tunnel
     restart: unless-stopped
-    entrypoint: ["/bin/sh"]
-    command:
-      - -c
-      - |
-        if [ -n "$${TUNNEL_TOKEN:-}" ]; then
-          echo "Cloudflare Tunnel enabled for relay"
-          exec cloudflared tunnel --no-autoupdate run --token "$${TUNNEL_TOKEN}"
-        fi
-        echo "Cloudflare Tunnel disabled (CF_TUNNEL_TOKEN not set)"
-        exec tail -f /dev/null
-    environment:
-      - TUNNEL_TOKEN=${CF_TUNNEL_TOKEN:-}
+    command: tunnel --no-autoupdate run --token ${CF_TUNNEL_TOKEN}
     depends_on:
       relay:
         condition: service_started
+
