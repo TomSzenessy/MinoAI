@@ -14,6 +14,22 @@ If not healthy:
 - confirm Portainer mapped port `3000:3000` (or your `MINO_PORT`)
 - check container logs for startup errors
 
+## `container mino-server is unhealthy` During Stack Deploy
+
+Cause:
+- healthcheck command failed inside container (older image used `curl` check)
+- cloudflared dependency waited for healthy status and blocked stack
+
+Fix:
+- make sure stack uses current compose from `../reference/docker-compose.md`
+- set `MINO_IMAGE_TAG=main` in Portainer env vars
+- redeploy stack
+
+If still unhealthy:
+- inspect logs in Portainer for `mino-server`
+- verify app health directly:
+  `http://<SERVER_IP>:3000/api/v1/health`
+
 ## `401 UNAUTHORIZED` On Protected Routes
 
 Cause:

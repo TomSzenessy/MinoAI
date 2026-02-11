@@ -83,9 +83,9 @@ RUN mkdir -p /data/notes /data/plugins
 # Server listens on port 3000
 EXPOSE 3000
 
-# Health check — hit the health endpoint every 30s
+# Health check — use Bun fetch (avoids relying on curl in slim image)
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD curl -f http://localhost:3000/api/v1/health || exit 1
+  CMD ["bun", "-e", "fetch('http://127.0.0.1:3000/api/v1/health').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
 
 # Set production mode
 ENV NODE_ENV=production

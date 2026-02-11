@@ -7,14 +7,16 @@ This folder is the practical documentation track for:
 
 ## Read This First
 
-1. `getting-started/portainer-stack.md`
-2. `getting-started/linking-and-auth.md`
-3. `getting-started/troubleshooting.md`
-4. `reference/setup-response.md`
+1. `getting-started/access-modes.md`
+2. `getting-started/portainer-stack.md`
+3. `getting-started/linking-and-auth.md`
+4. `getting-started/troubleshooting.md`
+5. `reference/setup-response.md`
 
 ## Sections
 
 ### Getting Started
+- `getting-started/access-modes.md`
 - `getting-started/portainer-stack.md`
 - `getting-started/linking-and-auth.md`
 - `getting-started/local-build.md`
