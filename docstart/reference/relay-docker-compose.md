@@ -20,12 +20,12 @@ Copy everything inside the code block into Portainer -> Stacks -> Add stack to d
 #
 # Cloudflare Tunnel (built-in):
 #   Set CF_TUNNEL_TOKEN in Portainer env vars to auto-expose the relay.
-#   The tunnel routes relay.test.mino.ink → relay:8787 internally.
+#   The tunnel routes relay.mino.ink → relay:8787 internally.
 #   If CF_TUNNEL_TOKEN is not set, the tunnel sidecar stays idle.
 #
 # After deploying:
-#   1. Set CF_TUNNEL_TOKEN to expose relay.test.mino.ink via tunnel.
-#   2. Verify: GET https://relay.test.mino.ink/api/v1/health
+#   1. Set CF_TUNNEL_TOKEN to expose relay.mino.ink via tunnel.
+#   2. Verify: GET https://relay.mino.ink/api/v1/health
 #   3. Set NEXT_PUBLIC_RELAY_URL on Cloudflare Pages and redeploy.
 #   4. Deploy the Mino server stack with MINO_RELAY_URL pointing here.
 #
@@ -74,7 +74,7 @@ services:
   #   1. Go to https://one.dash.cloudflare.com
   #   2. Networks/Tunnels → Create tunnel → Cloudflared
   #   3. Copy token from the shown docker command: `... --token <TOKEN>`
-  #   4. Add public hostname: relay.test.mino.ink → HTTP → relay:8787
+  #   4. Add public hostname: relay.mino.ink → HTTP → relay:8787
   #   5. Set CF_TUNNEL_TOKEN in Portainer env vars
   # ---------------------------------------------------------------------------
   cloudflared:
@@ -105,7 +105,7 @@ For `test.mino.ink` deployment, set:
 
 ```
 CF_TUNNEL_TOKEN=<your-tunnel-token>
-RELAY_PUBLIC_BASE_URL=https://relay.test.mino.ink
+RELAY_PUBLIC_BASE_URL=https://relay.mino.ink
 ```
 
 ## Verification
@@ -113,5 +113,5 @@ RELAY_PUBLIC_BASE_URL=https://relay.test.mino.ink
 After deployment, confirm the relay is healthy:
 
 ```bash
-curl https://relay.test.mino.ink/api/v1/health
+curl https://relay.mino.ink/api/v1/health
 ```

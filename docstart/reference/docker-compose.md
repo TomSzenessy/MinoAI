@@ -78,5 +78,5 @@ Set these in Portainer's "Environment variables" section:
 
 ```
 MINO_CONNECTION_MODE=relay
-MINO_RELAY_URL=https://relay.test.mino.ink
+MINO_RELAY_URL=https://relay.mino.ink
 ```
