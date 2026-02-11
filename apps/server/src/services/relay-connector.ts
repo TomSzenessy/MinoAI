@@ -203,8 +203,11 @@ export function startRelayConnector(options: RelayConnectorOptions): { stop: () 
       } catch (error) {
         failureCount += 1;
         const backoffMs = Math.min(2000 * failureCount, 15000);
+        const errObj = error instanceof Error ? error : new Error(String(error));
         logger.warn("Relay connector error", {
-          error: error instanceof Error ? error.message : "unknown",
+          error: errObj.message,
+          name: errObj.name,
+          cause: errObj.cause ? String(errObj.cause) : undefined,
           relayUrl: relayBaseUrl,
           backoffMs,
         });
