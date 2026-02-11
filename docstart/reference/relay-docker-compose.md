@@ -18,9 +18,13 @@ Copy everything inside the code block into Portainer -> Stacks -> Add stack to d
 # without requiring open inbound ports. Servers connect outbound to the
 # relay, and the web client proxies requests through it.
 #
+# Cloudflare Tunnel (built-in):
+#   Set CF_TUNNEL_TOKEN in Portainer env vars to auto-expose the relay.
+#   The tunnel routes relay.test.mino.ink → relay:8787 internally.
+#   If CF_TUNNEL_TOKEN is not set, the tunnel sidecar stays idle.
+#
 # After deploying:
-#   1. Route relay.test.mino.ink (or relay.mino.ink) to the relay container
-#      via Cloudflare Tunnel or reverse proxy.
+#   1. Set CF_TUNNEL_TOKEN to expose relay.test.mino.ink via tunnel.
 #   2. Verify: GET https://relay.test.mino.ink/api/v1/health
 #   3. Set NEXT_PUBLIC_RELAY_URL on Cloudflare Pages and redeploy.
 #   4. Deploy the Mino server stack with MINO_RELAY_URL pointing here.
@@ -37,7 +41,9 @@ services:
     container_name: mino-relay
     restart: unless-stopped
     ports:
-      - "${RELAY_PORT_BIND:-0.0.0.0}:${RELAY_PORT:-8787}:8787"
+      # Local-only by default when using tunnel. Set RELAY_PORT_BIND=0.0.0.0
+      # if you want to expose the port directly on the host instead.
+      - "${RELAY_PORT_BIND:-127.0.0.1}:${RELAY_PORT:-8787}:8787"
     environment:
       - NODE_ENV=production
       - RELAY_PORT=8787
@@ -57,6 +63,39 @@ services:
       timeout: 5s
       start_period: 10s
       retries: 3
+
+  # ---------------------------------------------------------------------------
+  # Cloudflare Tunnel — Secure remote access (no open ports)
+  # Auto behavior:
+  #   - CF_TUNNEL_TOKEN set     -> tunnel starts, exposes relay externally
+  #   - CF_TUNNEL_TOKEN missing -> tunnel service stays idle
+  #
+  # Setup:
+  #   1. Go to https://one.dash.cloudflare.com
+  #   2. Networks/Tunnels → Create tunnel → Cloudflared
+  #   3. Copy token from the shown docker command: `... --token <TOKEN>`
+  #   4. Add public hostname: relay.test.mino.ink → HTTP → relay:8787
+  #   5. Set CF_TUNNEL_TOKEN in Portainer env vars
+  # ---------------------------------------------------------------------------
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: mino-relay-tunnel
+    restart: unless-stopped
+    entrypoint: ["/bin/sh"]
+    command:
+      - -c
+      - |
+        if [ -n "$${TUNNEL_TOKEN:-}" ]; then
+          echo "Cloudflare Tunnel enabled for relay"
+          exec cloudflared tunnel --no-autoupdate run --token "$${TUNNEL_TOKEN}"
+        fi
+        echo "Cloudflare Tunnel disabled (CF_TUNNEL_TOKEN not set)"
+        exec tail -f /dev/null
+    environment:
+      - TUNNEL_TOKEN=${CF_TUNNEL_TOKEN:-}
+    depends_on:
+      relay:
+        condition: service_started
 ```
 
 ## Environment Variables
@@ -65,16 +104,18 @@ Set these in Portainer's "Environment variables" section when deploying the stac
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
+| `CF_TUNNEL_TOKEN` | **Yes** | *(none)* | Cloudflare Tunnel token for exposing the relay |
 | `RELAY_PUBLIC_BASE_URL` | **Yes** | `https://relay.mino.ink` | Public URL clients/servers use to reach relay |
 | `RELAY_IMAGE_TAG` | No | `main` | Docker image tag to pull |
 | `RELAY_PORT` | No | `8787` | Port the relay listens on |
-| `RELAY_PORT_BIND` | No | `0.0.0.0` | Host bind address |
+| `RELAY_PORT_BIND` | No | `127.0.0.1` | Host bind address (use `0.0.0.0` to expose directly) |
 
 ## Test Domain Example
 
 For `test.mino.ink` deployment, set:
 
 ```
+CF_TUNNEL_TOKEN=<your-tunnel-token>
 RELAY_PUBLIC_BASE_URL=https://relay.test.mino.ink
 ```
 
