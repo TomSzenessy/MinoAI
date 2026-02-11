@@ -1,4 +1,4 @@
-# Docker Compose (Portainer Copy Block)
+# Docker Compose — Server (Portainer Copy Block)
 
 [Back to DocStart](../README.md)
 
@@ -9,11 +9,12 @@ Copy everything inside the code block into Portainer -> Stacks -> Add stack.
 # Mino Server — Docker Compose (Portainer-friendly)
 #
 # Usage:
-#   docker compose up -d                           — Relay mode (default, no tunnel)
-#   docker compose --profile tunnel up -d          — Start with Cloudflare Tunnel
-#   docker compose --profile autoupdate up -d      — Start with Watchtower auto-updates
+#   docker compose up -d
 #
 # Copy-paste this file into Portainer → Stacks → "Add Stack" → Paste YAML.
+#
+# In relay mode (default), the server connects outbound to the relay —
+# no tunnel or open ports needed. Just set MINO_RELAY_URL.
 # =============================================================================
 
 services:
@@ -21,14 +22,10 @@ services:
   # Mino Server — The core API + built-in web UI
   # -------------------------------------------------------------------------
   mino:
-    # Default to :main so fresh pushes are always pullable.
-    # Override with MINO_IMAGE_TAG=latest (or a pinned version tag) if desired.
     image: ghcr.io/tomszenessy/mino-server:${MINO_IMAGE_TAG:-main}
     container_name: mino-server
     restart: unless-stopped
     ports:
-      # Relay mode default: local-only bind
-      # Open-port mode: set MINO_PORT_BIND=0.0.0.0
       - "${MINO_PORT_BIND:-127.0.0.1}:${MINO_PORT:-3000}:3000"
     volumes:
       - mino-data:/data
@@ -38,15 +35,11 @@ services:
       - MINO_CONNECTION_MODE=${MINO_CONNECTION_MODE:-relay}
       - MINO_RELAY_URL=${MINO_RELAY_URL:-https://relay.mino.ink}
       - MINO_PUBLIC_SERVER_URL=${MINO_PUBLIC_SERVER_URL:-}
-      # Optional overrides (uncomment as needed):
+      # Optional overrides (set in Portainer env vars):
       # - MINO_PORT=3000
-      # - MINO_PORT_BIND=0.0.0.0
       # - MINO_HOST=0.0.0.0
-      # - MINO_CONNECTION_MODE=relay|open-port
-      # - MINO_RELAY_URL=https://relay.mino.ink
-      # - MINO_PUBLIC_SERVER_URL=https://api.yourdomain.com
       # - MINO_AUTH_MODE=api-key
-      # - MINO_CORS_ORIGINS=https://mino.ink,https://test.mino.ink,http://localhost:3000
+      # - MINO_CORS_ORIGINS=https://mino.ink,https://test.mino.ink
       # - MINO_AGENT_ENABLED=true
       # - MINO_AGENT_PROVIDER=anthropic
       # - MINO_AGENT_MODEL=claude-sonnet-4-20250514
@@ -65,49 +58,25 @@ services:
       start_period: 10s
       retries: 3
 
-  # -------------------------------------------------------------------------
-  # Cloudflare Tunnel — Secure remote access (no open ports)
-  # Activate with: docker compose --profile tunnel up -d
-  #
-  # Only starts when the "tunnel" profile is active.
-  # Requires CF_TUNNEL_TOKEN to be set in Portainer env vars.
-  #
-  # Get your tunnel token from: https://one.dash.cloudflare.com
-  # Networks/Tunnels -> Create tunnel -> Cloudflared
-  # Copy token from the shown docker command: `... --token <TOKEN>`
-  # -------------------------------------------------------------------------
-  cloudflared:
-    image: cloudflare/cloudflared:latest
-    container_name: mino-tunnel
-    restart: unless-stopped
-    profiles: ["tunnel"]
-    command: tunnel --no-autoupdate run --token ${CF_TUNNEL_TOKEN}
-    depends_on:
-      mino:
-        condition: service_started
-
-  # -------------------------------------------------------------------------
-  # Watchtower — Automatic Docker image updates from GHCR
-  # Activate with: docker compose --profile autoupdate up -d
-  #
-  # Checks for new images every 6 hours. Zero-downtime restarts.
-  # -------------------------------------------------------------------------
-  watchtower:
-    image: containrrr/watchtower:latest
-    container_name: mino-watchtower
-    restart: unless-stopped
-    profiles: ["autoupdate"]
-    environment:
-      - WATCHTOWER_CLEANUP=true
-      - WATCHTOWER_POLL_INTERVAL=21600    # 6 hours
-      - WATCHTOWER_INCLUDE_STOPPED=false
-      - WATCHTOWER_SCOPE=mino
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    labels:
-      - "com.centurylinklabs.watchtower.scope=mino"
-
 volumes:
   mino-data:
     name: mino-data
+```
+
+## Environment Variables
+
+Set these in Portainer's "Environment variables" section:
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `MINO_CONNECTION_MODE` | No | `relay` | `relay` or `open-port` |
+| `MINO_RELAY_URL` | Yes (relay mode) | `https://relay.mino.ink` | URL of the relay service |
+| `MINO_IMAGE_TAG` | No | `main` | Docker image tag |
+| `MINO_PORT` | No | `3000` | Server port |
+
+## Test Domain Example
+
+```
+MINO_CONNECTION_MODE=relay
+MINO_RELAY_URL=https://relay.test.mino.ink
 ```
