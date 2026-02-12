@@ -1,0 +1,202 @@
+{
+  "nav": {
+    "home": "Startseite",
+    "features": "Funktionen",
+    "howItWorks": "Wie es funktioniert",
+    "agent": "KI-Agent",
+    "stack": "Stack",
+    "openSource": "Open Source",
+    "getStarted": "Loslegen",
+    "docs": "Dokumentation",
+    "settings": "Einstellungen",
+    "connectServer": "Server verbinden"
+  },
+  "hero": {
+    "badge": "Open Source & Selbstgehostet",
+    "titleLine1": "Dein Verstand,",
+    "titleLine2": "Organisiert.",
+    "subtitle": "Eine agenten-native, markdown-basierte Wissensplattform. Lass KI deine Notizen organisieren, während du dich auf das Wesentliche konzentrierst.",
+    "ctaPrimary": "✦ Schreib los",
+    "ctaSecondary": "↗ Auf GitHub ansehen",
+    "scrollHint": "In Aktion sehen"
+  },
+  "preview": {
+    "url": "mino.ink/workspace"
+  },
+  "features": {
+    "label": "WAS ES MACHT",
+    "title": "Gebaut für",
+    "titleHighlight": "Entwickler",
+    "subtitle": "Sechs Säulen, die Mino von jeder anderen Notiz-App unterscheiden.",
+    "smartImport": {
+      "title": "Intelligenter Import",
+      "description": "Importiere Webseiten, E-Mails, PDFs, Sprachnotizen oder YouTube-Videos. Der KI-Agent formatiert und archiviert sie automatisch."
+    },
+    "aiOrganization": {
+      "title": "KI-Organisation",
+      "description": "Deine Notizen organisieren sich selbst. Der Agent taggt, verknüpft verwandte Inhalte und pflegt deinen Wissensgraphen."
+    },
+    "intelligentRetrieval": {
+      "title": "Intelligentes Abrufen",
+      "description": "Semantische Suche in deinem gesamten Vault. Stelle Fragen in natürlicher Sprache und erhalte zusammengefasste Antworten."
+    },
+    "selfHosted": {
+      "title": "Selbstgehostet & Privat",
+      "description": "Deine Daten gehören dir. Deploye mit einem Befehl, verbinde jeden Client. Volle Kontrolle, kein Vendor Lock-in."
+    },
+    "agentNative": {
+      "title": "Agenten-Native API",
+      "description": "Zuerst für KI-Agenten gebaut. MCP-Tools ermöglichen Antigravity, Cursor oder jedem Agenten, deine Notizen direkt zu lesen und zu schreiben."
+    },
+    "everywhere": {
+      "title": "Überall, Offline",
+      "description": "Web, iOS, Android — alles offline-first mit CRDT-Sync. Bearbeite überall, Konflikte werden automatisch gelöst."
+    }
+  },
+  "howItWorks": {
+    "label": "WIE ES FUNKTIONIERT",
+    "title": "Vom",
+    "titleHighlight": "Chaos",
+    "titleEnd": "zur Klarheit",
+    "subtitle": "Drei Schritte zu einer perfekt organisierten Wissensbasis.",
+    "step1": {
+      "title": "Alles Erfassen",
+      "description": "Schreibe in Markdown, importiere von überall oder diktiere per Sprache. Jede Notiz ist eine .md-Datei — kein Lock-in, niemals."
+    },
+    "step2": {
+      "title": "KI Organisiert",
+      "description": "Der Agent liest deine Notizen, taggt sie automatisch, sortiert sie in die richtigen Ordner und erstellt Links zwischen verwandten Ideen."
+    },
+    "step3": {
+      "title": "Sofort Abrufen",
+      "description": "Stelle Fragen, suche semantisch oder durchsuche deinen automatisch generierten Wissensgraphen. Dein zweites Gehirn, immer aktuell."
+    }
+  },
+  "agent": {
+    "label": "DAS KILLER-FEATURE",
+    "title": "Triff den",
+    "titleHighlight": "KI-Organizer",
+    "subtitle": "Kein Chatbot — ein Wissensverwalter, der im Hintergrund arbeitet.",
+    "badge": "BETA",
+    "chatMsg1": "Ich habe <strong>3 Notizen</strong> über \"Architektur\" gefunden, die nicht miteinander verknüpft sind. Soll ich sie verbinden und eine Map of Content erstellen?",
+    "chatMsg2": "Ja, und tagge sie auch mit #core-systems",
+    "chatMsg3": "Erledigt! Ich habe:<br>• Alle 3 Architektur-Notizen verknüpft<br>• <code>MOC-Architektur.md</code> erstellt<br>• <code>#core-systems</code> zu jeder hinzugefügt<br>• 2 weitere verwandte Notizen in /Research gefunden, die du einschließen könntest",
+    "capability1Title": "Auto-Tagging",
+    "capability1Desc": "Liest Inhalte und wendet relevante Tags an",
+    "capability2Title": "Link-Erkennung",
+    "capability2Desc": "Findet Verbindungen, die du übersehen hast",
+    "capability3Title": "Intelligente Zusammenfassungen",
+    "capability3Desc": "Generiert MOCs und Indizes",
+    "capability4Title": "Vault-Bereinigung",
+    "capability4Desc": "Findet Duplikate, archiviert veraltete Notizen"
+  },
+  "tech": {
+    "label": "UNTER DER HAUBE",
+    "title": "Ein Moderner",
+    "titleHighlight": "Stack",
+    "subtitle": "Jede Entscheidung getroffen für Performance, Entwicklererfahrung und Einfachheit beim Selbsthosten.",
+    "items": {
+      "bun": "Server-Runtime",
+      "hono": "API-Framework",
+      "nextjs": "Web-App",
+      "expo": "Mobile Apps",
+      "sqlite": "Index + FTS5",
+      "yjs": "CRDT-Sync",
+      "mcp": "Agenten-Protokoll",
+      "md": "Quelle der Wahrheit"
+    }
+  },
+  "openSource": {
+    "label": "OPEN SOURCE",
+    "title": "Offen Gebaut",
+    "subtitle": "Mino ist 100% Open-Source. Selbsthoste mit einem Befehl, forke es, erweitere es oder trage bei. Deine Notizen gehören dir — für immer.",
+    "installCmd": "curl -fsSL https://mino.ink/install.sh | bash",
+    "ctaPrimary": "✦ Demo Testen",
+    "ctaSecondary": "↗ Auf GitHub bewerten"
+  },
+  "footer": {
+    "tagline": "Open Source · Selbstgehostet · Agenten-nativ",
+    "terms": "Nutzungsbedingungen",
+    "cookies": "Cookie-Richtlinie",
+    "privacy": "Datenschutzerklärung"
+  },
+  "cookieConsent": {
+    "message": "Wir verwenden essenzielle Cookies, um die ordnungsgemäße Funktion dieser Website sicherzustellen. Es werden keine Tracking-Cookies verwendet.",
+    "accept": "Akzeptieren",
+    "reject": "Ablehnen",
+    "learnMore": "Mehr erfahren"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "tabs": {
+      "general": "Allgemein",
+      "server": "Server",
+      "agent": "Agent",
+      "plugins": "Plugins",
+      "about": "Über"
+    },
+    "general": {
+      "language": "Sprache",
+      "languageDesc": "Wähle deine bevorzugte Sprache für die Benutzeroberfläche.",
+      "theme": "Design",
+      "themeDesc": "Wechsle zwischen dunklem und hellem Erscheinungsbild.",
+      "dark": "Dunkel",
+      "light": "Hell",
+      "system": "System"
+    },
+    "server": {
+      "title": "Server-Verbindung",
+      "connected": "Verbunden",
+      "disconnected": "Getrennt",
+      "serverUrl": "Server-URL",
+      "lastVerified": "Zuletzt verifiziert",
+      "relink": "Server neu verbinden"
+    },
+    "agent": {
+      "title": "KI-Agent Konfiguration",
+      "enabled": "Agent Aktiviert",
+      "model": "Modell",
+      "apiKey": "API-Schlüssel",
+      "apiKeyPlaceholder": "API-Schlüssel eingeben",
+      "permissions": "Berechtigungen",
+      "read": "Notizen lesen",
+      "write": "Notizen erstellen",
+      "edit": "Notizen bearbeiten",
+      "delete": "Notizen löschen",
+      "organize": "Auto-Organisation"
+    },
+    "plugins": {
+      "title": "Plugins",
+      "subtitle": "Erweitere Mino mit leistungsstarken Integrationen.",
+      "enabled": "Aktiviert",
+      "disabled": "Deaktiviert",
+      "comingSoon": "Demnächst",
+      "configure": "Konfigurieren"
+    },
+    "about": {
+      "title": "Über Mino",
+      "version": "Version",
+      "description": "Eine agenten-native, markdown-basierte Wissensplattform.",
+      "links": "Links",
+      "github": "GitHub-Repository",
+      "docs": "Dokumentation",
+      "legal": "Rechtliches",
+      "terms": "Nutzungsbedingungen",
+      "cookies": "Cookie-Richtlinie",
+      "privacy": "Datenschutzerklärung"
+    }
+  },
+  "docs": {
+    "title": "Dokumentation",
+    "subtitle": "Starte mit Mino — Anleitungen, Referenzen und Integrationshinweise.",
+    "gettingStarted": "Erste Schritte",
+    "reference": "Referenz",
+    "frontend": "Frontend-Integration"
+  },
+  "legal": {
+    "termsTitle": "Nutzungsbedingungen",
+    "cookiesTitle": "Cookie-Richtlinie",
+    "privacyTitle": "Datenschutzerklärung",
+    "lastUpdated": "Zuletzt aktualisiert"
+  }
+}

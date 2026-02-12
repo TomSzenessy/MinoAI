@@ -1,0 +1,202 @@
+{
+  "nav": {
+    "home": "Home",
+    "features": "Features",
+    "howItWorks": "How It Works",
+    "agent": "AI Agent",
+    "stack": "Stack",
+    "openSource": "Open Source",
+    "getStarted": "Get Started",
+    "docs": "Docs",
+    "settings": "Settings",
+    "connectServer": "Connect Server"
+  },
+  "hero": {
+    "badge": "Open Source & Self-Hostable",
+    "titleLine1": "Your Mind,",
+    "titleLine2": "Organized.",
+    "subtitle": "An agent-first, markdown-based knowledge platform. Let AI organize your notes while you focus on what matters.",
+    "ctaPrimary": "✦ Start Writing",
+    "ctaSecondary": "↗ View on GitHub",
+    "scrollHint": "See it in action"
+  },
+  "preview": {
+    "url": "mino.ink/workspace"
+  },
+  "features": {
+    "label": "WHAT IT DOES",
+    "title": "Built for",
+    "titleHighlight": "Developers",
+    "subtitle": "Six pillars that make Mino different from every other notes app.",
+    "smartImport": {
+      "title": "Smart Import",
+      "description": "Drop in web pages, emails, PDFs, voice memos, or YouTube videos. The AI agent formats and files them automatically."
+    },
+    "aiOrganization": {
+      "title": "AI Organization",
+      "description": "Your notes organize themselves. The agent auto-tags, links related content, and maintains your knowledge graph."
+    },
+    "intelligentRetrieval": {
+      "title": "Intelligent Retrieval",
+      "description": "Semantic search across your entire vault. Ask questions in natural language and get synthesized answers."
+    },
+    "selfHosted": {
+      "title": "Self-Hosted & Private",
+      "description": "Your data stays yours. Deploy with one command, connect any client. Full control, zero vendor lock-in."
+    },
+    "agentNative": {
+      "title": "Agent-Native API",
+      "description": "Built for AI agents first. MCP tools let Antigravity, Cursor, or any agent read and write your notes directly."
+    },
+    "everywhere": {
+      "title": "Everywhere, Offline",
+      "description": "Web, iOS, Android — all offline-first with CRDT sync. Edit anywhere, conflicts resolve automatically."
+    }
+  },
+  "howItWorks": {
+    "label": "HOW IT WORKS",
+    "title": "From",
+    "titleHighlight": "Chaos",
+    "titleEnd": "to Clarity",
+    "subtitle": "Three steps to a perfectly organized knowledge base.",
+    "step1": {
+      "title": "Capture Everything",
+      "description": "Write in markdown, import from anywhere, or dictate with voice. Every note is a plain .md file — no lock-in, ever."
+    },
+    "step2": {
+      "title": "AI Organizes",
+      "description": "The agent reads your notes, auto-tags them, files them into the right folders, and creates links between related ideas."
+    },
+    "step3": {
+      "title": "Retrieve Instantly",
+      "description": "Ask questions, search semantically, or browse your auto-generated knowledge graph. Your second brain, always up to date."
+    }
+  },
+  "agent": {
+    "label": "THE KILLER FEATURE",
+    "title": "Meet the",
+    "titleHighlight": "AI Organizer",
+    "subtitle": "Not a chatbot — a knowledge steward that works in the background.",
+    "badge": "BETA",
+    "chatMsg1": "I found <strong>3 notes</strong> about \"architecture\" that aren't linked together. Want me to connect them and create a Map of Content?",
+    "chatMsg2": "Yes, and also tag them with #core-systems",
+    "chatMsg3": "Done! I've:<br>• Linked all 3 architecture notes<br>• Created <code>MOC-Architecture.md</code><br>• Added <code>#core-systems</code> to each<br>• Found 2 more related notes in /Research you might want to include",
+    "capability1Title": "Auto-tagging",
+    "capability1Desc": "Reads content and applies relevant tags",
+    "capability2Title": "Link Discovery",
+    "capability2Desc": "Finds connections you missed",
+    "capability3Title": "Smart Summaries",
+    "capability3Desc": "Generates MOCs and indexes",
+    "capability4Title": "Vault Cleanup",
+    "capability4Desc": "Finds duplicates, archives stale notes"
+  },
+  "tech": {
+    "label": "UNDER THE HOOD",
+    "title": "A Modern",
+    "titleHighlight": "Stack",
+    "subtitle": "Every choice made for performance, developer experience, and self-hosting simplicity.",
+    "items": {
+      "bun": "Server Runtime",
+      "hono": "API Framework",
+      "nextjs": "Web App",
+      "expo": "Mobile Apps",
+      "sqlite": "Index + FTS5",
+      "yjs": "CRDT Sync",
+      "mcp": "Agent Protocol",
+      "md": "Source of Truth"
+    }
+  },
+  "openSource": {
+    "label": "OPEN SOURCE",
+    "title": "Built in the Open",
+    "subtitle": "Mino is 100% open-source. Self-host with one command, fork it, extend it, or contribute. Your notes are yours — forever.",
+    "installCmd": "curl -fsSL https://mino.ink/install.sh | bash",
+    "ctaPrimary": "✦ Try the Demo",
+    "ctaSecondary": "↗ Star on GitHub"
+  },
+  "footer": {
+    "tagline": "Open source · Self-hostable · Agent-native",
+    "terms": "Terms of Service",
+    "cookies": "Cookie Policy",
+    "privacy": "Privacy Policy"
+  },
+  "cookieConsent": {
+    "message": "We use essential cookies to ensure the proper functioning of this site. No tracking cookies are used.",
+    "accept": "Accept",
+    "reject": "Reject",
+    "learnMore": "Learn more"
+  },
+  "settings": {
+    "title": "Settings",
+    "tabs": {
+      "general": "General",
+      "server": "Server",
+      "agent": "Agent",
+      "plugins": "Plugins",
+      "about": "About"
+    },
+    "general": {
+      "language": "Language",
+      "languageDesc": "Choose your preferred language for the interface.",
+      "theme": "Theme",
+      "themeDesc": "Switch between dark and light appearance.",
+      "dark": "Dark",
+      "light": "Light",
+      "system": "System"
+    },
+    "server": {
+      "title": "Server Connection",
+      "connected": "Connected",
+      "disconnected": "Disconnected",
+      "serverUrl": "Server URL",
+      "lastVerified": "Last verified",
+      "relink": "Re-link Server"
+    },
+    "agent": {
+      "title": "AI Agent Configuration",
+      "enabled": "Agent Enabled",
+      "model": "Model",
+      "apiKey": "API Key",
+      "apiKeyPlaceholder": "Enter your API key",
+      "permissions": "Permissions",
+      "read": "Read notes",
+      "write": "Create notes",
+      "edit": "Edit notes",
+      "delete": "Delete notes",
+      "organize": "Auto-organize"
+    },
+    "plugins": {
+      "title": "Plugins",
+      "subtitle": "Extend Mino with powerful integrations.",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "comingSoon": "Coming Soon",
+      "configure": "Configure"
+    },
+    "about": {
+      "title": "About Mino",
+      "version": "Version",
+      "description": "An agent-first, markdown-based knowledge platform.",
+      "links": "Links",
+      "github": "GitHub Repository",
+      "docs": "Documentation",
+      "legal": "Legal",
+      "terms": "Terms of Service",
+      "cookies": "Cookie Policy",
+      "privacy": "Privacy Policy"
+    }
+  },
+  "docs": {
+    "title": "Documentation",
+    "subtitle": "Get started with Mino — guides, references, and integration notes.",
+    "gettingStarted": "Getting Started",
+    "reference": "Reference",
+    "frontend": "Frontend Integration"
+  },
+  "legal": {
+    "termsTitle": "Terms of Service",
+    "cookiesTitle": "Cookie Policy",
+    "privacyTitle": "Privacy Policy",
+    "lastUpdated": "Last updated"
+  }
+}

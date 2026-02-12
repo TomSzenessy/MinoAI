@@ -1,0 +1,202 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "features": "Características",
+    "howItWorks": "Cómo Funciona",
+    "agent": "Agente IA",
+    "stack": "Stack",
+    "openSource": "Código Abierto",
+    "getStarted": "Empezar",
+    "docs": "Documentación",
+    "settings": "Configuración",
+    "connectServer": "Conectar Servidor"
+  },
+  "hero": {
+    "badge": "Código Abierto y Autoalojable",
+    "titleLine1": "Tu Mente,",
+    "titleLine2": "Organizada.",
+    "subtitle": "Una plataforma de conocimiento basada en markdown y orientada a agentes. Deja que la IA organice tus notas mientras tú te enfocas en lo que importa.",
+    "ctaPrimary": "✦ Empieza a Escribir",
+    "ctaSecondary": "↗ Ver en GitHub",
+    "scrollHint": "Descúbrelo en acción"
+  },
+  "preview": {
+    "url": "mino.ink/workspace"
+  },
+  "features": {
+    "label": "QUÉ HACE",
+    "title": "Creado para",
+    "titleHighlight": "Desarrolladores",
+    "subtitle": "Seis pilares que hacen a Mino diferente de cualquier otra app de notas.",
+    "smartImport": {
+      "title": "Importación Inteligente",
+      "description": "Importa páginas web, emails, PDFs, notas de voz o vídeos de YouTube. El agente IA los formatea y archiva automáticamente."
+    },
+    "aiOrganization": {
+      "title": "Organización con IA",
+      "description": "Tus notas se organizan solas. El agente etiqueta, vincula contenido relacionado y mantiene tu grafo de conocimiento."
+    },
+    "intelligentRetrieval": {
+      "title": "Recuperación Inteligente",
+      "description": "Búsqueda semántica en toda tu bóveda. Haz preguntas en lenguaje natural y obtén respuestas sintetizadas."
+    },
+    "selfHosted": {
+      "title": "Autoalojado y Privado",
+      "description": "Tus datos son tuyos. Despliega con un solo comando, conecta cualquier cliente. Control total, sin dependencia de proveedores."
+    },
+    "agentNative": {
+      "title": "API Nativa para Agentes",
+      "description": "Diseñada primero para agentes IA. Las herramientas MCP permiten a Antigravity, Cursor o cualquier agente leer y escribir tus notas directamente."
+    },
+    "everywhere": {
+      "title": "En Todas Partes, Sin Conexión",
+      "description": "Web, iOS, Android — todo offline-first con sincronización CRDT. Edita donde sea, los conflictos se resuelven automáticamente."
+    }
+  },
+  "howItWorks": {
+    "label": "CÓMO FUNCIONA",
+    "title": "Del",
+    "titleHighlight": "Caos",
+    "titleEnd": "a la Claridad",
+    "subtitle": "Tres pasos para una base de conocimiento perfectamente organizada.",
+    "step1": {
+      "title": "Captura Todo",
+      "description": "Escribe en markdown, importa desde cualquier lugar o dicta por voz. Cada nota es un archivo .md — sin dependencias, nunca."
+    },
+    "step2": {
+      "title": "La IA Organiza",
+      "description": "El agente lee tus notas, las etiqueta automáticamente, las archiva en las carpetas correctas y crea enlaces entre ideas relacionadas."
+    },
+    "step3": {
+      "title": "Recupera al Instante",
+      "description": "Haz preguntas, busca semánticamente o navega tu grafo de conocimiento autogenerado. Tu segundo cerebro, siempre actualizado."
+    }
+  },
+  "agent": {
+    "label": "LA FUNCIÓN ESTRELLA",
+    "title": "Conoce al",
+    "titleHighlight": "Organizador IA",
+    "subtitle": "No es un chatbot — es un administrador de conocimiento que trabaja en segundo plano.",
+    "badge": "BETA",
+    "chatMsg1": "Encontré <strong>3 notas</strong> sobre \"arquitectura\" que no están vinculadas. ¿Quieres que las conecte y cree un Mapa de Contenido?",
+    "chatMsg2": "Sí, y también etiquétalas con #sistemas-core",
+    "chatMsg3": "¡Listo! He:<br>• Vinculado las 3 notas de arquitectura<br>• Creado <code>MOC-Arquitectura.md</code><br>• Añadido <code>#sistemas-core</code> a cada una<br>• Encontrado 2 notas más relacionadas en /Investigación que podrías querer incluir",
+    "capability1Title": "Auto-etiquetado",
+    "capability1Desc": "Lee el contenido y aplica etiquetas relevantes",
+    "capability2Title": "Descubrimiento de Enlaces",
+    "capability2Desc": "Encuentra conexiones que pasaste por alto",
+    "capability3Title": "Resúmenes Inteligentes",
+    "capability3Desc": "Genera MOCs e índices",
+    "capability4Title": "Limpieza de Bóveda",
+    "capability4Desc": "Encuentra duplicados, archiva notas obsoletas"
+  },
+  "tech": {
+    "label": "BAJO EL CAPÓ",
+    "title": "Un Stack",
+    "titleHighlight": "Moderno",
+    "subtitle": "Cada elección hecha pensando en rendimiento, experiencia de desarrollo y simplicidad de autoalojamiento.",
+    "items": {
+      "bun": "Runtime del Servidor",
+      "hono": "Framework API",
+      "nextjs": "App Web",
+      "expo": "Apps Móviles",
+      "sqlite": "Índice + FTS5",
+      "yjs": "Sync CRDT",
+      "mcp": "Protocolo de Agente",
+      "md": "Fuente de Verdad"
+    }
+  },
+  "openSource": {
+    "label": "CÓDIGO ABIERTO",
+    "title": "Construido en Abierto",
+    "subtitle": "Mino es 100% código abierto. Autoaloja con un solo comando, haz fork, extiéndelo o contribuye. Tus notas son tuyas — para siempre.",
+    "installCmd": "curl -fsSL https://mino.ink/install.sh | bash",
+    "ctaPrimary": "✦ Prueba la Demo",
+    "ctaSecondary": "↗ Estrella en GitHub"
+  },
+  "footer": {
+    "tagline": "Código abierto · Autoalojable · Nativo para agentes",
+    "terms": "Términos de Servicio",
+    "cookies": "Política de Cookies",
+    "privacy": "Política de Privacidad"
+  },
+  "cookieConsent": {
+    "message": "Usamos cookies esenciales para garantizar el correcto funcionamiento de este sitio. No se usan cookies de seguimiento.",
+    "accept": "Aceptar",
+    "reject": "Rechazar",
+    "learnMore": "Más información"
+  },
+  "settings": {
+    "title": "Configuración",
+    "tabs": {
+      "general": "General",
+      "server": "Servidor",
+      "agent": "Agente",
+      "plugins": "Plugins",
+      "about": "Acerca de"
+    },
+    "general": {
+      "language": "Idioma",
+      "languageDesc": "Elige tu idioma preferido para la interfaz.",
+      "theme": "Tema",
+      "themeDesc": "Cambia entre apariencia oscura y clara.",
+      "dark": "Oscuro",
+      "light": "Claro",
+      "system": "Sistema"
+    },
+    "server": {
+      "title": "Conexión del Servidor",
+      "connected": "Conectado",
+      "disconnected": "Desconectado",
+      "serverUrl": "URL del Servidor",
+      "lastVerified": "Última verificación",
+      "relink": "Reconectar Servidor"
+    },
+    "agent": {
+      "title": "Configuración del Agente IA",
+      "enabled": "Agente Habilitado",
+      "model": "Modelo",
+      "apiKey": "Clave API",
+      "apiKeyPlaceholder": "Introduce tu clave API",
+      "permissions": "Permisos",
+      "read": "Leer notas",
+      "write": "Crear notas",
+      "edit": "Editar notas",
+      "delete": "Eliminar notas",
+      "organize": "Auto-organizar"
+    },
+    "plugins": {
+      "title": "Plugins",
+      "subtitle": "Extiende Mino con integraciones potentes.",
+      "enabled": "Habilitado",
+      "disabled": "Deshabilitado",
+      "comingSoon": "Próximamente",
+      "configure": "Configurar"
+    },
+    "about": {
+      "title": "Acerca de Mino",
+      "version": "Versión",
+      "description": "Una plataforma de conocimiento basada en markdown y orientada a agentes.",
+      "links": "Enlaces",
+      "github": "Repositorio en GitHub",
+      "docs": "Documentación",
+      "legal": "Legal",
+      "terms": "Términos de Servicio",
+      "cookies": "Política de Cookies",
+      "privacy": "Política de Privacidad"
+    }
+  },
+  "docs": {
+    "title": "Documentación",
+    "subtitle": "Empieza con Mino — guías, referencias y notas de integración.",
+    "gettingStarted": "Primeros Pasos",
+    "reference": "Referencia",
+    "frontend": "Integración Frontend"
+  },
+  "legal": {
+    "termsTitle": "Términos de Servicio",
+    "cookiesTitle": "Política de Cookies",
+    "privacyTitle": "Política de Privacidad",
+    "lastUpdated": "Última actualización"
+  }
+}
