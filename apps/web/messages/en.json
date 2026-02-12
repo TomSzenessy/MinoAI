@@ -9,7 +9,8 @@
     "getStarted": "Get Started",
     "docs": "Docs",
     "settings": "Settings",
-    "connectServer": "Connect Server"
+    "connectServer": "Connect Server",
+    "workspace": "Workspace"
   },
   "hero": {
     "badge": "Open Source & Self-Hostable",
@@ -171,7 +172,9 @@
       "enabled": "Enabled",
       "disabled": "Disabled",
       "comingSoon": "Coming Soon",
-      "configure": "Configure"
+      "configure": "Configure",
+      "close": "Close",
+      "save": "Save"
     },
     "about": {
       "title": "About Mino",
@@ -198,5 +201,8 @@
     "cookiesTitle": "Cookie Policy",
     "privacyTitle": "Privacy Policy",
     "lastUpdated": "Last updated"
+  },
+  "testing": {
+    "onlyEnFallback": "Fallback from English"
   }
 }

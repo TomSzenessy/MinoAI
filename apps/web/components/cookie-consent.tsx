@@ -1,55 +1,52 @@
-/**
- * Mino Cookie Consent — DSGVO-compliant consent banner.
- *
- * Shows a bottom banner on first visit. Stores the user's choice
- * in localStorage. Only essential/functional cookies are used;
- * no tracking cookies exist, so this is informational compliance.
- */
-
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import Cookies from "js-cookie";
 import Link from "next/link";
-import { getLocale, createTranslator } from "@/lib/i18n";
+import { useEffect, useState } from "react";
+import { useTranslation } from "@/components/i18n-provider";
 
-/** localStorage key for consent status. */
 const CONSENT_KEY = "mino.cookieConsent";
 
 type ConsentStatus = "accepted" | "rejected" | null;
 
-function getConsent(): ConsentStatus {
+function readConsent(): ConsentStatus {
   if (typeof window === "undefined") return null;
-  const stored = localStorage.getItem(CONSENT_KEY);
-  if (stored === "accepted" || stored === "rejected") return stored;
+
+  const localValue = window.localStorage.getItem(CONSENT_KEY);
+  if (localValue === "accepted" || localValue === "rejected") {
+    return localValue;
+  }
+
+  const cookieValue = Cookies.get(CONSENT_KEY);
+  if (cookieValue === "accepted" || cookieValue === "rejected") {
+    return cookieValue;
+  }
+
   return null;
 }
 
-function setConsent(status: "accepted" | "rejected"): void {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(CONSENT_KEY, status);
+function storeConsent(value: "accepted" | "rejected") {
+  if (typeof window !== "undefined") {
+    window.localStorage.setItem(CONSENT_KEY, value);
+  }
+
+  Cookies.set(CONSENT_KEY, value, {
+    sameSite: "lax",
+    expires: 365,
+  });
 }
 
 export function CookieConsent() {
+  const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
-  const [t, setT] = useState(() => createTranslator("en"));
 
   useEffect(() => {
-    const consent = getConsent();
-    if (!consent) setVisible(true);
-    setT(() => createTranslator(getLocale()));
+    setVisible(readConsent() === null);
   }, []);
 
-  const handleAccept = useCallback(() => {
-    setConsent("accepted");
-    setVisible(false);
-  }, []);
-
-  const handleReject = useCallback(() => {
-    setConsent("rejected");
-    setVisible(false);
-  }, []);
-
-  if (!visible) return null;
+  if (!visible) {
+    return null;
+  }
 
   return (
     <div
@@ -59,7 +56,7 @@ export function CookieConsent() {
     >
       <div className="mx-auto flex max-w-4xl flex-col gap-3 rounded-2xl border border-[var(--glass-border)] bg-[var(--bg-surface)] p-4 shadow-lg backdrop-blur-xl sm:flex-row sm:items-center sm:gap-4 md:p-5">
         <p className="flex-1 text-sm leading-relaxed text-[var(--text-secondary)]">
-          {t("cookieConsent.message")}{" "}
+          {t("cookieConsent.message")} {" "}
           <Link
             href="/cookies"
             className="text-[var(--purple-300)] underline underline-offset-2 hover:text-[var(--purple-200)]"
@@ -69,13 +66,19 @@ export function CookieConsent() {
         </p>
         <div className="flex shrink-0 gap-2">
           <button
-            onClick={handleReject}
+            onClick={() => {
+              storeConsent("rejected");
+              setVisible(false);
+            }}
             className="rounded-full border border-[var(--glass-border)] bg-transparent px-4 py-2 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:border-[var(--purple-400)] hover:text-[var(--text-primary)]"
           >
             {t("cookieConsent.reject")}
           </button>
           <button
-            onClick={handleAccept}
+            onClick={() => {
+              storeConsent("accepted");
+              setVisible(false);
+            }}
             className="rounded-full bg-gradient-to-br from-[var(--purple-600)] to-[var(--purple-500)] px-4 py-2 text-sm font-semibold text-white transition-transform hover:-translate-y-px hover:shadow-[var(--glow-sm)]"
           >
             {t("cookieConsent.accept")}

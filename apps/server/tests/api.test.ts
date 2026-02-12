@@ -145,7 +145,10 @@ describe("Setup Endpoint", () => {
     const body = await res.json();
     expect(body.data.pairing.mode).toBe("relay");
     expect(body.data.links.connect.minoInk).toContain("relayCode=");
-    expect(body.data.links.connect.localUi).toBeUndefined();
+    expect(body.data.links.connect.localUi).toContain("/link?");
+    expect(body.data.links.connect.localUi).toContain("relayCode=");
+    expect(body.data.links.connect.localDevUi).toContain("http://localhost:5173/link?");
+    expect(body.data.links.connect.localDevUi).toContain("relayCode=");
   });
 
   it("returns direct links in open-port mode", async () => {

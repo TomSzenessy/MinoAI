@@ -1,3 +1,5 @@
+import { apiLimiter } from "@/lib/rate-limit";
+
 export class ApiRequestError extends Error {
   constructor(
     public readonly status: number,
@@ -37,12 +39,39 @@ export interface NoteSummary {
   updatedAt: string;
 }
 
+function sanitizeMessage(value: unknown, fallback: string): string {
+  if (typeof value !== "string" || value.trim().length === 0) {
+    return fallback;
+  }
+
+  // Prevent reflecting markup from remote error payloads.
+  return value.replace(/[<>]/g, "").slice(0, 280);
+}
+
+async function parseJsonSafe(response: Response): Promise<unknown> {
+  const contentType = response.headers.get("content-type") ?? "";
+
+  if (!contentType.includes("application/json")) {
+    return null;
+  }
+
+  try {
+    return await response.json();
+  } catch {
+    return null;
+  }
+}
+
 async function requestJson<T>(
   serverUrl: string,
   path: string,
   init: RequestInit,
   timeoutMs = 10000,
 ): Promise<T> {
+  if (!apiLimiter.tryConsume()) {
+    throw new ApiRequestError(429, "RATE_LIMITED", "Too many requests. Please try again shortly.");
+  }
+
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
@@ -52,14 +81,35 @@ async function requestJson<T>(
       signal: controller.signal,
     });
 
-    const contentType = response.headers.get("content-type") ?? "";
-    const isJson = contentType.includes("application/json");
-    const body = isJson ? await response.json() : null;
+    const body = await parseJsonSafe(response);
 
     if (!response.ok) {
-      const code = body?.error?.code || "REQUEST_FAILED";
-      const message = body?.error?.message || `Request failed (${response.status})`;
-      throw new ApiRequestError(response.status, code, message);
+      const errorCode =
+        typeof body === "object" &&
+        body !== null &&
+        "error" in body &&
+        typeof (body as { error?: unknown }).error === "object" &&
+        (body as { error: { code?: unknown } }).error
+          ? sanitizeMessage((body as { error: { code?: unknown } }).error.code, "REQUEST_FAILED")
+          : "REQUEST_FAILED";
+
+      const errorMessage =
+        typeof body === "object" &&
+        body !== null &&
+        "error" in body &&
+        typeof (body as { error?: unknown }).error === "object" &&
+        (body as { error: { message?: unknown } }).error
+          ? sanitizeMessage(
+              (body as { error: { message?: unknown } }).error.message,
+              `Request failed (${response.status}).`,
+            )
+          : `Request failed (${response.status}).`;
+
+      throw new ApiRequestError(response.status, errorCode, errorMessage);
+    }
+
+    if (!body) {
+      throw new ApiRequestError(response.status, "INVALID_RESPONSE", "Server returned a non-JSON response.");
     }
 
     return body as T;

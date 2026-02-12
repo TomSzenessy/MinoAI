@@ -33,6 +33,7 @@ From setup response (`links.connect`):
 - Relay mode:
   - `testMinoInk`
   - `minoInk`
+  - `localDevUi`
   - uses `relayCode` in link params
 - Open-port mode:
   - `testMinoInk`

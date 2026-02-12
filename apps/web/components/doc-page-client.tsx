@@ -1,39 +1,26 @@
+"use client";
+
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { BrandLogo } from "@/components/brand-logo";
-import { getAllDocPages, getDocPage, toDocHref, type DocSource } from "@/lib/docs";
+import { useTranslation } from "@/components/i18n-provider";
 
-interface DocPageProps {
-  params: Promise<{
-    source: DocSource;
-    slug: string[];
+interface DocPageClientProps {
+  page: {
+    title: string;
+    relativePath: string;
+    content: string;
+    href: string;
+  };
+  siblings: Array<{
+    title: string;
+    href: string;
   }>;
 }
 
-export function generateStaticParams() {
-  return getAllDocPages().map((page) => ({
-    source: page.source,
-    slug: page.slug,
-  }));
-}
-
-export const dynamicParams = false;
-
-export default async function DocPage({ params }: DocPageProps) {
-  const resolved = await params;
-
-  if (resolved.source !== "blueprint" && resolved.source !== "docstart") {
-    notFound();
-  }
-
-  const page = getDocPage(resolved.source, resolved.slug);
-  if (!page) {
-    notFound();
-  }
-
-  const siblings = getAllDocPages().filter((item) => item.source === page.source);
+export function DocPageClient({ page, siblings }: DocPageClientProps) {
+  const { t } = useTranslation();
 
   return (
     <main className="relative min-h-screen overflow-hidden px-6 py-8 md:px-10">
@@ -43,24 +30,21 @@ export default async function DocPage({ params }: DocPageProps) {
         <aside className="glass-card h-fit rounded-mino-2xl p-5">
           <div className="mb-4 flex items-center justify-between">
             <BrandLogo withWordmark={false} />
-            <Link href="/docs" className="text-xs text-[var(--purple-200)]">
-              All docs
+            <Link href="/docs" className="text-xs text-[var(--purple-300)]">
+              {t("docs.title")}
             </Link>
           </div>
-          <p className="mb-3 text-xs uppercase tracking-wide text-[var(--text-tertiary)]">
-            {page.source === "blueprint" ? "Blueprint" : "Implementation"}
-          </p>
+
           <ul className="space-y-1">
             {siblings.map((item) => {
-              const href = toDocHref(item);
-              const active = href === toDocHref(page);
+              const active = item.href === page.href;
               return (
-                <li key={href}>
+                <li key={item.href}>
                   <Link
-                    href={href}
+                    href={item.href}
                     className={`block rounded-lg px-3 py-2 text-sm ${
                       active
-                        ? "bg-[rgba(187,134,252,0.2)] text-white"
+                        ? "bg-[rgba(187,134,252,0.2)] text-[var(--text-primary)]"
                         : "text-[var(--text-secondary)] hover:bg-[rgba(187,134,252,0.08)]"
                     }`}
                   >

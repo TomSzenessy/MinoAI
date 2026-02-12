@@ -9,7 +9,8 @@
     "getStarted": "Loslegen",
     "docs": "Dokumentation",
     "settings": "Einstellungen",
-    "connectServer": "Server verbinden"
+    "connectServer": "Server verbinden",
+    "workspace": "Workspace"
   },
   "hero": {
     "badge": "Open Source & Selbstgehostet",
@@ -171,7 +172,9 @@
       "enabled": "Aktiviert",
       "disabled": "Deaktiviert",
       "comingSoon": "Demnächst",
-      "configure": "Konfigurieren"
+      "configure": "Konfigurieren",
+      "close": "Schließen",
+      "save": "Speichern"
     },
     "about": {
       "title": "Über Mino",

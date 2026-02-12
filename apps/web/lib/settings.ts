@@ -32,6 +32,15 @@ export interface UserSettings {
   enabledPlugins: string[];
 }
 
+export interface UserSettingsUpdate {
+  locale?: UserSettings["locale"];
+  theme?: UserSettings["theme"];
+  enabledPlugins?: UserSettings["enabledPlugins"];
+  agent?: Partial<Omit<AgentSettings, "permissions">> & {
+    permissions?: Partial<AgentSettings["permissions"]>;
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Defaults
 // ---------------------------------------------------------------------------
@@ -68,7 +77,7 @@ export function readSettings(): UserSettings {
   if (typeof window === "undefined") return { ...DEFAULT_SETTINGS };
 
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = window.localStorage.getItem(STORAGE_KEY);
     if (!raw) return { ...DEFAULT_SETTINGS };
 
     const parsed = JSON.parse(raw) as Partial<UserSettings>;
@@ -94,7 +103,7 @@ export function readSettings(): UserSettings {
  * Write user settings to localStorage.
  * Accepts a partial update — merges with existing settings.
  */
-export function writeSettings(update: Partial<UserSettings>): UserSettings {
+export function writeSettings(update: UserSettingsUpdate): UserSettings {
   const current = readSettings();
   const next: UserSettings = {
     ...current,
@@ -113,7 +122,7 @@ export function writeSettings(update: Partial<UserSettings>): UserSettings {
   };
 
   if (typeof window !== "undefined") {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
   }
 
   return next;
@@ -124,7 +133,7 @@ export function writeSettings(update: Partial<UserSettings>): UserSettings {
  */
 export function resetSettings(): UserSettings {
   if (typeof window !== "undefined") {
-    localStorage.removeItem(STORAGE_KEY);
+    window.localStorage.removeItem(STORAGE_KEY);
   }
   return { ...DEFAULT_SETTINGS };
 }

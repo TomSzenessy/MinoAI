@@ -1,26 +1,21 @@
-import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
 
-export type DocSource = "blueprint" | "docstart";
-
 export interface DocPageMeta {
-  source: DocSource;
   slug: string[];
   title: string;
   absolutePath: string;
   relativePath: string;
 }
 
+let cachedSignature: string | null = null;
+let cachedPages: DocPageMeta[] | null = null;
+
 function findWorkspaceRoot(start = process.cwd()): string {
   let current = resolve(start);
 
   while (true) {
-    const hasWorkspaceMarker = existsSync(join(current, "pnpm-workspace.yaml"));
-    const hasDocsDirs =
-      existsSync(join(current, "docs")) &&
-      existsSync(join(current, "docstart"));
-
-    if (hasWorkspaceMarker || hasDocsDirs) {
+    if (existsSync(join(current, "pnpm-workspace.yaml"))) {
       return current;
     }
 
@@ -33,9 +28,32 @@ function findWorkspaceRoot(start = process.cwd()): string {
   }
 }
 
-function sourceDirectory(source: DocSource): string {
-  const root = findWorkspaceRoot();
-  return source === "blueprint" ? join(root, "docs") : join(root, "docstart");
+function sourceDirectory(): string {
+  return join(findWorkspaceRoot(), "docstart");
+}
+
+function walkMarkdownFiles(dir: string): string[] {
+  if (!existsSync(dir)) {
+    return [];
+  }
+
+  const files: string[] = [];
+  const entries = readdirSync(dir, { withFileTypes: true });
+
+  for (const entry of entries) {
+    const absolute = join(dir, entry.name);
+
+    if (entry.isDirectory()) {
+      files.push(...walkMarkdownFiles(absolute));
+      continue;
+    }
+
+    if (entry.isFile() && entry.name.toLowerCase().endsWith(".md")) {
+      files.push(absolute);
+    }
+  }
+
+  return files;
 }
 
 function fileToSlug(relativePath: string): string[] {
@@ -67,69 +85,53 @@ function titleFromMarkdown(content: string, fallback: string): string {
   return fallback;
 }
 
-function walkMarkdownFiles(dir: string): string[] {
-  if (!existsSync(dir)) {
-    return [];
-  }
-
-  const files: string[] = [];
-  const entries = readdirSync(dir, { withFileTypes: true });
-
-  for (const entry of entries) {
-    const absolute = join(dir, entry.name);
-
-    if (entry.isDirectory()) {
-      files.push(...walkMarkdownFiles(absolute));
-      continue;
-    }
-
-    if (entry.isFile() && entry.name.toLowerCase().endsWith(".md")) {
-      files.push(absolute);
-    }
-  }
-
-  return files;
+function docsSignature(files: string[]): string {
+  return files
+    .map((file) => {
+      const stat = statSync(file);
+      return `${file}:${stat.mtimeMs}`;
+    })
+    .join("|");
 }
 
-export function getAllDocPages(): DocPageMeta[] {
-  const sources: DocSource[] = ["blueprint", "docstart"];
-  const pages: DocPageMeta[] = [];
-
-  for (const source of sources) {
-    const root = sourceDirectory(source);
-
-    for (const file of walkMarkdownFiles(root)) {
+function computePages(files: string[], root: string): DocPageMeta[] {
+  return files
+    .map((file): DocPageMeta => {
       const rel = relative(root, file);
       const content = readFileSync(file, "utf-8");
-      const slug = fileToSlug(rel);
       const fallbackTitle = rel.replace(/\.md$/i, "");
 
-      pages.push({
-        source,
-        slug,
+      return {
+        slug: fileToSlug(rel),
         title: titleFromMarkdown(content, fallbackTitle),
         absolutePath: file,
         relativePath: rel,
-      });
-    }
-  }
-
-  return pages.sort((a, b) => {
-    if (a.source !== b.source) {
-      return a.source.localeCompare(b.source);
-    }
-
-    return a.relativePath.localeCompare(b.relativePath);
-  });
+      };
+    })
+    .sort((a, b) => a.relativePath.localeCompare(b.relativePath));
 }
 
-export function getDocPage(source: DocSource, slug: string[]): (DocPageMeta & { content: string }) | null {
+export function getAllDocPages(): DocPageMeta[] {
+  const root = sourceDirectory();
+  const files = walkMarkdownFiles(root);
+  const signature = docsSignature(files);
+
+  if (cachedPages && cachedSignature === signature) {
+    return cachedPages;
+  }
+
+  const pages = computePages(files, root);
+  cachedPages = pages;
+  cachedSignature = signature;
+
+  return pages;
+}
+
+export function getDocPage(slug: string[]): (DocPageMeta & { content: string }) | null {
   const allPages = getAllDocPages();
   const joined = slug.join("/").toLowerCase();
 
-  const found = allPages.find(
-    (page) => page.source === source && page.slug.join("/").toLowerCase() === joined,
-  );
+  const found = allPages.find((page) => page.slug.join("/").toLowerCase() === joined);
 
   if (!found) {
     return null;
@@ -142,5 +144,5 @@ export function getDocPage(source: DocSource, slug: string[]): (DocPageMeta & { 
 }
 
 export function toDocHref(page: DocPageMeta): string {
-  return `/docs/${page.source}/${page.slug.join("/")}`;
+  return `/docs/${page.slug.join("/")}`;
 }

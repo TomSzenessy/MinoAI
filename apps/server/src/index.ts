@@ -16,6 +16,7 @@ import { getDataDir } from "./utils/paths";
 import { startRelayConnector } from "./services/relay-connector";
 import { existsSync } from "node:fs";
 import { join, resolve } from "node:path";
+import { buildDirectConnectLinks, buildRelayConnectLinks } from "./utils/connect-links";
 
 const SERVER_VERSION = "0.1.0";
 
@@ -103,28 +104,31 @@ async function main(): Promise<void> {
     b(`  ┣${hr}┫`);
 
     if (config.connection.mode === "relay") {
-      const testLink = `https://test.mino.ink/link?${relayLinkParams.toString()}`;
-      const prodLink = `https://mino.ink/link?${relayLinkParams.toString()}`;
+      const relayLinks = buildRelayConnectLinks(relayLinkParams, localBaseUrl);
       b(`  ┃${"".padEnd(62)}┃`);
       b(`  ┃  test.mino.ink:${"".padEnd(46)}┃`);
-      b(`  ┃  ${testLink.padEnd(60)}┃`);
+      b(`  ┃  ${relayLinks.testMinoInk.padEnd(60)}┃`);
       b(`  ┃${"".padEnd(62)}┃`);
       b(`  ┃  mino.ink:${"".padEnd(52)}┃`);
-      b(`  ┃  ${prodLink.padEnd(60)}┃`);
+      b(`  ┃  ${relayLinks.minoInk.padEnd(60)}┃`);
+      b(`  ┃${"".padEnd(62)}┃`);
+      b(`  ┃  local UI:${"".padEnd(50)}┃`);
+      b(`  ┃  ${relayLinks.localUi.padEnd(60)}┃`);
+      b(`  ┃${"".padEnd(62)}┃`);
+      b(`  ┃  local dev UI:${"".padEnd(47)}┃`);
+      b(`  ┃  ${relayLinks.localDevUi.padEnd(60)}┃`);
       b(`  ┃${"".padEnd(62)}┃`);
     } else {
-      const testLink = `https://test.mino.ink/link?${directLinkParams.toString()}`;
-      const prodLink = `https://mino.ink/link?${directLinkParams.toString()}`;
-      const builtinLink = `${localBaseUrl}/link?${directLinkParams.toString()}`;
+      const directLinks = buildDirectConnectLinks(directLinkParams, localBaseUrl);
       b(`  ┃${"".padEnd(62)}┃`);
       b(`  ┃  test.mino.ink:${"".padEnd(46)}┃`);
-      b(`  ┃  ${testLink.padEnd(60)}┃`);
+      b(`  ┃  ${directLinks.testMinoInk.padEnd(60)}┃`);
       b(`  ┃${"".padEnd(62)}┃`);
       b(`  ┃  mino.ink:${"".padEnd(52)}┃`);
-      b(`  ┃  ${prodLink.padEnd(60)}┃`);
+      b(`  ┃  ${directLinks.minoInk.padEnd(60)}┃`);
       b(`  ┃${"".padEnd(62)}┃`);
       b(`  ┃  Built-in UI:${"".padEnd(49)}┃`);
-      b(`  ┃  ${builtinLink.padEnd(60)}┃`);
+      b(`  ┃  ${directLinks.localUi.padEnd(60)}┃`);
       b(`  ┃${"".padEnd(62)}┃`);
     }
   }

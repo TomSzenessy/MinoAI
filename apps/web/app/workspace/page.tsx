@@ -86,7 +86,7 @@ export default function WorkspacePage() {
           <aside className="hidden border-r border-[rgba(255,255,255,0.06)] p-4 md:block">
             <h2 className="mb-3 text-xs uppercase tracking-wider text-[var(--text-tertiary)]">Server</h2>
             <div className="glass-card rounded-mino-lg p-3">
-              <p className="font-medium text-white">{profile?.name ?? "Linked Server"}</p>
+              <p className="font-medium text-[var(--text-primary)]">{profile?.name ?? "Linked Server"}</p>
               <p className="mt-1 text-xs text-[var(--text-secondary)]">{profile?.serverUrl}</p>
             </div>
 
@@ -98,7 +98,7 @@ export default function WorkspacePage() {
 
           <section className="min-h-0 overflow-y-auto p-4 md:p-6">
             <div className="mb-4 flex items-center justify-between">
-              <h1 className="font-display text-2xl font-semibold text-white">Workspace</h1>
+              <h1 className="font-display text-2xl font-semibold text-[var(--text-primary)]">Workspace</h1>
               <p className="text-sm text-[var(--text-secondary)]">
                 {health ? `v${health.version} · ${health.uptimeSeconds}s uptime` : "Waiting for server"}
               </p>
@@ -114,7 +114,7 @@ export default function WorkspacePage() {
                   key={note.path}
                   className="rounded-mino-xl border border-[rgba(255,255,255,0.06)] bg-[var(--bg-elevated)] p-4"
                 >
-                  <h2 className="mb-2 font-display text-lg font-semibold text-white">{note.title}</h2>
+                  <h2 className="mb-2 font-display text-lg font-semibold text-[var(--text-primary)]">{note.title}</h2>
                   <p className="mb-3 text-xs text-[var(--text-secondary)]">{note.path}</p>
                   <div className="flex flex-wrap gap-1">
                     {note.tags.slice(0, 3).map((tag) => (

@@ -19,35 +19,33 @@ Deploy Mino by pasting one compose file in Portainer. No repository clone is req
    - `MINO_CONNECTION_MODE` (`relay` default, `open-port` optional)
    - `MINO_RELAY_URL` (default `https://relay.mino.ink`)
    - `MINO_PUBLIC_SERVER_URL` (optional explicit public URL for open-port mode)
-   - `CF_TUNNEL_TOKEN` (optional, only if you also want Cloudflare tunnel sidecar)
-   - `COMPOSE_PROFILES=autoupdate` (optional; enables Watchtower sidecar)
+   - `WATCHTOWER_POLL_INTERVAL` (optional, default `300` seconds)
 6. Deploy the stack.
 
 ## What Starts By Default
 
-With no profile configured:
+With default settings:
 - `mino` service starts
 - server mode is `relay`
 - host bind defaults to `127.0.0.1:${MINO_PORT}` (not public)
-- `cloudflared` sidecar stays idle unless `CF_TUNNEL_TOKEN` is set
-- `watchtower` stays disabled
+- `watchtower` runs automatically and updates labeled containers
 
 ## Connection Modes
 
 - Relay mode (default)
   - `MINO_CONNECTION_MODE=relay`
-  - generates `mino.ink` / `test.mino.ink` links using relay pairing code
-  - local UI links are intentionally omitted in this mode
+  - generates relay pairing links for `mino.ink`, `test.mino.ink`, local UI, and local dev UI
 - Open-port mode (direct)
   - `MINO_CONNECTION_MODE=open-port`
   - `MINO_PORT_BIND=0.0.0.0`
   - optionally set `MINO_PUBLIC_SERVER_URL=https://api.yourdomain.com`
   - generates direct links for `mino.ink`, built-in UI, and local dev UI
 
-## Optional Profiles
+## Automatic Updates
 
-- `COMPOSE_PROFILES=autoupdate`
-  Starts `watchtower` + `mino`
+- Watchtower is included by default in the compose stack.
+- It checks for image updates every `WATCHTOWER_POLL_INTERVAL` seconds.
+- When a new image digest is published to GHCR, the container is pulled and restarted automatically.
 
 ## Verify Deployment
 
@@ -63,7 +61,7 @@ Expected health response status is `200`.
 ## Link Output Rules
 
 - `relay` mode:
-  - generates relay-code links for `mino.ink` and `test.mino.ink`
+  - generates relay-code links for `mino.ink`, `test.mino.ink`, local UI, and local dev UI
   - intended one-click flow: open link -> `/link` auto-exchanges code -> connected
 - `open-port` mode:
   - generates direct `serverUrl + apiKey` links for:

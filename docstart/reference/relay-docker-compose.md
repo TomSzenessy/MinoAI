@@ -14,6 +14,8 @@ Copy everything inside the code block into Portainer -> Stacks -> Add stack to d
 # Copy-paste this file into Portainer → Stacks → "Add Stack" → Paste YAML
 # to deploy the relay as a standalone stack.
 #
+# Includes Watchtower by default for automatic GHCR image updates.
+#
 # The relay enables private Mino servers to be accessible via mino.ink
 # without requiring open inbound ports. Servers connect outbound to the
 # relay, and the web client proxies requests through it.
@@ -40,6 +42,9 @@ services:
     image: ghcr.io/tomszenessy/mino-relay:${RELAY_IMAGE_TAG:-main}
     container_name: mino-relay
     restart: unless-stopped
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "com.centurylinklabs.watchtower.scope=mino-relay"
     ports:
       # Local-only by default when using tunnel. Set RELAY_PORT_BIND=0.0.0.0
       # if you want to expose the port directly on the host instead.
@@ -81,7 +86,32 @@ services:
     image: cloudflare/cloudflared:latest
     container_name: mino-relay-tunnel
     restart: unless-stopped
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "com.centurylinklabs.watchtower.scope=mino-relay"
     command: tunnel --no-autoupdate run --token ${CF_TUNNEL_TOKEN}
+    depends_on:
+      relay:
+        condition: service_started
+
+  # ---------------------------------------------------------------------------
+  # Watchtower — Auto-update relay and tunnel images and restart containers
+  # ---------------------------------------------------------------------------
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: mino-relay-watchtower
+    restart: unless-stopped
+    command:
+      - --label-enable
+      - --scope
+      - mino-relay
+      - --cleanup
+      - --interval
+      - "${WATCHTOWER_POLL_INTERVAL:-300}"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - WATCHTOWER_NO_STARTUP_MESSAGE=true
     depends_on:
       relay:
         condition: service_started
@@ -98,6 +128,7 @@ Set these in Portainer's "Environment variables" section when deploying the stac
 | `RELAY_IMAGE_TAG` | No | `main` | Docker image tag to pull |
 | `RELAY_PORT` | No | `8787` | Port the relay listens on |
 | `RELAY_PORT_BIND` | No | `127.0.0.1` | Host bind address (use `0.0.0.0` to expose directly) |
+| `WATCHTOWER_POLL_INTERVAL` | No | `300` | Seconds between update checks |
 
 ## Test Domain Example
 

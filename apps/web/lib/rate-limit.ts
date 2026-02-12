@@ -1,83 +1,81 @@
 /**
- * Mino Rate Limiter — Client-side token bucket for API call throttling.
- *
- * Prevents excessive requests from the browser to avoid hammering the
- * server and to comply with DSGVO "data minimization" principles.
- *
- * @example
- * const limiter = createRateLimiter({ maxTokens: 30, refillPerSecond: 5 });
- * if (limiter.tryConsume()) { fetch(...) }
+ * Client-side token-bucket rate limiting for API calls.
  */
 
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
-
 export interface RateLimiterConfig {
-  /** Maximum number of tokens (burst capacity). */
-  maxTokens: number;
-  /** Tokens refilled per second. */
-  refillPerSecond: number;
+  maxRequests: number;
+  windowMs: number;
+  cooldownMs?: number;
 }
 
 export interface RateLimiter {
-  /** Attempt to consume a token. Returns `true` if allowed. */
   tryConsume: () => boolean;
-  /** Returns the number of available tokens (for debugging/UI). */
   available: () => number;
-  /** Reset the bucket to full capacity. */
   reset: () => void;
 }
 
-// ---------------------------------------------------------------------------
-// Implementation
-// ---------------------------------------------------------------------------
-
-/**
- * Create a token-bucket rate limiter.
- *
- * Tokens are refilled continuously based on elapsed time since last check,
- * capped at `maxTokens`. Each call to `tryConsume()` tries to take one token.
- */
 export function createRateLimiter(config: RateLimiterConfig): RateLimiter {
-  let tokens = config.maxTokens;
-  let lastRefill = Date.now();
+  const refillPerMs = config.maxRequests / config.windowMs;
 
-  function refill(): void {
+  let tokens = config.maxRequests;
+  let lastRefill = Date.now();
+  let blockedUntil = 0;
+
+  const refill = () => {
     const now = Date.now();
-    const elapsed = (now - lastRefill) / 1000; // seconds
-    tokens = Math.min(config.maxTokens, tokens + elapsed * config.refillPerSecond);
-    lastRefill = now;
-  }
+
+    if (now < blockedUntil) {
+      return;
+    }
+
+    const elapsed = now - lastRefill;
+    if (elapsed > 0) {
+      tokens = Math.min(config.maxRequests, tokens + elapsed * refillPerMs);
+      lastRefill = now;
+    }
+  };
 
   return {
-    tryConsume(): boolean {
+    tryConsume() {
+      const now = Date.now();
+      if (now < blockedUntil) {
+        return false;
+      }
+
       refill();
+
       if (tokens >= 1) {
         tokens -= 1;
         return true;
       }
+
+      if (config.cooldownMs && config.cooldownMs > 0) {
+        blockedUntil = now + config.cooldownMs;
+      }
+
       return false;
     },
 
-    available(): number {
+    available() {
+      const now = Date.now();
+      if (now < blockedUntil) {
+        return 0;
+      }
+
       refill();
       return Math.floor(tokens);
     },
 
-    reset(): void {
-      tokens = config.maxTokens;
+    reset() {
+      tokens = config.maxRequests;
       lastRefill = Date.now();
+      blockedUntil = 0;
     },
   };
 }
 
-// ---------------------------------------------------------------------------
-// Default limiter for API calls
-// ---------------------------------------------------------------------------
-
-/** Shared limiter: 30 requests burst, refills at 5/sec → steady 300/min. */
 export const apiLimiter = createRateLimiter({
-  maxTokens: 30,
-  refillPerSecond: 5,
+  maxRequests: 30,
+  windowMs: 60_000,
+  cooldownMs: 1_500,
 });

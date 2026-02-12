@@ -39,13 +39,14 @@ Endpoint:
       "relayApiBase": "https://relay.mino.ink/r/<serverId>/api/v1",
       "connect": {
         "testMinoInk": "https://test.mino.ink/link?relayCode=...",
-        "minoInk": "https://mino.ink/link?relayCode=..."
+        "minoInk": "https://mino.ink/link?relayCode=...",
+        "localDevUi": "http://localhost:5173/link?relayCode=...&relayUrl=..."
       }
     },
     "instructions": [
-      "Copy your API key — it will be redacted after setup.",
+      "Open the mino.ink connect link. It uses relay code pairing by default.",
       "Open one of the connect links to prefill server details.",
-      "If prefill is unavailable, paste server URL and API key manually.",
+      "For local development, use localDevUi (http://localhost:5173) with relay code prefill.",
       "Then call POST /api/v1/auth/link to mark setup complete."
     ]
   }
@@ -65,6 +66,6 @@ Endpoint:
 - `pairing.relayCode`
   One-click code used by `/link` to exchange relay connection info.
 - `links.connect.*`
-  Prefilled URLs for production/test/local clients.
+  Prefilled URLs for production/test/local clients (includes `localDevUi`).
 - Client contract for these URLs:
   `./link-handler-spec.md`

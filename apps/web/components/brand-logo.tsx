@@ -18,7 +18,7 @@ export function BrandLogo({ className, withWordmark = true }: BrandLogoProps) {
         <ellipse cx="150" cy="100" rx="17" ry="50" fill="#BB86FC" />
       </svg>
       {withWordmark ? (
-        <span className="font-display text-lg font-semibold tracking-tight text-white">ino</span>
+        <span className="font-display text-lg font-semibold tracking-tight text-[var(--text-primary)]">ino</span>
       ) : null}
     </div>
   );

@@ -9,7 +9,8 @@
     "getStarted": "Empezar",
     "docs": "Documentación",
     "settings": "Configuración",
-    "connectServer": "Conectar Servidor"
+    "connectServer": "Conectar Servidor",
+    "workspace": "Espacio de trabajo"
   },
   "hero": {
     "badge": "Código Abierto y Autoalojable",
@@ -171,7 +172,9 @@
       "enabled": "Habilitado",
       "disabled": "Deshabilitado",
       "comingSoon": "Próximamente",
-      "configure": "Configurar"
+      "configure": "Configurar",
+      "close": "Cerrar",
+      "save": "Guardar"
     },
     "about": {
       "title": "Acerca de Mino",

@@ -8,6 +8,7 @@
 import { Hono } from "hono";
 import type { Context } from "hono";
 import type { AppContext } from "../types";
+import { buildDirectConnectLinks, buildRelayConnectLinks } from "../utils/connect-links";
 
 export function setupRoutes(): Hono<AppContext> {
   const router = new Hono<AppContext>();
@@ -45,16 +46,8 @@ export function setupRoutes(): Hono<AppContext> {
     }
 
     const connectLinks = mode === "relay"
-      ? {
-          testMinoInk: `https://test.mino.ink/link?${relayLinkParams.toString()}`,
-          minoInk: `https://mino.ink/link?${relayLinkParams.toString()}`,
-        }
-      : {
-          testMinoInk: `https://test.mino.ink/link?${directLinkParams.toString()}`,
-          minoInk: `https://mino.ink/link?${directLinkParams.toString()}`,
-          localUi: `${publicServerUrl}/link?${directLinkParams.toString()}`,
-          localDevUi: `http://localhost:5173/link?${directLinkParams.toString()}`,
-        };
+      ? buildRelayConnectLinks(relayLinkParams, directServerUrl)
+      : buildDirectConnectLinks(directLinkParams, publicServerUrl);
 
     return c.json({
       success: true,
@@ -97,7 +90,7 @@ export function setupRoutes(): Hono<AppContext> {
                 : "Copy your API key — it will be redacted after setup.",
               "Open one of the connect links to prefill server details.",
               mode === "relay"
-                ? "Open-port/local UI links are disabled in relay mode. Switch to open-port mode to use local interface links."
+                ? "For local usage, use localUi/localDevUi with relay code prefill."
                 : "If prefill is unavailable, paste server URL and API key manually.",
               "Then call POST /api/v1/auth/link to mark setup complete.",
             ],
