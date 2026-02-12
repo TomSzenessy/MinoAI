@@ -94,13 +94,22 @@ services:
     image: containrrr/watchtower:latest
     container_name: mino-relay-watchtower
     restart: unless-stopped
+    entrypoint: ["/bin/sh", "-ec"]
     command:
-      - --label-enable
-      - --scope
-      - mino-relay
-      - --cleanup
-      - --interval
-      - "${WATCHTOWER_POLL_INTERVAL:-300}"
+      - |
+        if [ "${WATCHTOWER_POLL_INTERVAL:-300}" = "-1" ]; then
+          echo "Watchtower disabled (WATCHTOWER_POLL_INTERVAL=-1)."
+          exec tail -f /dev/null
+        fi
+        case "${WATCHTOWER_POLL_INTERVAL:-300}" in
+          ''|*[!0-9]*)
+            echo "Invalid WATCHTOWER_POLL_INTERVAL=${WATCHTOWER_POLL_INTERVAL:-300}. Falling back to 300."
+            exec /watchtower --label-enable --scope mino-relay --cleanup --interval "300"
+            ;;
+          *)
+            exec /watchtower --label-enable --scope mino-relay --cleanup --interval "${WATCHTOWER_POLL_INTERVAL:-300}"
+            ;;
+        esac
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:

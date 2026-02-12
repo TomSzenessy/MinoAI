@@ -19,7 +19,7 @@ Deploy Mino by pasting one compose file in Portainer. No repository clone is req
    - `MINO_CONNECTION_MODE` (`relay` default, `open-port` optional)
    - `MINO_RELAY_URL` (default `https://relay.mino.ink`)
    - `MINO_PUBLIC_SERVER_URL` (optional explicit public URL for open-port mode)
-   - `WATCHTOWER_POLL_INTERVAL` (optional, default `300` seconds)
+   - `WATCHTOWER_POLL_INTERVAL` (optional, default `300` seconds, set `-1` to disable checks)
 6. Deploy the stack.
 
 ## What Starts By Default
@@ -45,6 +45,7 @@ With default settings:
 
 - Watchtower is included by default in the compose stack.
 - It checks for image updates every `WATCHTOWER_POLL_INTERVAL` seconds.
+- Set `WATCHTOWER_POLL_INTERVAL=-1` to disable checks while keeping the container idle.
 - When a new image digest is published to GHCR, the container is pulled and restarted automatically.
 
 ## Verify Deployment
