@@ -8,12 +8,13 @@ interface DocPageProps {
   }>;
 }
 
-export function generateStaticParams() {
+export async function generateStaticParams(): Promise<Array<{ slug: string[] }>> {
   return getAllDocPages().map((page) => ({
     slug: page.slug,
   }));
 }
 
+export const dynamic = "force-static";
 export const dynamicParams = false;
 
 export default async function DocPage({ params }: DocPageProps) {
