@@ -11,10 +11,18 @@ export interface DocPageMeta {
 let cachedSignature: string | null = null;
 let cachedPages: DocPageMeta[] | null = null;
 
+function hasDirectory(path: string): boolean {
+  return existsSync(path) && statSync(path).isDirectory();
+}
+
 function findWorkspaceRoot(start = process.cwd()): string {
   let current = resolve(start);
 
   while (true) {
+    if (hasDirectory(join(current, "docstart"))) {
+      return current;
+    }
+
     if (existsSync(join(current, "pnpm-workspace.yaml"))) {
       return current;
     }

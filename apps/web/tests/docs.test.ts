@@ -1,5 +1,6 @@
 import { describe, expect, it } from "bun:test";
-import { readdirSync } from "node:fs";
+import { mkdtempSync, mkdirSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { getAllDocPages, getDocPage, toDocHref } from "../lib/docs";
 
@@ -24,6 +25,30 @@ function countMarkdownFiles(dir: string): number {
 }
 
 describe("docs", () => {
+  it("finds docstart when workspace marker file is absent", () => {
+    const originalCwd = process.cwd();
+    const tempRoot = mkdtempSync(join(tmpdir(), "mino-docs-"));
+    const nestedCwd = join(tempRoot, "apps", "web");
+    const docFile = join(tempRoot, "docstart", "getting-started", "intro.md");
+
+    try {
+      mkdirSync(nestedCwd, { recursive: true });
+      mkdirSync(join(tempRoot, "docstart", "getting-started"), { recursive: true });
+      writeFileSync(docFile, "# Intro\n\nWelcome.");
+
+      process.chdir(nestedCwd);
+
+      const pages = getAllDocPages();
+      const intro = pages.find((page) => page.slug.join("/") === "getting-started/intro");
+
+      expect(intro).toBeDefined();
+      expect(intro?.relativePath).toBe("getting-started/intro.md");
+    } finally {
+      process.chdir(originalCwd);
+      rmSync(tempRoot, { recursive: true, force: true });
+    }
+  });
+
   it("indexes only docstart markdown pages", () => {
     const pages = getAllDocPages();
 
