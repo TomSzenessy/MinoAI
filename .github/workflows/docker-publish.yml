@@ -15,6 +15,10 @@ on:
     branches: [main]
     tags: ["v*.*.*"]
 
+concurrency:
+  group: docker-publish-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: tomszenessy/mino-server
@@ -31,6 +35,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Verify docs static-export route is present
+        run: |
+          FILE='apps/web/app/docs/[...slug]/page.tsx'
+          echo "Commit SHA: $GITHUB_SHA"
+          test -f "$FILE"
+          echo "--- $FILE ---"
+          sed -n '1,120p' "$FILE"
+          grep -n "generateStaticParams" "$FILE"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
