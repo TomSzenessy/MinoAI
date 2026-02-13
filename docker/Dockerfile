@@ -38,6 +38,10 @@ COPY --from=deps /app/packages/shared/node_modules ./packages/shared/node_module
 COPY --from=deps /app/apps/server/node_modules ./apps/server/node_modules
 COPY --from=deps /app/apps/web/node_modules ./apps/web/node_modules
 
+# Commit-scoped build arg to prevent stale source cache reuse across publish runs.
+ARG BUILD_COMMIT=dev
+RUN echo "Building server image from commit: ${BUILD_COMMIT}"
+
 # Copy source code
 COPY tsconfig.base.json ./
 COPY packages/shared/ ./packages/shared/
@@ -45,6 +49,10 @@ COPY apps/server/ ./apps/server/
 COPY apps/web/ ./apps/web/
 COPY docs/ ./docs/
 COPY docstart/ ./docstart/
+
+# Fail fast with a clear message if the docs catch-all route export is not present.
+RUN test -f 'apps/web/app/docs/[...slug]/page.tsx' \
+  && grep -n "generateStaticParams" 'apps/web/app/docs/[...slug]/page.tsx'
 
 # Build shared package first (server depends on it)
 RUN cd packages/shared && bun run build

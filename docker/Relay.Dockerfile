@@ -20,6 +20,11 @@ WORKDIR /app
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/apps/relay/node_modules ./apps/relay/node_modules
+
+# Commit-scoped build arg to prevent stale source cache reuse across publish runs.
+ARG BUILD_COMMIT=dev
+RUN echo "Building relay image from commit: ${BUILD_COMMIT}"
+
 COPY tsconfig.base.json ./
 COPY apps/relay/ ./apps/relay/
 
