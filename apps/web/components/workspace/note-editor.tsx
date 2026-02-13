@@ -4,6 +4,10 @@ import { fetchNoteDetail, Note, NoteSummary, updateNote } from "@/lib/api";
 import { useTranslation } from "@/components/i18n-provider";
 import { LinkedServerProfile } from "@/lib/storage";
 import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  MarkdownEditor,
+  type MarkdownEditorHandle,
+} from "@/components/workspace/markdown-editor";
 
 interface NoteEditorProps {
   profile: LinkedServerProfile | null;
@@ -53,7 +57,7 @@ export function NoteEditor({ profile, noteSummary, onSave }: NoteEditorProps) {
   const noteRef = useRef<Note | null>(null);
   const draftRef = useRef<TitleBodyDraft>({ title: "", body: "" });
   const profileRef = useRef<LinkedServerProfile | null>(profile);
-  const bodyInputRef = useRef<HTMLTextAreaElement | null>(null);
+  const bodyInputRef = useRef<MarkdownEditorHandle | null>(null);
 
   useEffect(() => {
     noteRef.current = note;
@@ -251,12 +255,10 @@ export function NoteEditor({ profile, noteSummary, onSave }: NoteEditorProps) {
           placeholder={t("workspace.noteEditor.untitled")}
         />
 
-        <textarea
+        <MarkdownEditor
           ref={bodyInputRef}
-          className="min-h-[500px] h-full w-full resize-none bg-transparent text-[15px] leading-relaxed text-[var(--text-secondary)] focus:outline-none"
           value={body}
-          onChange={(event) => commitDraft({ body: event.target.value })}
-          spellCheck={false}
+          onChange={(nextValue) => commitDraft({ body: nextValue })}
           placeholder={t("workspace.noteEditor.startWriting")}
         />
       </div>

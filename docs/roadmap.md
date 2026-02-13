@@ -82,7 +82,7 @@ All methods result in:
 - [x] Server-link page (paste URL + API key, plus relay pairing params)
 - [ ] Free tier managed instance for non-self-hosters
 - [x] Workspace layout (sidebar + note list + editor)
-- [ ] Markdown editor (CodeMirror 6 or TipTap)
+- [x] Markdown editor (CodeMirror 6 or TipTap)
 - [x] File tree with drag-and-drop
 - [x] Command palette (Cmd+K)
 - [x] Theme switching (dark/light)
@@ -146,6 +146,7 @@ All methods result in:
 - [x] Note move support (`PATCH /api/v1/notes/:path/move`) with workspace file-tree drag-to-folder interactions.
 - [x] Agent toolset expanded with move/tree intents (plus existing search/read/create) for more complete core tool coverage.
 - [x] Agent integration docs with concrete Cursor + Antigravity examples and MCP runbook.
+- [x] Workspace note body editor upgraded to CodeMirror 6 with markdown language support and keyboard editing ergonomics.
 
 ### Prototype Parity Snapshot (`prototype/index.html`)
 
