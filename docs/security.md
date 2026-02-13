@@ -1,220 +1,111 @@
 # Security & Code Quality
 
-> Hybrid authentication, credential flow, Cloudflare Tunnel, security hardening, testing, and CI/CD.
+> Current security model and hardening posture for this repository.
 
 [← Back to docs](./README.md)
 
 ---
 
-## Hybrid Authentication Model
+## Authentication (Current)
 
-Mino uses a three-tier auth model — **no account is ever required**:
+Mino currently uses API-key authentication for protected endpoints.
 
-```
-┌─ Auth Decision Flow ────────────────────────────────────────┐
-│                                                              │
-│  User accesses mino.ink or localhost:3000                    │
-│    │                                                         │
-│    ├─ Has Google account linked?                             │
-│    │   YES → auto-discover linked servers → JWT session      │
-│    │                                                         │
-│    ├─ Has server credentials in localStorage?                │
-│    │   YES → connect directly → API key auth                 │
-│    │                                                         │
-│    └─ Neither?                                               │
-│        → Show server-link page (paste URL + API key)         │
-│        → OR sign in with Google for convenience              │
-│        → OR use the free managed instance                    │
-│                                                              │
-│  Auth Methods by Context:                                    │
-│  ┌──────────────────────────────────────────────────────┐   │
-│  │ 1. API Key (header: X-Mino-Key)                       │   │
-│  │    → Machine access, CLI, MCP, scripts                 │   │
-│  │    → Generated on server first boot                    │   │
-│  │                                                        │   │
-│  │ 2. JWT Bearer Token                                    │   │
-│  │    → Web/mobile sessions after credential exchange     │   │
-│  │    → Short-lived (15min) + refresh tokens (7 days)     │   │
-│  │                                                        │   │
-│  │ 3. Google OAuth (mino.ink only)                        │   │
-│  │    → Links server credentials to Google account        │   │
-│  │    → Enables multi-device server discovery             │   │
-│  │    → Google never sees or stores notes                  │   │
-│  └──────────────────────────────────────────────────────┘   │
-│                                                              │
-│  Each auth method resolves to a User + Permission Set        │
-└──────────────────────────────────────────────────────────────┘
-```
+- Header: `X-Mino-Key`
+- Public endpoints:
+  - `GET /api/v1/health`
+  - `GET /api/v1/system/setup`
+  - `POST /api/v1/channels/webhook/:provider`
+- Protected endpoints: all other `/api/v1/*` routes
 
-### Server-Link Credential Flow
+Current middleware behavior:
 
-```
-1. Deploy Docker → server auto-bootstraps
-2. Server generates: API Key + Server ID + JWT Secret
-3. Credentials available at `GET /api/v1/system/setup`
-   (includes generated connect URLs for `/link`)
+1. If `X-Mino-Key` is present, it is validated with constant-time comparison.
+2. If `Authorization: Bearer ...` is present, server returns `401` with “JWT authentication not yet supported”.
+3. If no credentials are provided, server returns `401`.
 
-4. User goes to mino.ink (or localhost:3000)
-5. Enters Server URL + API Key
-   → Option A: stored in localStorage (no account needed)
-   → Option B: linked to Google account (multi-device sync)
+Planned:
 
-6. mino.ink calls POST /api/v1/auth/link
-   { serverUrl, apiKey }
-   → Server validates → returns JWT session token
-   → Server marks setupComplete: true
-
-7. All subsequent requests use JWT
-   → Auto-refreshed via refresh token
-   → If JWT expires and refresh fails → re-enter API key
-```
-
-### What Google Sign-In Stores
-
-| Stored in Google Account | NOT stored |
-|--------------------------|------------|
-| List of linked server URLs | Notes content |
-| Server names ("Personal", "Work") | API keys (encrypted at rest) |
-| Last used server | File system data |
-| User preferences (theme, etc.) | LLM API keys |
+- JWT session auth for browser/mobile convenience.
+- Account-backed linked profile sync across devices.
 
 ---
 
-## Cloudflare Tunnel (Secure Remote Access)
+## Bootstrap Credential Flow
 
-For servers behind NAT / closed ports, Cloudflare Tunnel provides **free, zero-port-exposure** remote access:
+On first boot, server generates and persists:
 
-```
-┌─ Your Network ──────────────────────────────────────────────┐
-│                                                              │
-│  ┌─ mino-server ─┐  ┌─ cloudflared ──────────────────────┐ │
-│  │  :3000         │  │  Outbound-only connection           │ │
-│  │  (no exposed   │──│  to Cloudflare edge                 │ │
-│  │   ports)       │  │  TLS 1.3 encrypted                  │ │
-│  └────────────────┘  └──────────┬────────────────────────┘ │
-│                                  │                           │
-│  NO INBOUND PORTS OPEN           │ outbound :443 only        │
-└──────────────────────────────────┼───────────────────────────┘
-                                   │
-                                   ▼
-┌─ Cloudflare Edge ────────────────────────────────────────────┐
-│  https://your-mino.cfargotunnel.com                          │
-│  → Proxied to your mino-server via the persistent tunnel     │
-│  → DDoS protection, rate limiting, WAF included (free)       │
-└──────────────────────────────────────────────────────────────┘
-                                   │
-                                   ▼
-┌─ mino.ink (browser) ────────────────────────────────────────┐
-│  API calls → https://your-mino.cfargotunnel.com/api/v1/     │
-└──────────────────────────────────────────────────────────────┘
-```
+- `serverId`
+- `adminApiKey`
+- `jwtSecret` (reserved for future JWT auth)
+- `relaySecret`
+- `relayPairCode`
 
-**Setup (via UI):**
-1. User creates a free Cloudflare Tunnel in their dashboard
-2. Gets a tunnel token
-3. Adds it to docker-compose: `CF_TUNNEL_TOKEN=xxx`
-4. Redeploys stack (cloudflared auto-starts when token is present)
-5. Server is accessible at `https://slug.cfargotunnel.com`
+Stored in:
 
-**Security properties:**
-- Zero inbound ports — only outbound connections
-- Traffic encrypted end-to-end (TLS 1.3)
-- Cloudflare's WAF and DDoS protection (free tier)
-- No IP address exposure
-- Token-revocable — delete the tunnel = instant cutoff
+- `/data/credentials.json` (with best-effort restrictive chmod in Unix environments)
+
+Setup endpoint:
+
+- `GET /api/v1/system/setup`
+
+Behavior:
+
+- Before setup completion, full API key is returned.
+- After `POST /api/v1/auth/link`, setup is marked complete and API key is redacted in setup responses.
 
 ---
 
-## Security Hardening Checklist
+## Network Security Model
 
-| Measure | Implementation |
-|---------|---------------|
-| **Transport encryption** | HTTPS everywhere (TLS 1.3). No plain HTTP in production. Cloudflare Tunnel for zero-port exposure. |
-| **Authentication** | API keys (server-generated, bcrypt-hashed). JWT with short expiry (15min) + refresh tokens (7 days). |
-| **Authorization** | Role-based: `owner`, `editor`, `viewer`, `agent`. Folder-level permissions. |
-| **Input validation** | All inputs validated via Zod schemas. Markdown content sanitized on render (not on store). |
-| **Path traversal** | All file paths normalized and validated against the data directory. No `../` escapes. |
-| **Rate limiting** | Per-IP and per-API-key rate limits. Configurable. |
-| **CORS** | Strict origin allowlist (`mino.ink` + `localhost`). No `*` in production. |
-| **Content Security Policy** | Strict CSP headers on the web app. |
-| **Dependency security** | Automated dependency scanning (Dependabot/Renovate). Minimal dependency tree. |
-| **Secrets management** | API keys hashed (bcrypt). JWT secrets auto-generated per server. No secrets in git. Credentials in `/data/credentials.json`. |
-| **Audit logging** | Log all write operations with timestamp, user, and action. |
-| **End-to-end encryption** | Optional client-side encryption for sensitive notes (using Web Crypto API). |
-| **SQL injection** | Parameterized queries only (enforced by drizzle-orm/Bun SQLite API). |
-| **XSS** | Markdown rendered safely via `react-markdown` with sanitization. No `dangerouslySetInnerHTML`. |
-| **Plugin sandboxing** | Plugins run in isolated contexts. No access to server filesystem outside `/data/plugins/`. |
-| **Credential isolation** | Google account stores only server URLs (encrypted). Notes and API keys never leave the server. |
+### Relay Mode (Default)
 
-### Self-Hosted Security
+- `MINO_CONNECTION_MODE=relay`
+- Server keeps outbound connection to relay service.
+- Browser/mobile can connect via relay pairing code exchange.
+- No mandatory inbound port exposure for the common flow.
 
-For self-hosted instances:
+### Open-Port Mode (Optional)
 
-1. **Network:** Bind to `127.0.0.1` by default. Use Cloudflare Tunnel (recommended) or a reverse proxy (Caddy/nginx) for HTTPS.
-2. **Firewall:** Zero exposed ports with Cloudflare Tunnel. Or expose only port 443 (HTTPS) if using a reverse proxy.
-3. **Updates:** Watchtower auto-pulls new images from GHCR. One-step updates.
-4. **Backups:** Built-in backup command or just `tar -czf backup.tar.gz /data` — it's all files + one SQLite DB.
-5. **Credentials:** Auto-generated on first boot. Stored in `/data/credentials.json`. Server never needs manual secret configuration.
+- `MINO_CONNECTION_MODE=open-port`
+- Direct browser/client access to server URL with API key.
+- Should be deployed behind HTTPS reverse proxy or tunnel.
+
+### Tunnel (Optional)
+
+Cloudflare Tunnel sidecar is supported in deployment docs as an optional zero-port-exposure pattern.
 
 ---
 
-## Code Organization & Quality
+## Hardening Checklist (Current)
 
-### Consistency Guarantees
-
-| Mechanism | Purpose |
-|-----------|---------|
-| **Shared types package** | `@mino-ink/shared` — all TypeScript interfaces shared between server, web, and mobile |
-| **Shared API client** | Type-safe API client generated from OpenAPI spec, used by all clients |
-| **Design tokens** | Single source of truth for colors, spacing, typography in `@mino-ink/design-tokens` |
-| **Component library** | Shared React components in `@mino-ink/ui` |
-| **Linting** | ESLint + Prettier + Oxlint with strict rules |
-| **Formatting** | Automated via Prettier (enforced in CI) |
-
-### DRY & Modular Code Practices
-
-1. **No duplicate logic:** All markdown parsing, API calls, and validation logic lives in shared packages.
-2. **Composable services:** The server uses a dependency injection pattern — services are composable and testable.
-3. **Feature modules:** Each feature (notes, search, agent, plugins) is a self-contained module with its own routes, services, and tests.
-4. **No God files:** Maximum 500 LOC per file. Split into focused modules.
+| Area | Current State |
+|------|---------------|
+| **Transport** | HTTPS recommended for all remote connections; relay URLs should be HTTPS |
+| **Auth** | API key required for protected routes (`X-Mino-Key`) |
+| **Rate limiting** | API rate-limit middleware in server + per-endpoint/IP limits in relay |
+| **CORS** | Configurable allowlist defaults include mino/test/local origins |
+| **Path safety** | Static file serving sanitizes/normalizes paths to block traversal |
+| **Secrets in repo** | Credentials generated at runtime and stored under `/data`, not in git |
+| **Relay pairing abuse** | Relay tracks pair-code failures and temporary IP blocks |
+| **Error handling** | Structured JSON API errors with code/message fields |
 
 ---
 
-## Testing Strategy
+## Code Quality Baseline
 
-| Layer | Tool | What's Tested |
-|-------|------|---------------|
-| **Unit** | Vitest | Service logic, utilities, validation, markdown parsing |
-| **Integration** | Vitest + Supertest | API endpoints, database operations, file operations |
-| **E2E** | Playwright | Full user flows in the web app |
-| **Mobile E2E** | Detox (or Maestro) | Full user flows in the mobile app |
-| **Contract** | OpenAPI validator | API responses match the spec |
-| **Performance** | k6 | API throughput, search latency |
+Current quality gates are script-driven per package:
 
----
+- Type checking: `tsc --noEmit` (`pnpm typecheck` at workspace level)
+- Tests:
+  - `apps/server`: `bun test`
+  - `apps/web`: `bun test`
+  - `apps/relay`: `bun test`
+  - `apps/mobile`: `jest`
+- Build orchestration: Turborepo (`pnpm build`)
 
-## CI/CD Pipeline
+Planned quality/security upgrades:
 
-```yaml
-# .github/workflows/ci.yml
-on: [push, pull_request]
-
-jobs:
-  lint:       # ESLint + Prettier + Oxlint
-  typecheck:  # tsc --noEmit
-  test:       # vitest run
-  e2e:        # playwright test
-  build:      # Build all packages
-
-  docker:
-    # Build multi-arch Docker image (amd64 + arm64)
-    # Embed Next.js static export into server image
-    # Push to ghcr.io/tomszenessy/mino-server:main + :latest + :vX.Y.Z
-
-  deploy-web:
-    # Cloudflare Pages auto-deploy (mino.ink frontend)
-
-# Users: Watchtower on their server auto-pulls new images
-```
-
-**Total cost: $0** — GHCR free for public images, GitHub Actions free for open-source, Cloudflare Pages free tier.
+1. JWT auth test coverage once JWT support ships.
+2. Expanded integration/E2E automation for relay + link flows.
+3. Optional security audit endpoints exposure in main server route graph.
+4. Additional dependency and container scanning in CI.

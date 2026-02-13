@@ -15,34 +15,34 @@
 | **Server Runtime** | **Bun** | 3x faster than Node.js for I/O, native TypeScript, built-in SQLite, single binary deploys, excellent DX |
 | **Server Framework** | **Hono** | Ultra-lightweight (14KB), works everywhere (Bun/Node/Deno/Cloudflare), type-safe middleware, OpenAPI generation |
 | **Web Framework** | **Next.js 15 (App Router)** | SSR for SEO (landing/docs), static export for Cloudflare Pages + bundled UI, massive ecosystem |
-| **UI Components** | **shadcn/ui + Radix UI** | Accessible, composable, unstyled primitives. Already used in both prototypes. |
-| **Styling** | **Tailwind CSS 4** | Utility-first, design token support, excellent with shadcn/ui |
+| **UI Components** | **Custom React/React Native components** | Purpose-built workspace components for note list, editor, sidebar, settings, and connect flows |
+| **Styling** | **Tailwind CSS 3.4 + CSS variables (web)** | Utility-first styling for web with shared design tokens package |
 | **Mobile** | **React Native + Expo** | Cross-platform iOS/Android, shared business logic with web, offline-first capabilities, OTA updates |
 | **State Management** | **Zustand** | Minimal, unopinionated, works well with React and React Native |
 | **Database (Index)** | **SQLite (via Bun built-in)** | Zero-config, embedded, incredibly fast for read-heavy workloads, portable, FTS5 for full-text search |
 | **Data Storage** | **File system (markdown files)** | The core data IS the files. SQLite indexes them, but the source of truth is always the `.md` files on disk. |
 | **Search** | **SQLite FTS5 + vector embeddings** | FTS5 for instant full-text search, optional embeddings (via `sqlite-vec`) for semantic search |
-| **Auth** | **Hybrid (JWT + API Key + Google OAuth)** | JWT for sessions, API keys for machine access, Google OAuth for cross-device persistence on mino.ink |
-| **Real-time Sync** | **WebSocket + Yjs (CRDTs)** | Conflict-free offline-first sync across devices |
-| **AI/LLM** | **Model-agnostic (OpenAI, Anthropic, Google, local)** | User chooses their provider. Server proxies requests. |
+| **Auth** | **API Key (`X-Mino-Key`)** | Implemented end-to-end today; JWT/Google account flows are planned |
+| **Sync** | **HTTP push/pull + local retry queue** | Current mobile/web-safe sync path; WebSocket/CRDT live sync is planned |
+| **AI/LLM** | **Rule-based server agent with provider config** | Agent endpoints are live today; external model adapters are planned |
 | **Container Registry** | **GitHub Container Registry (ghcr.io)** | No pull rate limits, native GitHub Actions integration, free for public images |
 | **CI/CD** | **GitHub Actions** | Builds Docker images, pushes to GHCR, deploys frontend to Cloudflare Pages |
 | **Web Hosting** | **Cloudflare Pages** | Free, global CDN, static Next.js export, zero-config deploys |
 | **Tunnel (optional)** | **Cloudflare Tunnel (cloudflared)** | Free, zero-port-exposure remote access to self-hosted servers |
 | **Auto-updates** | **Watchtower** | Monitors GHCR for new image tags, auto-pulls and restarts containers |
-| **Monorepo** | **pnpm workspaces + Turborepo** | Shared types, shared components, efficient builds |
-| **Testing** | **Vitest + Playwright** | Fast unit tests, reliable E2E |
-| **Docs** | **Mintlify or Starlight** | Beautiful API docs from OpenAPI spec |
+| **Monorepo** | **pnpm workspaces + Turborepo** | Shared packages and coordinated builds across server/web/mobile/relay |
+| **Testing** | **Bun test + TypeScript typecheck** | Current test/typecheck baseline in package scripts |
+| **Docs** | **Repository markdown docs (`/docs`)** | Versioned with code; rendered by web `/docs` route |
 
 ### Why NOT Other Options?
 
 | Rejected | Reason |
 |----------|--------|
 | **Go for server** | Great performance, but TypeScript everywhere (server → web → mobile) enables massive code sharing. Type-safe API contracts via shared packages. |
-| **Flutter for mobile** | No code sharing with the web stack. React Native + Expo means shared components, hooks, and business logic between web and mobile. |
+| **Flutter for mobile** | Less direct reuse of existing TypeScript shared packages (`@mino-ink/shared`, `@mino-ink/api-client`) and store/service patterns. |
 | **PostgreSQL** | Overkill for a note-taking app. SQLite is embeddable, zero-config, portable, and perfect for self-hosting. One file = your entire index. |
 | **MongoDB/NoSQL** | Notes are files. The index database should be relational (tags, folders, links between notes). SQLite is ideal. |
-| **Prisma ORM** | Too heavy for SQLite. Use `drizzle-orm` or raw `bun:sqlite` — faster, lighter, better SQLite support. |
+| **Prisma ORM** | Extra abstraction for a file-first architecture. Current implementation uses direct services + SQLite primitives. |
 | **Vanilla CSS** | Too much boilerplate for a large consistent design system. Tailwind + design tokens is the pragmatic choice. |
 | **DockerHub** | Free tier has pull rate limits (100/6hr anonymous). GHCR has no limits and integrates natively with GitHub Actions. |
 | **Vercel** | Great for Next.js but unnecessary — Cloudflare Pages is free and the frontend is just a static shell. |
@@ -61,9 +61,9 @@ Connection policy:
 ```
 ┌─ mino.ink (Cloudflare Pages, FREE) ─────────────────────────┐
 │  Static Next.js export — just a UI shell                     │
-│  Auth: optional Google sign-in (persists linked servers)     │
-│  OR: just paste server credentials (localStorage only)       │
-│  OR: use the free-tier managed instance (limited)            │
+│  Auth today: local linked profiles (server credentials)       │
+│  Planned: optional Google sign-in + managed free tier         │
+│  OR: use fully self-hosted web UI at server root              │
 └──────────────────────────┬───────────────────────────────────┘
                            │
             ┌──────────────┴──────────────┐
@@ -174,7 +174,7 @@ http://localhost:3000/workspace  → Workspace shell
 http://localhost:3000/docs       → Docs explorer (`/docs`)
 http://localhost:3000/api/v1/system/setup → First-run setup payload
 http://localhost:3000/api/v1/    → REST API
-http://localhost:3000/ws         → WebSocket
+http://localhost:3000/api/v1/system/info  → Linked server identity
 ```
 
 **Build process:** GitHub Actions builds the Next.js frontend as a static export → the static files are embedded into the Docker image → Hono serves them at `/`.
@@ -184,7 +184,7 @@ This means:
 - **Local server:** User opens `http://localhost:3000` → full UI + API in one
 - **Air-gapped:** Everything works offline with no external dependencies
 
-### Free Tier (mino.ink Managed Instance)
+### Free Tier (mino.ink Managed Instance, Planned)
 
 Users who don't want to self-host get a **free limited instance** automatically:
 
@@ -241,22 +241,18 @@ GitHub repo (TomSzenessy/MinoAI)
 
 ```
 mino/
-├── packages/
-│   ├── shared/              # Shared types, utils, API contracts
-│   │   ├── types/           # TypeScript types (Note, Folder, User, etc.)
-│   │   ├── api-client/      # Type-safe API client (used by web + mobile)
-│   │   ├── markdown/        # Markdown parsing/rendering utilities
-│   │   └── design-tokens/   # CSS variables, Tailwind preset
-│   └── ui/                  # Shared React components (works in web + RN)
-│       ├── primitives/      # Button, Input, Card, etc.
-│       └── features/        # Editor, Sidebar, NoteList, etc.
 ├── apps/
+│   ├── mobile/              # React Native + Expo app
+│   ├── relay/               # Managed relay service (pairing + proxy)
 │   ├── server/              # Bun + Hono API server (+ bundled web UI)
-│   ├── web/                 # Next.js web application (mino.ink + bundled UI)
-│   └── mobile/              # React Native + Expo app
+│   └── web/                 # Next.js web application (mino.ink + bundled UI)
+├── packages/
+│   ├── api-client/          # Type-safe API client (web + mobile + tools)
+│   ├── design-tokens/       # Shared visual tokens
+│   ├── plugin-sdk/          # Plugin typing/helpers
+│   └── shared/              # Shared types and utilities
 ├── tools/
-│   ├── mcp-server/          # MCP tool server for AI agents
-│   └── cli/                 # CLI tool for server management
+│   └── mcp-server/          # MCP tool server for AI agents
 ├── docker/                  # Dockerfiles, docker-compose.yml
 │   ├── Dockerfile           # Multi-stage: build web → embed in server image
 │   └── docker-compose.yml   # One-paste Portainer deployment
@@ -273,22 +269,22 @@ mino/
 
 ```
 ┌─ Layer 1: INTERFACES ──────────────────────────────────────────┐
-│  mino.ink    │ Built-in UI │ Mobile │ CLI │ MCP │ API Clients   │
-│  (CF Pages)   (localhost)   (Expo)  (Bun) (SDK)  (curl/fetch)  │
+│  mino.ink    │ Built-in UI │ Mobile │ MCP │ API Clients         │
+│  (CF Pages)   (localhost)   (Expo)   (SDK)  (curl/fetch)       │
 └──────────────────────────────┬──────────────────────────────────┘
-                               │  HTTPS + WebSocket
+                               │  HTTPS (poll/push today, WS planned)
                                ▼
 ┌─ Layer 2: MINO SERVER ──────────────────────────────────────────┐
 │                                                                  │
-│  ┌─────────────┐  ┌──────────────┐  ┌──────────────────┐       │
-│  │  HTTP Router │  │  WebSocket   │  │  Agent Runtime   │       │
-│  │  (Hono)      │  │  (ws + Yjs)  │  │  (LLM + Tools)   │       │
-│  └──────┬───────┘  └──────┬───────┘  └────────┬─────────┘       │
-│         │                 │                    │                  │
-│  ┌──────┴─────────────────┴────────────────────┴─────────┐      │
+│  ┌─────────────┐                     ┌──────────────────┐       │
+│  │  HTTP Router │                     │  Agent Runtime   │       │
+│  │  (Hono)      │                     │  (rule-based)    │       │
+│  └──────┬───────┘                     └────────┬─────────┘       │
+│         │                                      │                  │
+│  ┌──────┴──────────────────────────────────────┴─────────┐      │
 │  │                   SERVICE LAYER                         │      │
-│  │  NoteService │ FolderService │ SearchService │ Auth     │      │
-│  │  PluginService │ SandboxService │ ResourceDetector      │      │
+│  │  NoteService │ FolderService │ SearchService │ Auth      │      │
+│  │  PluginService │ ChannelService │ ResourceDetector       │      │
 │  └──────────────────────┬──────────────────────────────────┘      │
 │                         │                                         │
 │  ┌──────────────────────┴──────────────────────────────────┐      │
@@ -323,13 +319,28 @@ sequenceDiagram
     S->>S: Validate auth + permissions
     S->>F: Write /data/notes/path.md
     S->>I: INSERT INTO notes_fts (+ embeddings if enabled)
-    S->>S: Broadcast via WebSocket
+    S->>S: Persist for next client poll/sync cycle
     S->>C: 201 Created {note metadata}
 ```
 
 ### Multi-Server Architecture
 
-Users can link multiple independent Mino servers to one Google account:
+Current state: one active linked server profile per browser/device.
+
+Planned: multi-server account-level discovery and picker.
+
+```
+Server A (Personal)
+  └── ~/personal-notes/
+        ↓
+  Docker on home NAS
+        ↓
+  ┌─── mino.ink / local UI ─────────────────────────────────────────────┐
+  │  Link via relay code OR serverUrl + apiKey → profile stored locally │
+  └──────────────────────────────────────────────────────────────────────┘
+```
+
+Planned multi-server flow:
 
 ```
 Server A (Personal)          Server B (Work)           Server C (Shared Team)
@@ -338,7 +349,7 @@ Server A (Personal)          Server B (Work)           Server C (Shared Team)
   Docker on home NAS           Docker on work server      Docker on cloud VPS
         ↓                            ↓                            ↓
   ┌─── mino.ink (server picker — switch between linked servers) ──────────┐
-  │  Sign in with Google → see all linked servers → select one → connected│
+  │  Optional Google sign-in → discover linked servers → select one        │
   └───────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -434,34 +445,39 @@ For semantic search:
 
 ## Offline-First & Sync Strategy
 
-### CRDT-Based Sync (Yjs)
+### Current Sync Model (Implemented)
 
 ```
 Device A (offline)     Mino Server     Device B (online)
       │                     │                  │
       │── Edit note ──►     │                  │
       │   (queued)          │                  │
-      │                     │── Edit same ──►  │
-      │                     │   note           │
+      │                     │── Edit note ──►  │
       │── Come online ──►   │                  │
-      │   Send Yjs update   │                  │
-      │                     │── Merge ──►      │
-      │                     │   (CRDT)         │
-      │◄── Merged state ──  │── Merged state ──│
+      │   Push dirty queue  │                  │
+      │                     │── Pull latest ──►│
+      │◄── Pull latest ──   │                  │
       │                     │                  │
 ```
 
 ### Sync Protocol
 
-1. **Connect:** Client opens WebSocket to server
-2. **Handshake:** Exchange vector clocks / state vectors
-3. **Diff:** Server sends only the deltas since last sync
-4. **Apply:** Client applies deltas locally (CRDT merge)
-5. **Push:** Client sends its local deltas to server
-6. **Continuous:** WebSocket stays open for real-time updates
+1. **Queue local writes:** mobile marks notes dirty and appends sync queue items.
+2. **Push phase:** queued create/update/delete operations are sent over HTTP.
+3. **Pull phase:** client lists remote notes and refreshes clean local notes when remote `updatedAt` is newer.
+4. **Conflict guard:** dirty local notes are not overwritten during pull.
+5. **Retry:** failed queue items are retried with capped retry count.
+6. **Schedule:** periodic sync runs on interval and manual sync can be triggered from UI.
 
 ### Conflict Resolution
 
-CRDTs guarantee that all devices converge to the same state, regardless of the order edits arrive. No manual conflict resolution needed.
+Current behavior is deterministic pull/push reconciliation:
 
-For the rare case of irreconcilable conflicts (e.g., one device deleted a note while another edited it), the "edit wins" policy is applied — deletions are soft-deletes that can be recovered.
+- Local dirty note wins over remote during pull.
+- Remote newer note overwrites only clean local copy.
+- Remote deletions remove only clean local notes.
+
+Planned:
+
+- Native server sync socket endpoint.
+- Full CRDT/WebSocket convergence for multi-device simultaneous edits.

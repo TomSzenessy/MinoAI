@@ -14,28 +14,21 @@
 | ------------------------------ | ----------- | ----------------------------------------- |
 | **Docker Compose (Portainer)** | ⭐ Easy     | Copy-paste → deploy → running in 10s      |
 | **Docker CLI**                 | ⭐ Easy     | `docker compose up -d` on any server      |
-| **Single binary**              | ⭐ Easy     | Minimal servers, Raspberry Pi, NAS        |
 | **From source (git clone)**    | ⭐⭐ Medium | Development, customization, local UI only |
-| **npm / curl**                 | ⭐⭐ Medium | Quick local install for development       |
-| **Free tier (mino.ink)**       | ⭐ Easy     | No self-hosting, limited features         |
+| **Relay + web link flow**      | ⭐⭐ Medium | Remote connectivity without open inbound ports |
 
 ### Installation Methods
 
 ```bash
 # Method 1: Docker Compose (recommended — paste into Portainer or run manually)
-curl -fsSL https://mino.ink/docker-compose.yml -o docker-compose.yml
+# Use the compose file from this repository (or docs-site reference copy)
 docker compose up -d
 
-# Method 2: One-line install script
-curl -fsSL https://mino.ink/install.sh | bash
-
-# Method 3: npm global install (for development / local use)
-npm install -g @mino-ink/server
-mino start
-
-# Method 4: Git clone (for development / running your own UI)
-git clone https://github.com/mino-ink/mino.git
-cd mino && pnpm install && pnpm dev
+# Method 2: Git clone (development / customization)
+git clone https://github.com/TomSzenessy/MinoAI.git
+cd MinoAI
+pnpm install
+pnpm dev
 ```
 
 All methods result in:
@@ -88,7 +81,7 @@ All methods result in:
 - [x] Theme switching (dark/light)
 - [x] Settings UI (agent config, API keys, server info — all visual)
 - [x] Plugin marketplace UI (browse, install, configure)
-- [ ] Bundle static export into Docker image (built-in UI)
+- [x] Bundle static export into Docker image (built-in UI)
 - [ ] Real-time sync via WebSocket
 
 ### Phase 3: AI Agent (Weeks 8-11)
@@ -111,13 +104,13 @@ All methods result in:
 
 ### Phase 5: Mobile App (Weeks 12-16)
 
-- [ ] React Native + Expo setup
-- [ ] Local SQLite for offline storage
-- [ ] Yjs sync engine
-- [ ] Mobile auth: Google sign-in or manual server credentials
-- [ ] Note editor (mobile-optimized)
+- [x] React Native + Expo setup
+- [x] Local SQLite for offline storage
+- [x] Yjs sync engine
+- [x] Mobile auth: relay pairing + manual server credentials (Google sign-in pending)
+- [x] Note editor (mobile-optimized)
 - [ ] File browser
-- [ ] Multi-server picker (auto-discovered if Google linked)
+- [ ] Multi-server picker (account-backed discovery planned)
 - [ ] Push notifications
 
 ### Phase 6: Plugins (Weeks 16-20)
@@ -182,14 +175,14 @@ Reference direction: OpenClaw’s plugin/channel modularization patterns.
 | Risk                              | Impact                                 | Probability | Mitigation                                                                              |
 | --------------------------------- | -------------------------------------- | ----------- | --------------------------------------------------------------------------------------- |
 | **Scope creep**                   | Schedule delays                        | High        | Strict phase gates. Each phase has a Definition of Done.                                |
-| **File sync conflicts**           | Data loss                              | Medium      | CRDTs (Yjs) guarantee convergence. Soft-delete for safety.                              |
+| **File sync conflicts**           | Data loss                              | Medium      | Preserve local dirty notes, refresh clean notes from server, and add CRDT sync in later phases. |
 | **LLM token costs**               | User expense                           | Medium      | Aggressive token optimization. Local model support. Usage dashboard.                    |
 | **Security vulnerabilities**      | Trust erosion                          | Medium      | Security audit before launch. Bug bounty program. Minimal attack surface.               |
 | **SQLite scaling limits**         | Performance degradation at >100K notes | Low         | SQLite handles millions of rows easily. Sharding/partitioning as escape hatch.          |
 | **Mobile offline complexity**     | Bugs, data inconsistency               | Medium      | Extensive testing. Yjs is battle-tested. Start with read-only offline, add write later. |
 | **Plugin ecosystem**              | Fragmentation, quality issues          | Low         | Curated plugin registry. Official plugins first. Community plugins later.               |
 | **Competing with Obsidian**       | Adoption challenges                    | Medium      | Don't compete on features. Compete on AI-native experience. Different audience.         |
-| **Free tier abuse**               | Resource costs                         | Medium      | Rate limits, storage caps, require Google sign-in for free tier.                        |
+| **Free tier abuse**               | Resource costs                         | Medium      | Rate limits, storage caps, and staged rollout with explicit quotas.                     |
 | **Cloudflare Tunnel reliability** | Remote access downtime                 | Low         | Tunnel auto-reconnects. Fallback to direct access if available.                         |
 
 ---
@@ -204,12 +197,12 @@ Reference direction: OpenClaw’s plugin/channel modularization patterns.
 | Mobile framework       | React Native + Expo                                | Code sharing with web                               |
 | Primary database       | SQLite                                             | Portable, zero-config, fast                         |
 | Data format            | Markdown files                                     | No lock-in, agent-compatible                        |
-| Sync protocol          | CRDTs (Yjs)                                        | Offline-first, conflict-free                        |
+| Sync protocol          | HTTP queue/pull now, CRDT later                    | Reliable now; upgrade path to real-time convergence |
 | CSS framework          | Tailwind CSS                                       | Consistent design tokens                            |
-| Component library      | shadcn/ui                                          | Accessible, customizable                            |
+| Component approach     | Custom React/React Native components               | Faster iteration across web/mobile surfaces         |
 | **Container registry** | **GitHub Container Registry (ghcr.io)**            | No pull limits, native Actions integration, free    |
 | **Web hosting**        | **Cloudflare Pages**                               | Free, global CDN, static export                     |
-| **Auth model**         | **Hybrid (API key + Google OAuth + localStorage)** | No account required, multi-device optional          |
+| **Auth model**         | **API key + local linked profiles (today)**        | Simple and shipped; JWT/account sync remains planned |
 | **Server deployment**  | **Docker Compose (Portainer-friendly)**            | One-paste deploy, auto-bootstrap, zero config       |
 | **Remote access**      | **Cloudflare Tunnel (free, optional)**             | Zero ports, encrypted, DDoS protection              |
 | **Auto-updates**       | **Watchtower**                                     | Watches GHCR for new tags, zero-downtime            |
@@ -219,7 +212,7 @@ Reference direction: OpenClaw’s plugin/channel modularization patterns.
 
 ### Open Questions for Discussion
 
-1. **Markdown editor choice:** CodeMirror 6 (more control, better for code) vs TipTap (better WYSIWYG, extensions)? Recommendation: **CodeMirror 6** for the developer audience.
+1. **Realtime sync rollout:** should server-side WebSocket/CRDT sync ship behind a feature flag first, or as default once stable?
 
 2. **Embedding model:** Cloud (OpenAI `text-embedding-3-small`, fast but costs money) vs local (`all-MiniLM-L6-v2`, free but slower)? Recommendation: **Support both**, default to local if resources allow, cloud if API key provided.
 

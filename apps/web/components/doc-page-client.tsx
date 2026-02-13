@@ -22,6 +22,19 @@ interface DocPageClientProps {
 export function DocPageClient({ page, siblings }: DocPageClientProps) {
   const { t } = useTranslation();
 
+  function normalizeDocHref(href: string): string {
+    if (href.startsWith("#")) {
+      return href;
+    }
+    if (href.startsWith("/docs")) {
+      return href;
+    }
+    if (href.startsWith("/")) {
+      return `/docs${href}`;
+    }
+    return href;
+  }
+
   return (
     <main className="relative min-h-screen overflow-hidden px-6 py-8 md:px-10">
       <div className="mino-grid-overlay" />
@@ -59,7 +72,38 @@ export function DocPageClient({ page, siblings }: DocPageClientProps) {
         <article className="glass-card rounded-mino-2xl p-6 md:p-8">
           <p className="mb-2 text-xs uppercase tracking-wide text-[var(--text-tertiary)]">{page.relativePath}</p>
           <div className="docs-content">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>{page.content}</ReactMarkdown>
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              components={{
+                a: ({ href, children, ...props }) => {
+                  if (!href) {
+                    return <a {...props}>{children}</a>;
+                  }
+
+                  const normalized = normalizeDocHref(href);
+                  if (
+                    normalized.startsWith("/docs") ||
+                    normalized.startsWith("#")
+                  ) {
+                    return <Link href={normalized}>{children}</Link>;
+                  }
+
+                  const external = /^https?:\/\//i.test(normalized);
+                  return (
+                    <a
+                      href={normalized}
+                      rel={external ? "noreferrer noopener" : undefined}
+                      target={external ? "_blank" : undefined}
+                      {...props}
+                    >
+                      {children}
+                    </a>
+                  );
+                },
+              }}
+            >
+              {page.content}
+            </ReactMarkdown>
           </div>
         </article>
       </div>

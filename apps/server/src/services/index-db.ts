@@ -10,6 +10,7 @@
  * - Tag extraction and indexing
  * - Backlink tracking
  * - Incremental updates via checksum comparison
+ * - Vector embeddings for semantic search
  */
 
 import { Database } from 'bun:sqlite';
@@ -17,6 +18,10 @@ import { join } from 'node:path';
 import type { SearchResult, NoteMetadata, FolderNode } from '@mino-ink/shared';
 import { parseMarkdown } from '../utils/markdown';
 import { FileManager } from './file-manager';
+import {
+	SemanticSearchService,
+	type SemanticSearchResult
+} from './semantic-search';
 
 /** Index statistics */
 export interface IndexStats {
@@ -66,6 +71,7 @@ export class IndexDB {
 	private dbPath: string;
 	private isInitialized = false;
 	private indexingPromise: Promise<void> | null = null;
+	private semanticSearch: SemanticSearchService | null = null;
 
 	constructor(dataDir: string) {
 		this.dbPath = join(dataDir, 'mino.db');
@@ -164,6 +170,10 @@ export class IndexDB {
         value TEXT
       )
     `);
+
+		// Initialize semantic search service
+		this.semanticSearch = new SemanticSearchService(this.db);
+		this.semanticSearch.initialize();
 
 		this.isInitialized = true;
 	}
@@ -356,6 +366,13 @@ export class IndexDB {
 		});
 
 		transaction();
+
+		// Update semantic search embedding (async, non-blocking)
+		if (this.semanticSearch) {
+			this.semanticSearch.indexNote(path, content).catch(() => {
+				// Silently fail - semantic search is optional
+			});
+		}
 	}
 
 	/** Removes a note from the index. */
@@ -370,6 +387,11 @@ export class IndexDB {
 		});
 
 		transaction();
+
+		// Remove from semantic search index
+		if (this.semanticSearch) {
+			this.semanticSearch.removeNote(path);
+		}
 	}
 
 	// ===========================================================================
@@ -384,7 +406,9 @@ export class IndexDB {
 		this.initialize();
 
 		const { limit = 20, folder, tags } = options;
-		const tagFilters = (tags ?? []).map((tag) => tag.trim()).filter(Boolean);
+		const tagFilters = (tags ?? [])
+			.map((tag) => tag.trim())
+			.filter(Boolean);
 
 		// Build the FTS query with proper escaping
 		const escapedQuery = query.replace(/['"]/g, "''");
@@ -426,12 +450,12 @@ export class IndexDB {
 
 		// Execute search with ranking
 		const results = this.db.prepare(sql).all(...params) as Array<{
-				path: string;
-				title: string;
-				snippet: string;
-				score: number;
-				tags: string | null;
-			}>;
+			path: string;
+			title: string;
+			snippet: string;
+			score: number;
+			tags: string | null;
+		}>;
 
 		// Convert to SearchResult format
 		return results.map((row) => ({
@@ -601,5 +625,110 @@ export class IndexDB {
 			}
 		).count;
 		return count === 0;
+	}
+
+	// ===========================================================================
+	// Semantic Search Operations
+	// ===========================================================================
+
+	/**
+	 * Performs a semantic search using embeddings.
+	 * Returns results ranked by similarity to the query.
+	 */
+	async performSemanticSearch(
+		query: string,
+		options: { limit?: number; threshold?: number } = {}
+	): Promise<SemanticSearchResult[]> {
+		if (!this.semanticSearch) {
+			return [];
+		}
+		return this.semanticSearch.search(query, options);
+	}
+
+	/**
+	 * Finds notes similar to a given note.
+	 */
+	async findSimilarNotes(
+		notePath: string,
+		options: { limit?: number; threshold?: number } = {}
+	): Promise<SemanticSearchResult[]> {
+		if (!this.semanticSearch) {
+			return [];
+		}
+		return this.semanticSearch.findSimilar(notePath, options);
+	}
+
+	/**
+	 * Rebuilds all embeddings for semantic search.
+	 * Call this after enabling semantic search or when embeddings become stale.
+	 */
+	async rebuildAllEmbeddings(): Promise<{
+		total: number;
+		indexed: number;
+		errors: string[];
+	}> {
+		if (!this.semanticSearch) {
+			return {
+				total: 0,
+				indexed: 0,
+				errors: ['Semantic search not initialized']
+			};
+		}
+
+		// Get all notes from the database
+		const notes = this.db.prepare('SELECT path FROM notes').all() as Array<{
+			path: string;
+		}>;
+		const result = {
+			total: notes.length,
+			indexed: 0,
+			errors: [] as string[]
+		};
+
+		for (const note of notes) {
+			try {
+				// Get content from notes table
+				const noteRow = this.db
+					.prepare('SELECT content FROM notes WHERE path = ?')
+					.get(note.path) as { content: string } | undefined;
+				if (noteRow?.content) {
+					await this.semanticSearch.indexNote(
+						note.path,
+						noteRow.content
+					);
+					result.indexed++;
+				}
+			} catch (error) {
+				result.errors.push(`${note.path}: ${error}`);
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Gets statistics about the semantic search index.
+	 */
+	getSemanticSearchStats(): {
+		available: boolean;
+		provider: string | null;
+		embeddingCount: number;
+		dimensions: number | null;
+	} {
+		if (!this.semanticSearch) {
+			return {
+				available: false,
+				provider: null,
+				embeddingCount: 0,
+				dimensions: null
+			};
+		}
+		const stats = this.semanticSearch.getStats();
+		return {
+			available: true,
+			provider: stats.provider,
+			embeddingCount: stats.indexedCount,
+			dimensions: stats.dimension
+		};
 	}
 }

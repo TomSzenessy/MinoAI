@@ -1,12 +1,29 @@
 # AI Agent ("The Organizer")
 
-> The killer feature of Mino — a server-hosted AI knowledge steward with plugins, sandbox, and integrations.
+> Server-hosted organizer runtime for search/read/create/move workflows, with planned expansion to full LLM-powered orchestration.
 
 [← Back to docs](./README.md)
 
 ---
 
-## What the Agent Does
+## Current Implementation Snapshot (2026-02-13)
+
+Implemented today in this repo:
+
+- `POST /api/v1/agent/chat` and `GET /api/v1/agent/status`
+- Rule-based server-side intent handling (not full external-LLM orchestration yet)
+- Core action coverage: search, read (context preview), create, move, tree
+- Plugin and channel endpoints are available and can be invoked by server workflows
+
+Planned next:
+
+- External model provider execution path (OpenAI/Anthropic/etc.)
+- Richer autonomous organization and summarization loops
+- Sandboxed tool execution for advanced plugin actions
+
+---
+
+## Vision (Planned Expansion)
 
 The agent is a **knowledge steward**, not a general-purpose chatbot. It runs **server-side** (never in the browser) for full access to files, plugins, and local AI tools. Its job:
 

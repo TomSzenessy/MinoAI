@@ -13,6 +13,24 @@ export function systemRoutes(): Hono<AppContext> {
   const router = new Hono<AppContext>();
 
   /**
+   * GET /api/v1/system/info
+   * Returns basic server identity for linked clients.
+   */
+  router.get("/info", (c) => {
+    const credentials = c.get("credentials");
+    const version = c.get("version");
+
+    return c.json({
+      success: true,
+      data: {
+        serverId: credentials.serverId,
+        version,
+        setupComplete: credentials.setupComplete,
+      },
+    });
+  });
+
+  /**
    * GET /api/v1/system/capabilities
    * Returns detected system resources and enabled features.
    */
@@ -45,7 +63,7 @@ export function systemRoutes(): Hono<AppContext> {
   });
 
   /**
-   * GET /api/v1/config
+   * GET /api/v1/system/config
    * Returns the public server configuration (no secrets).
    */
   router.get("/config", (c) => {

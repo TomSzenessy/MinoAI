@@ -34,12 +34,11 @@ Core tool names:
 
 ```bash
 # from repo root
-cd tools/mcp-server
-pnpm build
+pnpm --dir tools/mcp-server build
 
 MINO_SERVER_URL="https://test.mino.ink" \
 MINO_API_KEY="mino_sk_your_key_here" \
-node dist/cli.js
+node tools/mcp-server/dist/cli.js
 ```
 
 For local self-hosted testing:
@@ -47,7 +46,7 @@ For local self-hosted testing:
 ```bash
 MINO_SERVER_URL="http://localhost:3000" \
 MINO_API_KEY="mino_sk_your_key_here" \
-node dist/cli.js
+node tools/mcp-server/dist/cli.js
 ```
 
 ---
@@ -66,4 +65,3 @@ If you are staging on `test.mino.ink` and later moving to `mino.ink`, keep integ
 1. Use `MINO_SERVER_URL` in all MCP launchers.
 2. Store API keys in per-environment secrets.
 3. Avoid hardcoding domain strings in prompts/rules.
-

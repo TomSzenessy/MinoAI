@@ -323,11 +323,14 @@ class MinoAPIClient {
 	}
 
 	async getTree(folder?: string) {
-		const params = folder ? `?folder=${encodeURIComponent(folder)}` : '';
+		const normalizedFolder = folder?.trim().replace(/^\/+|\/+$/g, '');
+		const path = normalizedFolder
+			? `/folders/tree/${encodeURIComponent(normalizedFolder)}`
+			: '/folders/tree';
 		return this.request<{
 			success: boolean;
 			data: { root: unknown; totalFiles: number };
-		}>(`/tree${params}`);
+		}>(path);
 	}
 
 	async listNotes() {
@@ -608,14 +611,36 @@ export class MinoMCPServer {
 // CLI Entry Point
 // ============================================================================
 
+interface NodeLikeProcess {
+	env?: Record<string, string | undefined>;
+	argv?: string[];
+	exit?: (code?: number) => never;
+}
+
+function nodeProcess(): NodeLikeProcess | undefined {
+	return (globalThis as { process?: NodeLikeProcess }).process;
+}
+
+function envVar(name: string): string | undefined {
+	return nodeProcess()?.env?.[name];
+}
+
+function exitWithCode(code: number): never {
+	const proc = nodeProcess();
+	if (proc?.exit) {
+		return proc.exit(code);
+	}
+	throw new Error(`Process exited with code ${code}`);
+}
+
 export async function main(): Promise<void> {
-	const serverUrl = process.env.MINO_SERVER_URL ?? 'http://localhost:3000';
-	const apiKey = process.env.MINO_API_KEY;
+	const serverUrl = envVar('MINO_SERVER_URL') ?? 'http://localhost:3000';
+	const apiKey = envVar('MINO_API_KEY');
 
 	if (!apiKey) {
 		console.error('Error: MINO_API_KEY environment variable is required.');
 		console.error('Set it to your Mino API key (mino_sk_...).');
-		process.exit(1);
+		exitWithCode(1);
 	}
 
 	const server = new MinoMCPServer({
@@ -629,10 +654,11 @@ export async function main(): Promise<void> {
 }
 
 // Run if executed directly
-if (import.meta.url === `file://${process.argv[1]}`) {
+const argv1 = nodeProcess()?.argv?.[1];
+if (argv1 && import.meta.url === `file://${argv1}`) {
 	main().catch((error) => {
 		console.error('Fatal error:', error);
-		process.exit(1);
+		exitWithCode(1);
 	});
 }
 

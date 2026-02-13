@@ -1,6 +1,6 @@
 # The Mino Server
 
-> Core responsibilities, auto-bootstrap, REST API, built-in UI, plugin host, sandbox, and resource detection.
+> Core responsibilities, auto-bootstrap, REST API, built-in UI, plugin host, and resource detection.
 
 [← Back to docs](./README.md)
 
@@ -10,10 +10,10 @@
 
 1. **File Management** — CRUD operations on `.md` files and folders
 2. **Indexing** — Maintain SQLite FTS5 index of all note content, titles, tags, links
-3. **Search** — Full-text search, tag search, semantic search (embeddings)
-4. **Authentication** — JWT tokens, API keys, server-link credentials
-5. **Real-time Sync** — WebSocket connections for live collaboration and sync
-6. **Agent Runtime** — Host the AI organizer agent (server-side, with sandbox)
+3. **Search** — Full-text search (`/api/v1/search`) with optional folder filter
+4. **Authentication** — API-key auth (`X-Mino-Key`) with server-link credentials
+5. **Sync Foundations** — File watcher + HTTP-compatible sync primitives used by clients
+6. **Agent Runtime** — Host the organizer agent routes/tools server-side (rule-based in current build)
 7. **Plugin Host** — Install, load, update, and execute plugins at runtime
 8. **Built-in Web UI** — Serve the full mino.ink interface at `/` (static files embedded in Docker image)
 9. **Resource Detection** — Auto-detect CPU, RAM, GPU and enable/disable features accordingly
@@ -29,7 +29,7 @@ First boot sequence:
   1. Detect /data is empty → enter FIRST_RUN mode
   2. Generate Admin API Key (mino_sk_xxxxxxxxxxxx)
   3. Generate Server ID (unique UUID)
-  4. Generate JWT signing secret
+  4. Generate JWT signing secret (reserved for future JWT auth support)
   5. Write default config.json
   6. Create /data/notes/ folder structure
   7. Initialize SQLite index (mino.db)
@@ -49,6 +49,9 @@ First boot sequence:
   "serverId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
   "adminApiKey": "mino_sk_xxxxxxxxxxxxxxxxxxxxxxxxxxxx",
   "jwtSecret": "auto-generated-secret",
+  "relaySecret": "auto-generated-relay-secret",
+  "relayPairCode": "ABCD2345",
+  "relayPairCodeCreatedAt": "2026-02-11T19:01:28Z",
   "createdAt": "2026-02-11T19:01:28Z",
   "setupComplete": false  // becomes true after first link from mino.ink
 }
@@ -66,8 +69,8 @@ http://localhost:3000/link       → Dedicated server-link handler
 http://localhost:3000/workspace  → Workspace shell
 http://localhost:3000/docs       → Docs explorer (repository `/docs` content)
 http://localhost:3000/api/v1/system/setup → First-run setup payload
+http://localhost:3000/api/v1/system/info  → Linked server identity
 http://localhost:3000/api/v1/    → REST API
-http://localhost:3000/ws         → WebSocket
 ```
 
 **How it works:** GitHub Actions builds the Next.js frontend as a static export → the static files are COPY'd into the Docker image during the multi-stage build → Hono serves them at `/` as static files.
@@ -119,7 +122,7 @@ The server watches the file system for changes (using `fs.watch` or `chokidar`):
 User edits file via VS Code/git/external editor
   → File watcher detects change
     → Re-index the file in SQLite
-      → Broadcast change via WebSocket to connected clients
+      → Next client sync/poll sees updated metadata and content
 ```
 
 This is critical: notes can be edited OUTSIDE of Mino (in any text editor, via git, via coding agents) and the server stays in sync.
@@ -235,12 +238,10 @@ Provider adapters are responsible for:
 ### Design Principles
 
 1. **RESTful** for CRUD operations
-2. **WebSocket** for real-time sync and collaboration
-3. **OpenAPI 3.1** spec auto-generated from code (Hono + Zod)
-4. **Versioned** — all routes under `/api/v1/`
-5. **Consistent error format** — `{ error: { code, message, details } }`
-6. **Pagination** — cursor-based for lists
-7. **Rate limiting** — per-API-key, configurable
+2. **Versioned** — all routes under `/api/v1/`
+3. **Consistent error format** — `{ error: { code, message, details } }`
+4. **Rate limiting** — per-IP + per-route middleware
+5. **Extensible contracts** — shared types in `@mino-ink/shared`
 
 ### API Endpoints (Current)
 
@@ -256,6 +257,7 @@ POST   /api/v1/auth/link
 POST   /api/v1/auth/pair-code/rotate
 
 # System
+GET    /api/v1/system/info
 GET    /api/v1/system/capabilities
 GET    /api/v1/system/config
 
@@ -351,7 +353,7 @@ const server = new McpServer({
       name: 'Mino File Tree',
       description: 'The folder structure of the notes vault',
       handler: async () => {
-        // Call Mino API: GET /api/v1/tree
+        // Call Mino API: GET /api/v1/folders/tree
       },
     },
   ],
@@ -363,15 +365,15 @@ const server = new McpServer({
 For developers who want to build their own integrations:
 
 ```typescript
-import { MinoClient } from '@mino-ink/sdk';
+import { MinoClient } from '@mino-ink/api-client';
 
 const mino = new MinoClient({
-  endpoint: 'https://my-mino.com',
+  serverUrl: 'https://my-mino.com',
   apiKey: 'mino_...',
 });
 
 // Search
-const results = await mino.search('meeting notes', { limit: 5 });
+const results = await mino.search.search('meeting notes', { limit: 5 });
 
 // Read
 const note = await mino.notes.get('Projects/Alpha/notes.md');
@@ -379,9 +381,9 @@ const note = await mino.notes.get('Projects/Alpha/notes.md');
 // Write
 await mino.notes.create('Daily/2026-02-11.md', '# Today\n- Planning Mino');
 
-// Edit (search-and-replace)
-await mino.notes.edit('Projects/Alpha/notes.md', {
-  find: '## Status: In Progress',
-  replace: '## Status: Complete',
-});
+// Update full content
+await mino.notes.update(
+  'Projects/Alpha/notes.md',
+  '# Updated note content'
+);
 ```

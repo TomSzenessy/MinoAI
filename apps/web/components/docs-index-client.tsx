@@ -17,31 +17,46 @@ interface DocsIndexClientProps {
 export function DocsIndexClient({ pages }: DocsIndexClientProps) {
   const { t } = useTranslation();
 
-  const overviewOrder = [
-    "README.md",
-    "architecture.md",
-    "frontend.md",
-    "server.md",
-    "ai-agent.md",
-  ] as const;
-  const referenceOrder = [
-    "relay.md",
-    "security.md",
-    "design-system.md",
-    "roadmap.md",
+  const orderedSections = [
+    "Introduction",
+    "Guides",
+    "Deployment",
+    "API Reference",
+    "Reference",
+    "Security",
+    "Other",
   ] as const;
 
-  const overview = overviewOrder
-    .map((path) => pages.find((page) => page.relativePath === path))
-    .filter((page): page is DocItem => Boolean(page));
-  const reference = referenceOrder
-    .map((path) => pages.find((page) => page.relativePath === path))
-    .filter((page): page is DocItem => Boolean(page));
-  const uncategorized = pages.filter(
-    (page) =>
-      !overview.some((entry) => entry.href === page.href) &&
-      !reference.some((entry) => entry.href === page.href),
-  );
+  function sectionFor(path: string): (typeof orderedSections)[number] {
+    if (!path.includes("/")) {
+      return "Introduction";
+    }
+    if (path.startsWith("guides/")) {
+      return "Guides";
+    }
+    if (path.startsWith("deployment/")) {
+      return "Deployment";
+    }
+    if (path.startsWith("api/")) {
+      return "API Reference";
+    }
+    if (path.startsWith("reference/")) {
+      return "Reference";
+    }
+    if (path.startsWith("security/")) {
+      return "Security";
+    }
+    return "Other";
+  }
+
+  const grouped = orderedSections
+    .map((section) => ({
+      section,
+      items: pages
+        .filter((page) => sectionFor(page.relativePath) === section)
+        .sort((a, b) => a.relativePath.localeCompare(b.relativePath)),
+    }))
+    .filter((entry) => entry.items.length > 0);
 
   return (
     <main className="relative min-h-screen overflow-hidden px-6 py-8 md:px-10">
@@ -68,41 +83,24 @@ export function DocsIndexClient({ pages }: DocsIndexClientProps) {
         </div>
 
         <div className="grid gap-6 lg:grid-cols-2">
-          <section className="glass-card rounded-mino-2xl p-6">
-            <h2 className="mb-1 font-display text-2xl font-semibold text-[var(--text-primary)]">
-              {t("docs.gettingStarted")}
-            </h2>
-            <ul className="space-y-2">
-              {overview.map((page) => (
-                <li key={page.href}>
-                  <Link
-                    href={page.href}
-                    className="block rounded-lg border border-transparent px-3 py-2 text-sm text-[var(--text-secondary)] transition hover:border-[rgba(187,134,252,0.25)] hover:bg-[rgba(187,134,252,0.08)] hover:text-[var(--text-primary)]"
-                  >
-                    {page.title}
-                    <span className="ml-2 text-xs text-[var(--text-tertiary)]">{page.relativePath}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </section>
-
-          <section className="glass-card rounded-mino-2xl p-6">
-            <h2 className="mb-1 font-display text-2xl font-semibold text-[var(--text-primary)]">{t("docs.reference")}</h2>
-            <ul className="space-y-2">
-              {[...reference, ...uncategorized].map((page) => (
-                <li key={page.href}>
-                  <Link
-                    href={page.href}
-                    className="block rounded-lg border border-transparent px-3 py-2 text-sm text-[var(--text-secondary)] transition hover:border-[rgba(187,134,252,0.25)] hover:bg-[rgba(187,134,252,0.08)] hover:text-[var(--text-primary)]"
-                  >
-                    {page.title}
-                    <span className="ml-2 text-xs text-[var(--text-tertiary)]">{page.relativePath}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </section>
+          {grouped.map((group) => (
+            <section key={group.section} className="glass-card rounded-mino-2xl p-6">
+              <h2 className="mb-1 font-display text-2xl font-semibold text-[var(--text-primary)]">{group.section}</h2>
+              <ul className="space-y-2">
+                {group.items.map((page) => (
+                  <li key={page.href}>
+                    <Link
+                      href={page.href}
+                      className="block rounded-lg border border-transparent px-3 py-2 text-sm text-[var(--text-secondary)] transition hover:border-[rgba(187,134,252,0.25)] hover:bg-[rgba(187,134,252,0.08)] hover:text-[var(--text-primary)]"
+                    >
+                      {page.title}
+                      <span className="ml-2 text-xs text-[var(--text-tertiary)]">{page.relativePath}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))}
         </div>
       </div>
     </main>

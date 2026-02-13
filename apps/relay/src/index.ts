@@ -426,8 +426,18 @@ function cleanupRateData(): void {
   }
 }
 
-setInterval(cleanupStaleSessions, 30_000).unref();
-setInterval(cleanupRateData, 60_000).unref();
+const cleanupStaleSessionsTimer = setInterval(cleanupStaleSessions, 30_000);
+const cleanupRateDataTimer = setInterval(cleanupRateData, 60_000);
+
+const staleTimer = cleanupStaleSessionsTimer as unknown as { unref?: () => void };
+const rateTimer = cleanupRateDataTimer as unknown as { unref?: () => void };
+
+if (typeof staleTimer.unref === "function") {
+  staleTimer.unref();
+}
+if (typeof rateTimer.unref === "function") {
+  rateTimer.unref();
+}
 
 const app = new Hono();
 
@@ -786,7 +796,11 @@ app.all("/r/:serverId/*", async (c) => {
 
   const responseHeaders = sanitizeResponseHeaders(proxied.headers);
   const responseBody = decodeBase64(proxied.bodyBase64) ?? new Uint8Array();
-  return new Response(responseBody, {
+  const responseArrayBuffer = responseBody.buffer.slice(
+    responseBody.byteOffset,
+    responseBody.byteOffset + responseBody.byteLength,
+  ) as ArrayBuffer;
+  return new Response(responseArrayBuffer, {
     status: proxied.status,
     headers: responseHeaders,
   });
@@ -794,7 +808,11 @@ app.all("/r/:serverId/*", async (c) => {
 
 export const relayApp = app;
 
-if (import.meta.main) {
+const isBunMain = Boolean(
+  typeof Bun !== "undefined" && (import.meta as { main?: boolean }).main,
+);
+
+if (isBunMain && Bun) {
   const port = parseInt(process.env.RELAY_PORT ?? "8787", 10);
   const host = process.env.RELAY_HOST ?? "0.0.0.0";
 

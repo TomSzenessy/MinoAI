@@ -134,9 +134,21 @@ Keep the existing mino.ink design language, updated with logo-derived brand colo
 - Shared TypeScript types with the server
 - Shared API client with the web app
 - Shared markdown parsing logic
-- Shared React components (via `react-native-web` bridge)
 - OTA updates without app store review
 - Single codebase for iOS + Android
+
+### React Version Compatibility
+
+Current versions are intentionally split by platform constraints:
+
+- Web (`apps/web`): React 19 (required by Next.js 15)
+- Mobile (`apps/mobile`): React 18.3.1 (required by Expo SDK 52)
+
+This is expected. TypeScript resolution is scoped per app so React types do not leak between web and mobile.
+
+Upgrade path:
+
+- Move mobile to Expo SDK 53+ and align both apps on React 19.
 
 ### Mobile Architecture
 
@@ -145,11 +157,11 @@ Keep the existing mino.ink design language, updated with logo-derived brand colo
 │                                                        │
 │  ┌──────────────────────────────────────────────┐     │
 │  │           UI Layer (React Native)             │     │
-│  │  NoteList │ Editor │ Search │ Settings │ Chat │     │
+│  │  Home Board │ Editor │ Connect │ Settings      │     │
 │  └──────────────────┬───────────────────────────┘     │
 │                      │                                 │
 │  ┌──────────────────┴───────────────────────────┐     │
-│  │           State (Zustand + Yjs)               │     │
+│  │        State (Zustand + local sync state)      │     │
 │  └──────────────────┬───────────────────────────┘     │
 │                      │                                 │
 │  ┌──────────────────┴───────────────────────────┐     │
@@ -158,8 +170,8 @@ Keep the existing mino.ink design language, updated with logo-derived brand colo
 │  └──────────────────┬───────────────────────────┘     │
 │                      │                                 │
 │  ┌──────────────────┴───────────────────────────┐     │
-│  │           Sync Engine (Yjs + WebSocket)        │     │
-│  │  Offline queue → sync when online              │     │
+│  │    Sync Engine (HTTP push/pull + retry queue)   │     │
+│  │  Optional Yjs doc + best-effort WS client       │     │
 │  └──────────────────────────────────────────────┘     │
 │                                                        │
 └────────────────────────────────────────────────────────┘
@@ -168,33 +180,29 @@ Keep the existing mino.ink design language, updated with logo-derived brand colo
 ### Offline-First
 
 - All notes are stored locally in SQLite on the device
-- Edits are queued when offline and synced via CRDTs when reconnected
-- Conflict resolution is automatic (Yjs CRDT)
-- Server selector in settings lets users point to ANY Mino server
+- Edits are queued when offline and pushed over HTTP when reconnected
+- Current merge strategy keeps local dirty notes and refreshes clean notes from server updates
+- App restores the last saved connection and can reconnect to another server from the Connect screen
+- Real-time WebSocket/CRDT convergence is planned once the server sync socket endpoint is finalized
 
 ### Mobile Auth & Server Setup
 
 ```
 1. Open Mino app
-2. Option A: Sign in with Google → auto-discovers all linked servers
-3. Option B: Enter server URL + API key manually (no Google needed)
-4. Select a server → app syncs notes to local SQLite
-5. Works fully offline after first sync
+2. Option A: Enter relay pairing code (plus optional relay URL)
+3. Option B: Enter server URL + API key manually
+4. App verifies credentials, persists connection, and initializes sync
+5. Works offline after first sync (local SQLite copy + sync queue)
 ```
 
 ### Multi-Server Support
 
-The mobile app maintains a list of connected servers:
+Current state:
 
-```typescript
-interface ServerConfig {
-	id: string;
-	name: string; // "Personal", "Work", etc.
-	endpoint: string; // "https://my-server.com" or tunnel URL
-	authToken: string; // API key or JWT
-	syncEnabled: boolean;
-	lastSyncedAt: Date;
-}
-```
+- One active server connection is stored locally (`serverConnection` in settings store).
+- Users can disconnect and connect to a different server at any time.
 
-Users can switch between servers or view notes from all servers in a unified view.
+Planned:
+
+- Multi-server picker and unified cross-server views.
+- Account-backed server discovery.

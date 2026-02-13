@@ -17,6 +17,11 @@ Relay is the default connectivity mode for Mino:
 
 No inbound port forwarding is required for the default flow.
 
+Relay exchange endpoint used by both web and mobile clients:
+
+- `POST /api/v1/pair/exchange` with JSON body `{ "code": "PAIRCODE" }`
+- Response includes relay-proxied `serverUrl` (`/r/:serverId`) and temporary API key for linking
+
 ---
 
 ## Required Variables
@@ -95,6 +100,12 @@ Use setup-generated links (logs or `/api/v1/system/setup`) and open:
 - `https://test.mino.ink/link?relayCode=...&relayUrl=...`
 
 The link flow auto-exchanges pairing code and connects without manual `serverUrl` input.
+
+Mobile app equivalent:
+
+- Open the Connect screen in `@mino-ink/mobile`
+- Enter the relay pairing code (and optional relay URL override)
+- App calls `POST /api/v1/pair/exchange`, stores returned credentials, and starts sync
 
 ---
 

@@ -85,13 +85,19 @@ export interface AgentChatOptions {
 
 /** Agent chat response. */
 export interface AgentChatResponse {
-	response: string;
-	conversationId: string;
-	toolCalls?: Array<{
-		tool: string;
-		args: Record<string, unknown>;
-		result?: unknown;
+	reply: string;
+	actions: Array<{
+		type: 'search' | 'read' | 'create' | 'move' | 'tree';
+		summary: string;
+		path?: string;
 	}>;
+	relatedNotes: Array<{
+		path: string;
+		title: string;
+	}>;
+	model: string;
+	provider: string;
+	createdAt: string;
 }
 
 /** Plugin manifest. */
@@ -251,6 +257,13 @@ class HttpClient {
 	}
 }
 
+function envVar(name: string): string | undefined {
+	const maybeProcess = (
+		globalThis as { process?: { env?: Record<string, string | undefined> } }
+	).process;
+	return maybeProcess?.env?.[name];
+}
+
 // ============================================================================
 // API Modules
 // ============================================================================
@@ -331,10 +344,14 @@ class FoldersAPI {
 
 	/** Get the folder tree structure. */
 	async tree(folder?: string): Promise<FolderTree> {
+		const normalizedFolder = folder?.trim().replace(/^\/+|\/+$/g, '');
+		const endpoint = normalizedFolder
+			? `/folders/tree/${encodeURIComponent(normalizedFolder)}`
+			: '/folders/tree';
 		const response = await this.http.get<{
 			success: boolean;
 			data: FolderTree;
-		}>('/tree', folder ? { folder } : undefined);
+		}>(endpoint);
 		return response.data;
 	}
 
@@ -376,16 +393,17 @@ class SystemAPI {
 
 	/** Get basic health status. */
 	async health(): Promise<HealthStatus> {
-		return this.http.get<HealthStatus>('/health');
+		const response = await this.http.get<{
+			success: boolean;
+			data: HealthStatus;
+		}>('/health');
+		return response.data;
 	}
 
 	/** Get detailed health status. */
 	async healthDetailed(): Promise<HealthStatus> {
-		const response = await this.http.get<{
-			success: boolean;
-			data: HealthStatus;
-		}>('/health/detailed');
-		return response.data;
+		// The server currently exposes a single health endpoint.
+		return this.health();
 	}
 
 	/** Get server identity. */
@@ -567,9 +585,8 @@ export class MinoClient {
 	 * Uses MINO_SERVER_URL and MINO_API_KEY.
 	 */
 	static fromEnv(): MinoClient {
-		const serverUrl =
-			process.env.MINO_SERVER_URL ?? 'http://localhost:3000';
-		const apiKey = process.env.MINO_API_KEY;
+		const serverUrl = envVar('MINO_SERVER_URL') ?? 'http://localhost:3000';
+		const apiKey = envVar('MINO_API_KEY');
 
 		if (!apiKey) {
 			throw new Error('MINO_API_KEY environment variable is required');

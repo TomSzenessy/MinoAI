@@ -19,7 +19,7 @@ function findWorkspaceRoot(start = process.cwd()): string {
   let current = resolve(start);
 
   while (true) {
-    if (hasDirectory(join(current, "docs"))) {
+    if (hasDirectory(join(current, "docs-site"))) {
       return current;
     }
 
@@ -37,7 +37,7 @@ function findWorkspaceRoot(start = process.cwd()): string {
 }
 
 function sourceDirectory(): string {
-  return join(findWorkspaceRoot(), "docs");
+  return join(findWorkspaceRoot(), "docs-site");
 }
 
 function walkMarkdownFiles(dir: string): string[] {
@@ -80,7 +80,54 @@ function fileToSlug(relativePath: string): string[] {
   return segments.map((segment) => segment.toLowerCase());
 }
 
-function titleFromMarkdown(content: string, fallback: string): string {
+function stripQuotes(value: string): string {
+  if (
+    (value.startsWith("\"") && value.endsWith("\"")) ||
+    (value.startsWith("'") && value.endsWith("'"))
+  ) {
+    return value.slice(1, -1);
+  }
+
+  return value;
+}
+
+function parseFrontmatter(content: string): { attributes: Record<string, string>; body: string } {
+  const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
+  if (!match) {
+    return { attributes: {}, body: content };
+  }
+
+  const raw = match[1] ?? "";
+  const attributes: Record<string, string> = {};
+  for (const line of raw.split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) {
+      continue;
+    }
+
+    const kv = trimmed.match(/^([A-Za-z0-9_-]+):\s*(.+)$/);
+    if (!kv) {
+      continue;
+    }
+
+    const key = (kv[1] ?? "").trim().toLowerCase();
+    const value = stripQuotes((kv[2] ?? "").trim());
+    if (key) {
+      attributes[key] = value;
+    }
+  }
+
+  return {
+    attributes,
+    body: content.slice(match[0].length),
+  };
+}
+
+function titleFromMarkdown(content: string, fallback: string, frontmatterTitle?: string): string {
+  if (frontmatterTitle && frontmatterTitle.trim()) {
+    return frontmatterTitle.trim();
+  }
+
   const firstHeading = content
     .split("\n")
     .map((line) => line.trim())
@@ -107,11 +154,12 @@ function computePages(files: string[], root: string): DocPageMeta[] {
     .map((file): DocPageMeta => {
       const rel = relative(root, file);
       const content = readFileSync(file, "utf-8");
+      const parsed = parseFrontmatter(content);
       const fallbackTitle = rel.replace(/\.md$/i, "");
 
       return {
         slug: fileToSlug(rel),
-        title: titleFromMarkdown(content, fallbackTitle),
+        title: titleFromMarkdown(parsed.body, fallbackTitle, parsed.attributes.title),
         absolutePath: file,
         relativePath: rel,
       };
@@ -147,7 +195,7 @@ export function getDocPage(slug: string[]): (DocPageMeta & { content: string }) 
 
   return {
     ...found,
-    content: readFileSync(found.absolutePath, "utf-8"),
+    content: parseFrontmatter(readFileSync(found.absolutePath, "utf-8")).body,
   };
 }
 

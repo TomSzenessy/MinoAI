@@ -1,0 +1,36 @@
+{
+	"extends": "../../tsconfig.base.json",
+	"compilerOptions": {
+		"target": "ESNext",
+		"lib": ["DOM", "DOM.Iterable", "ESNext"],
+		"allowJs": true,
+		"skipLibCheck": true,
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
+		"strict": true,
+		"forceConsistentCasingInFileNames": true,
+		"module": "ESNext",
+		"moduleResolution": "bundler",
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		"noEmit": true,
+		"jsx": "react-jsx",
+		"baseUrl": ".",
+		"paths": {
+			"react": ["./node_modules/@types/react"],
+			"react/jsx-runtime": ["./node_modules/@types/react/jsx-runtime"],
+			"react/jsx-dev-runtime": ["./node_modules/@types/react/jsx-dev-runtime"],
+			"@/*": ["./src/*"],
+			"@mino-ink/shared": ["../../packages/shared/src"],
+			"@mino-ink/api-client": ["../../packages/api-client/src"],
+			"@mino-ink/design-tokens": ["../../packages/design-tokens/src"]
+		}
+	},
+	"include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"],
+	"exclude": [
+		"node_modules",
+		"babel.config.js",
+		"metro.config.js",
+		"tailwind.config.js"
+	]
+}

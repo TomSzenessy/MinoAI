@@ -209,11 +209,12 @@ mino/
 │   ├── roadmap.md
 │   └── relay.md
 │
-├── docstart/                      # Getting started docs
-│   ├── README.md
-│   ├── frontend.md
-│   ├── getting-started/
-│   └── reference/
+├── docs-site/                     # Public docs site content
+│   ├── introduction.md
+│   ├── guides/
+│   ├── deployment/
+│   ├── reference/
+│   └── api/
 │
 ├── plans/                         # Architecture plans
 │   └── implementation-architecture.md
@@ -984,7 +985,7 @@ COPY packages/shared/ ./packages/shared/
 COPY apps/server/ ./apps/server/
 COPY apps/web/ ./apps/web/
 COPY docs/ ./docs/
-COPY docstart/ ./docstart/
+COPY docs-site/ ./docs-site/
 
 # Build shared package first
 RUN cd packages/shared && bun run build

@@ -15,7 +15,7 @@
 | [**Frontend**](./frontend.md) | mino.ink (Cloudflare Pages), local UI, mobile apps, hybrid auth |
 | [**AI Agent**](./ai-agent.md) | "The Organizer" agent, server-hosted runtime, plugin install, MCP |
 | [**Integrations**](./integrations.md) | MCP setup plus Cursor and Antigravity integration examples |
-| [**Security**](./security.md) | Hybrid auth, credential flow, Cloudflare Tunnel, security hardening |
+| [**Security**](./security.md) | Current API-key auth model, credential flow, hardening checklist |
 | [**Roadmap**](./roadmap.md) | Phased plan, deployment priorities, risk analysis, open questions |
 
 ---
@@ -38,8 +38,8 @@ Mino follows a **hybrid hosting model** — the server runs on your infrastructu
 
 | Mode | Description | Requires Account? |
 |------|-------------|-------------------|
-| **mino.ink + self-hosted server** | Use the hosted web UI at mino.ink, link your own server via credentials | Optional (Google sign-in to persist across devices, or just localStorage) |
-| **mino.ink free tier** | Use a limited managed server hosted by mino.ink — no self-hosting, no setup | Optional (Google sign-in for persistence) |
+| **mino.ink + self-hosted server** | Use the hosted web UI at mino.ink, link your own server via credentials | No account required today (Google sign-in is planned) |
+| **mino.ink free tier** | Planned managed server hosted by mino.ink — no self-hosting, no setup | Planned |
 | **Fully self-hosted** | Run the Docker image, which includes the full web UI at `http://server:3000` | ❌ No account needed |
 | **API / CLI / MCP only** | Talk directly to the server API using generated credentials | ❌ No account needed |
 
@@ -57,7 +57,7 @@ Most note-taking apps treat AI as a feature. **Mino treats the AI agent as a fir
 
 > **This is a living blueprint.** Update individual docs as decisions are made and the project evolves.
 >
-> Web docs endpoint: `test.mino.ink/docs` renders the repository `/docs` folder only.
-> Implementation runbooks remain in `/docstart` for repo-local/operator use.
+> Web docs endpoint: `test.mino.ink/docs` renders the repository `/docs-site` folder.
+> Internal blueprint docs remain in `/docs` for architecture and planning content.
 >
 > *Last updated: 2026-02-13*

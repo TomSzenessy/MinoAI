@@ -1,0 +1,163 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "Mino Documentation",
+  "logo": {
+    "dark": "/logo-dark.svg",
+    "light": "/logo-light.svg"
+  },
+  "favicon": "/favicon.ico",
+  "colors": {
+    "primary": "#3B82F6",
+    "light": "#60A5FA",
+    "dark": "#2563EB"
+  },
+  "topbarLinks": [
+    {
+      "name": "GitHub",
+      "url": "https://github.com/mino-ink/mino"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Get Started",
+    "url": "/guides/getting-started"
+  },
+  "tabs": [
+    {
+      "name": "API Reference",
+      "url": "api"
+    },
+    {
+      "name": "Guides",
+      "url": "guides"
+    },
+    {
+      "name": "Deployment",
+      "url": "deployment"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Introduction",
+      "pages": [
+        "introduction",
+        "quickstart"
+      ]
+    },
+    {
+      "group": "Guides",
+      "pages": [
+        "guides/getting-started",
+        "guides/access-modes",
+        "guides/linking-and-auth",
+        "guides/linking-server",
+        "guides/web-link-flow",
+        "guides/mobile-app",
+        "guides/ai-assistant",
+        "guides/plugins",
+        "guides/local-build",
+        "guides/troubleshooting"
+      ]
+    },
+    {
+      "group": "Deployment",
+      "pages": [
+        "deployment/docker",
+        "deployment/portainer-stack",
+        "deployment/cloudflare-tunnel",
+        "deployment/watchtower",
+        "deployment/reverse-proxy"
+      ]
+    },
+    {
+      "group": "API Reference",
+      "pages": [
+        "api/introduction",
+        "api/authentication",
+        {
+          "group": "System & Auth",
+          "pages": [
+            "api/endpoints/health",
+            "api/endpoints/setup",
+            "api/endpoints/config",
+            "api/endpoints/auth-verify",
+            "api/endpoints/auth-link",
+            "api/endpoints/auth-pair-code-rotate"
+          ]
+        },
+        {
+          "group": "Notes",
+          "pages": [
+            "api/endpoints/notes-list",
+            "api/endpoints/notes-get",
+            "api/endpoints/notes-create",
+            "api/endpoints/notes-update",
+            "api/endpoints/notes-delete"
+          ]
+        },
+        {
+          "group": "Folders",
+          "pages": [
+            "api/endpoints/folders-list",
+            "api/endpoints/folders-create"
+          ]
+        },
+        {
+          "group": "Search",
+          "pages": [
+            "api/endpoints/search",
+            "api/endpoints/semantic-search"
+          ]
+        },
+        {
+          "group": "Agent",
+          "pages": [
+            "api/endpoints/agent-chat",
+            "api/endpoints/agent-tools"
+          ]
+        },
+        {
+          "group": "Plugins & Channels",
+          "pages": [
+            "api/endpoints/plugins",
+            "api/endpoints/channels"
+          ]
+        },
+        {
+          "group": "Security",
+          "pages": [
+            "api/endpoints/security-audit"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "Reference",
+      "pages": [
+        "reference/docker-compose",
+        "reference/setup-response",
+        "reference/link-handler-spec",
+        "reference/frontend-clients",
+        "reference/relay",
+        "reference/relay-docker-compose",
+        "reference/agent-integrations"
+      ]
+    },
+    {
+      "group": "Security",
+      "pages": [
+        "security/overview",
+        "security/authentication",
+        "security/rate-limiting",
+        "security/best-practices"
+      ]
+    }
+  ],
+  "footerSocials": {
+    "github": "https://github.com/mino-ink/mino"
+  },
+  "analytics": {
+    "ga": {
+      "measurementId": "G-XXXXXXXXXX"
+    }
+  }
+}

@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+	:root {
+		/* Background Scale (Dark Mode) */
+		--mino-bg-base: #121212;
+		--mino-bg-surface: #1e1e1e;
+		--mino-bg-elevated: #2a2a2a;
+		--mino-bg-hover: #353535;
+		--mino-bg-active: #404040;
+
+		/* Purple Accent Scale */
+		--mino-purple-50: #f5f0ff;
+		--mino-purple-100: #e8dbff;
+		--mino-purple-200: #d4bfff;
+		--mino-purple-300: #c4a6fe;
+		--mino-purple-400: #bb86fc;
+		--mino-purple-500: #a96ef5;
+		--mino-purple-600: #9b5de5;
+		--mino-purple-700: #7e3fcc;
+		--mino-purple-800: #6229a8;
+		--mino-purple-900: #481985;
+		--mino-purple-950: #2d0f54;
+
+		/* Text */
+		--mino-text-primary: rgba(255, 255, 255, 1);
+		--mino-text-secondary: rgba(255, 255, 255, 0.6);
+		--mino-text-tertiary: rgba(255, 255, 255, 0.4);
+		--mino-text-muted: rgba(255, 255, 255, 0.2);
+
+		/* Semantic */
+		--mino-success: #22c55e;
+		--mino-warning: #eab308;
+		--mino-error: #ef4444;
+		--mino-info: #3b82f6;
+
+		/* Glass Effects */
+		--mino-glass-bg: rgba(255, 255, 255, 0.04);
+		--mino-glass-border: rgba(187, 134, 252, 0.08);
+
+		/* Glow Effects */
+		--mino-glow: 0 0 30px -5px rgba(187, 134, 252, 0.35);
+		--mino-glow-lg: 0 0 60px -10px rgba(187, 134, 252, 0.25);
+	}
+}
+
+@layer components {
+	.glass-card {
+		@apply bg-white/[0.04] border border-mino-purple-400/10 rounded-2xl;
+	}
+
+	.glass-panel {
+		@apply bg-mino-bg-surface/90 border border-white/5 rounded-2xl;
+	}
+
+	.glow-effect {
+		box-shadow: var(--mino-glow);
+	}
+
+	.glow-effect-lg {
+		box-shadow: var(--mino-glow-lg);
+	}
+}

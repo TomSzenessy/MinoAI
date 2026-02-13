@@ -8,7 +8,7 @@ You do **not** need to clone this repo to deploy.
 
 1. Open Portainer.
 2. Go to `Stacks` -> `Add stack`.
-3. Paste compose from `docstart/reference/docker-compose.md`.
+3. Paste compose from `docs-site/reference/docker-compose.md`.
 4. Deploy.
 
 Default service:
@@ -90,11 +90,7 @@ Use two projects: one for testing, one for production.
 
 ## 5. Documentation Endpoint
 
-The web `/docs` endpoint now shows **both** tracks:
-- Blueprint docs from `/docs`
-- Implementation docs from `/docstart`
-
-So users can browse architecture and setup runbooks from one place (`test.mino.ink/docs`).
+The web `/docs` endpoint renders repository docs from `/docs-site`.
 
 ## 5.1 Relay Deployment (Operator)
 
@@ -115,10 +111,10 @@ docker run --rm -p 8787:8787 \
 Install dependencies:
 
 ```bash
-bun install
+pnpm install --no-frozen-lockfile
 ```
 
-Run server:
+Run server (requires Bun):
 
 ```bash
 cd apps/server
@@ -144,11 +140,24 @@ cd apps/server && bun test
 cd ../../apps/web && bun test
 ```
 
+Run full workspace validation:
+
+```bash
+pnpm build
+pnpm test
+pnpm typecheck
+```
+
+Compatibility note:
+
+- Web uses React 19 (Next.js 15 requirement).
+- Mobile uses React 18.3.1 (Expo SDK 52 requirement).
+
 ## 7. Docs Policy
 
 Docs governance is defined in `DOCS_POLICY.md`:
-- `/docs` = blueprint
-- `/docstart` = implementation/use
+- `/docs` = internal blueprint/architecture docs
+- `/docs-site` = public product/operator/API docs
 
 ## 8. Canonical Repository
 

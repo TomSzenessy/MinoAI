@@ -14,6 +14,7 @@ import type { Note, NoteMetadata, SearchResult } from '@mino-ink/shared';
 import { FileManager } from './file-manager';
 import { IndexDB } from './index-db';
 import { parseMarkdown } from '../utils/markdown';
+import type { SemanticSearchResult } from './semantic-search';
 
 export class NoteService {
 	private readonly fm: FileManager;
@@ -177,6 +178,57 @@ export class NoteService {
 	/** Gets index statistics. */
 	getIndexStats() {
 		return this.index.getStats();
+	}
+
+	// -----------------------------------------------------------------------
+	// Semantic Search Operations
+	// -----------------------------------------------------------------------
+
+	/**
+	 * Performs a semantic search using vector embeddings.
+	 * Returns results ranked by similarity to the query.
+	 */
+	async semanticSearch(
+		query: string,
+		options: { limit?: number; threshold?: number } = {}
+	): Promise<SemanticSearchResult[]> {
+		await this.ensureIndex();
+		return this.index.performSemanticSearch(query, options);
+	}
+
+	/**
+	 * Finds notes similar to a given note using embeddings.
+	 */
+	async findSimilarNotes(
+		notePath: string,
+		options: { limit?: number; threshold?: number } = {}
+	): Promise<SemanticSearchResult[]> {
+		await this.ensureIndex();
+		return this.index.findSimilarNotes(notePath, options);
+	}
+
+	/**
+	 * Rebuilds all embeddings for semantic search.
+	 */
+	async rebuildEmbeddings(): Promise<{
+		total: number;
+		indexed: number;
+		errors: string[];
+	}> {
+		await this.ensureIndex();
+		return this.index.rebuildAllEmbeddings();
+	}
+
+	/**
+	 * Gets statistics about the semantic search index.
+	 */
+	getSemanticSearchStats(): {
+		available: boolean;
+		provider: string | null;
+		embeddingCount: number;
+		dimensions: number | null;
+	} {
+		return this.index.getSemanticSearchStats();
 	}
 
 	// -----------------------------------------------------------------------

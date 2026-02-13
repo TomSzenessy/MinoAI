@@ -1,48 +1,33 @@
 # Docs Policy
 
-This repository has two documentation tracks.
+This repository now has two active documentation tracks.
 
 ## What Goes Where
 
-- `/docs` is the blueprint track.
-- `/docstart` is the implementation and usage track.
+- `/docs` is the internal blueprint track.
+- `/docs-site` is the public documentation track (deployment, API, operator runbooks).
 
 Use `/docs` for:
+
 - architecture decisions
 - design system rules
-- product model, security model, long-term roadmap
+- product model and long-range roadmap
 
-Use `/docstart` for:
-- Portainer setup guides
+Use `/docs-site` for:
+
+- setup and deployment guides
 - linking/auth runbooks
-- local build instructions
+- API endpoint docs
 - troubleshooting and integration references
-
-## Section Mapping (`MASTER_PLAN.md` -> `/docs`)
-
-- Product overview and hosting model -> `docs/README.md`
-- Design system and visual language -> `docs/design-system.md`
-- Architecture, deployment, CI/CD -> `docs/architecture.md`
-- Server and API model -> `docs/server.md`
-- Web/mobile interfaces -> `docs/frontend.md`
-- AI agent model -> `docs/ai-agent.md`
-- Security posture -> `docs/security.md`
-- Phasing and delivery plan -> `docs/roadmap.md`
 
 ## Contribution Rules
 
 - If a change affects strategy/architecture, update `/docs`.
-- If a change affects setup/integration steps, update `/docstart`.
+- If a change affects setup/integration/public usage, update `/docs-site`.
 - If both are affected, update both in the same PR.
-
-## Transition Rule for `MASTER_PLAN.md`
-
-- `MASTER_PLAN.md` remains transitional while this frontend phase is being completed.
-- After frontend MVP parity is confirmed in `/docs`, remove `MASTER_PLAN.md` in a dedicated cleanup PR.
 
 ## PR Checklist
 
-- [ ] I updated `/docs` for blueprint-level changes.
-- [ ] I updated `/docstart` for operator/integrator changes.
-- [ ] I kept `/docs` and `/docstart` responsibilities separate.
-- [ ] I checked section-level parity with `MASTER_PLAN.md` when relevant.
+- [ ] I updated `/docs` for blueprint-level changes (if relevant).
+- [ ] I updated `/docs-site` for public/operator/API changes (if relevant).
+- [ ] I verified links and paths do not reference removed `docstart` files.

@@ -3,11 +3,12 @@
   "version": "0.1.0",
   "description": "Mino managed relay service for private server connectivity",
   "type": "module",
-  "main": "./src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "dev": "bun run --watch src/index.ts",
     "start": "bun run src/index.ts",
-    "build": "bun build src/index.ts --outdir dist --target bun",
+    "build": "tsc -p tsconfig.json",
     "typecheck": "tsc --noEmit",
     "test": "bun test",
     "clean": "rm -rf dist"

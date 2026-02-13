@@ -48,7 +48,7 @@ COPY packages/shared/ ./packages/shared/
 COPY apps/server/ ./apps/server/
 COPY apps/web/ ./apps/web/
 COPY docs/ ./docs/
-COPY docstart/ ./docstart/
+COPY docs-site/ ./docs-site/
 
 # Fail fast with a clear message if the docs catch-all route export is not present.
 RUN test -f 'apps/web/app/docs/[...slug]/page.tsx' \
