@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev --port 5173",
-    "build": "next build",
+    "build": "rm -rf .next out && MINO_WEB_OUTPUT=export next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "test": "bun test"
