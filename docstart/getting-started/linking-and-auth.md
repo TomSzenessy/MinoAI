@@ -14,6 +14,8 @@ This endpoint returns:
 - setup status (`setupComplete`)
 - connection mode + links (`relay` or `open-port`)
 
+In relay mode, startup logs also print quick-connect links on every boot.
+
 ## Auth Method
 
 Protected endpoints require:
@@ -33,6 +35,7 @@ From setup response (`links.connect`):
 - Relay mode:
   - `testMinoInk`
   - `minoInk`
+  - `localUi`
   - `localDevUi`
   - uses `relayCode` in link params
 - Open-port mode:
@@ -71,6 +74,20 @@ curl -X POST http://<SERVER_IP>:3000/api/v1/auth/link \
 After this:
 - `setupComplete=true`
 - setup endpoint redacts the API key value
+- startup logs still print relay quick-connect links and current relay pair code
+
+## Relay Pair Code Rotation
+
+If you want a new relay code, call:
+
+```bash
+curl -X POST http://<SERVER_IP>:3000/api/v1/auth/pair-code/rotate \
+  -H "X-Mino-Key: <API_KEY>"
+```
+
+This returns:
+- `relayPairCode`
+- `relayPairCodeCreatedAt`
 
 ## API Key Rotation
 

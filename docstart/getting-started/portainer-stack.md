@@ -56,7 +56,7 @@ Use these URLs:
 - Setup: `http://<SERVER_IP>:3000/api/v1/system/setup` (same access rules)
 - Web docs explorer: `http://<SERVER_IP>:3000/docs`
 
-If the setup URL is not reachable (relay mode + local bind), use the first-run links printed in container logs.
+If the setup URL is not reachable (relay mode + local bind), use the quick-connect links printed in container logs (available on every boot).
 
 Expected health response status is `200`.
 

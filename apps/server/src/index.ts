@@ -79,16 +79,20 @@ async function main(): Promise<void> {
     b(`  ┃  Relay:      ${config.connection.relayUrl.padEnd(47)}┃`);
   }
 
-  if (!credentials.setupComplete) {
-    const relayLinkParams = new URLSearchParams({
-      relayCode: credentials.relayPairCode,
-      relayUrl: config.connection.relayUrl.replace(/\/+$/, ""),
-    });
-    const directLinkParams = new URLSearchParams({
-      serverUrl: localBaseUrl,
-      apiKey: credentials.adminApiKey,
-    });
+  const relayLinkParams = new URLSearchParams({
+    relayCode: credentials.relayPairCode,
+    relayUrl: config.connection.relayUrl.replace(/\/+$/, ""),
+  });
+  const directLinkParams = new URLSearchParams({
+    serverUrl: localBaseUrl,
+  });
 
+  // Only include API key prefill before setup is marked complete.
+  if (!credentials.setupComplete) {
+    directLinkParams.set("apiKey", credentials.adminApiKey);
+  }
+
+  if (!credentials.setupComplete) {
     b(`  ┣${hr}┫`);
     b(`  ┃  🟣 FIRST RUN — Setup credentials${"".padEnd(28)}┃`);
     b(`  ┣${hr}┫`);
@@ -99,38 +103,45 @@ async function main(): Promise<void> {
       b(`  ┃  Pair Code:  ${credentials.relayPairCode.padEnd(47)}┃`);
     }
 
-    b(`  ┣${hr}┫`);
-    b(`  ┃  Quick-connect links:${"".padEnd(40)}┃`);
-    b(`  ┣${hr}┫`);
+  }
 
-    if (config.connection.mode === "relay") {
-      const relayLinks = buildRelayConnectLinks(relayLinkParams, localBaseUrl);
-      b(`  ┃${"".padEnd(62)}┃`);
-      b(`  ┃  test.mino.ink:${"".padEnd(46)}┃`);
-      b(`  ┃  ${relayLinks.testMinoInk.padEnd(60)}┃`);
-      b(`  ┃${"".padEnd(62)}┃`);
-      b(`  ┃  mino.ink:${"".padEnd(52)}┃`);
-      b(`  ┃  ${relayLinks.minoInk.padEnd(60)}┃`);
-      b(`  ┃${"".padEnd(62)}┃`);
-      b(`  ┃  local UI:${"".padEnd(50)}┃`);
-      b(`  ┃  ${relayLinks.localUi.padEnd(60)}┃`);
-      b(`  ┃${"".padEnd(62)}┃`);
-      b(`  ┃  local dev UI:${"".padEnd(47)}┃`);
-      b(`  ┃  ${relayLinks.localDevUi.padEnd(60)}┃`);
-      b(`  ┃${"".padEnd(62)}┃`);
-    } else {
-      const directLinks = buildDirectConnectLinks(directLinkParams, localBaseUrl);
-      b(`  ┃${"".padEnd(62)}┃`);
-      b(`  ┃  test.mino.ink:${"".padEnd(46)}┃`);
-      b(`  ┃  ${directLinks.testMinoInk.padEnd(60)}┃`);
-      b(`  ┃${"".padEnd(62)}┃`);
-      b(`  ┃  mino.ink:${"".padEnd(52)}┃`);
-      b(`  ┃  ${directLinks.minoInk.padEnd(60)}┃`);
-      b(`  ┃${"".padEnd(62)}┃`);
-      b(`  ┃  Built-in UI:${"".padEnd(49)}┃`);
-      b(`  ┃  ${directLinks.localUi.padEnd(60)}┃`);
+  b(`  ┣${hr}┫`);
+  b(`  ┃  Quick-connect links:${"".padEnd(40)}┃`);
+  b(`  ┣${hr}┫`);
+
+  if (config.connection.mode === "relay") {
+    if (credentials.setupComplete) {
+      b(`  ┃  Pair Code:  ${credentials.relayPairCode.padEnd(47)}┃`);
       b(`  ┃${"".padEnd(62)}┃`);
     }
+
+    const relayLinks = buildRelayConnectLinks(relayLinkParams, localBaseUrl);
+    b(`  ┃  test.mino.ink:${"".padEnd(46)}┃`);
+    b(`  ┃  ${relayLinks.testMinoInk.padEnd(60)}┃`);
+    b(`  ┃${"".padEnd(62)}┃`);
+    b(`  ┃  mino.ink:${"".padEnd(52)}┃`);
+    b(`  ┃  ${relayLinks.minoInk.padEnd(60)}┃`);
+    b(`  ┃${"".padEnd(62)}┃`);
+    b(`  ┃  local UI:${"".padEnd(50)}┃`);
+    b(`  ┃  ${relayLinks.localUi.padEnd(60)}┃`);
+    b(`  ┃${"".padEnd(62)}┃`);
+    b(`  ┃  local dev UI:${"".padEnd(47)}┃`);
+    b(`  ┃  ${relayLinks.localDevUi.padEnd(60)}┃`);
+    b(`  ┃${"".padEnd(62)}┃`);
+  } else {
+    const directLinks = buildDirectConnectLinks(directLinkParams, localBaseUrl);
+    b(`  ┃  test.mino.ink:${"".padEnd(46)}┃`);
+    b(`  ┃  ${directLinks.testMinoInk.padEnd(60)}┃`);
+    b(`  ┃${"".padEnd(62)}┃`);
+    b(`  ┃  mino.ink:${"".padEnd(52)}┃`);
+    b(`  ┃  ${directLinks.minoInk.padEnd(60)}┃`);
+    b(`  ┃${"".padEnd(62)}┃`);
+    b(`  ┃  Built-in UI:${"".padEnd(49)}┃`);
+    b(`  ┃  ${directLinks.localUi.padEnd(60)}┃`);
+    b(`  ┃${"".padEnd(62)}┃`);
+    b(`  ┃  local dev UI:${"".padEnd(47)}┃`);
+    b(`  ┃  ${directLinks.localDevUi.padEnd(60)}┃`);
+    b(`  ┃${"".padEnd(62)}┃`);
   }
 
   b(`  ┗${hr}┛`);
