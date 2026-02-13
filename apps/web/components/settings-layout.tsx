@@ -5,7 +5,29 @@ import type { ReactNode } from "react";
 import { BrandLogo } from "@/components/brand-logo";
 import type { TranslationFn } from "@/lib/i18n";
 
-export type SettingsTabId = "general" | "server" | "agent" | "plugins" | "about";
+export type SettingsTabId =
+  | "general"
+  | "server"
+  | "agent"
+  | "channels"
+  | "plugins"
+  | "about";
+
+const SETTINGS_TAB_IDS: readonly SettingsTabId[] = [
+  "general",
+  "server",
+  "agent",
+  "channels",
+  "plugins",
+  "about",
+] as const;
+
+export function isSettingsTabId(value: string | null): value is SettingsTabId {
+  if (!value) {
+    return false;
+  }
+  return SETTINGS_TAB_IDS.includes(value as SettingsTabId);
+}
 
 interface TabItem {
   id: SettingsTabId;
@@ -17,6 +39,7 @@ export function buildSettingsTabs(t: TranslationFn): TabItem[] {
     { id: "general", label: t("settings.tabs.general") },
     { id: "server", label: t("settings.tabs.server") },
     { id: "agent", label: t("settings.tabs.agent") },
+    { id: "channels", label: t("settings.tabs.channels") },
     { id: "plugins", label: t("settings.tabs.plugins") },
     { id: "about", label: t("settings.tabs.about") },
   ];

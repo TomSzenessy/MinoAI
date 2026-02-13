@@ -151,6 +151,10 @@ export function getProfileById(
   return store.profiles.find((profile) => profile.id === profileId) ?? null;
 }
 
+export function getProfiles(storage?: StorageLike): LinkedServerProfile[] {
+  return readStore(storage).profiles;
+}
+
 export function getActiveProfile(storage?: StorageLike): LinkedServerProfile | null {
   const store = readStore(storage);
   if (!store.activeProfileId) {
@@ -158,6 +162,40 @@ export function getActiveProfile(storage?: StorageLike): LinkedServerProfile | n
   }
 
   return store.profiles.find((profile) => profile.id === store.activeProfileId) ?? null;
+}
+
+export function setActiveProfile(
+  profileId: string,
+  storage?: StorageLike,
+): LinkedServerProfile | null {
+  const store = readStore(storage);
+  const profile = store.profiles.find((entry) => entry.id === profileId) ?? null;
+  if (!profile) {
+    return null;
+  }
+
+  writeStore(
+    {
+      ...store,
+      activeProfileId: profileId,
+    },
+    storage,
+  );
+
+  return profile;
+}
+
+export function getFallbackProfile(storage?: StorageLike): LinkedServerProfile | null {
+  const store = readStore(storage);
+  const active = store.activeProfileId
+    ? store.profiles.find((profile) => profile.id === store.activeProfileId)
+    : null;
+
+  if (active) {
+    return active;
+  }
+
+  return store.profiles[0] ?? null;
 }
 
 export function getLocalDemoProfile(): LinkedServerProfile {

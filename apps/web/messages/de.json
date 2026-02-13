@@ -4,6 +4,7 @@
     "features": "Funktionen",
     "howItWorks": "Wie es funktioniert",
     "agent": "KI-Agent",
+    "myRelays": "Meine Relays",
     "stack": "Stack",
     "openSource": "Open Source",
     "getStarted": "Loslegen",
@@ -144,6 +145,7 @@
       "general": "Allgemein",
       "server": "Server",
       "agent": "Agent",
+      "channels": "Kanäle",
       "plugins": "Plugins",
       "about": "Über"
     },
@@ -169,6 +171,8 @@
     "agent": {
       "title": "KI-Agent Konfiguration",
       "enabled": "Agent Aktiviert",
+      "runtimeStatus": "Laufzeit",
+      "statusUnknown": "Status nicht verfügbar",
       "model": "Modell",
       "apiKey": "API-Schlüssel",
       "apiKeyPlaceholder": "API-Schlüssel eingeben",
@@ -179,6 +183,27 @@
       "delete": "Notizen löschen",
       "organize": "Auto-Organisation"
     },
+    "channels": {
+      "title": "Nachrichtenkanäle",
+      "subtitle": "Verbinde Telegram und WhatsApp, damit der KI-Agent eingehende Nachrichten verarbeiten kann.",
+      "provider": "Anbieter",
+      "name": "Kanalname",
+      "namePlaceholder": "Primärer Telegram-Bot",
+      "webhookSecret": "Webhook-Secret",
+      "webhookSecretPlaceholder": "Geteiltes Secret zur Webhook-Validierung",
+      "botToken": "Telegram-Bot-Token",
+      "botTokenPlaceholder": "123456:ABC-DEF...",
+      "accessToken": "WhatsApp Access Token",
+      "accessTokenPlaceholder": "EAAB...",
+      "phoneNumberId": "WhatsApp Telefonnummer-ID",
+      "phoneNumberIdPlaceholder": "1029384756",
+      "add": "Kanal hinzufügen",
+      "remove": "Entfernen",
+      "enabled": "Aktiviert",
+      "disabled": "Deaktiviert",
+      "loading": "Kanäle werden geladen...",
+      "empty": "Noch keine Kanäle konfiguriert."
+    },
     "plugins": {
       "title": "Plugins",
       "subtitle": "Erweitere Mino mit leistungsstarken Integrationen.",
@@ -188,6 +213,10 @@
       "configure": "Konfigurieren",
       "close": "Schließen",
       "save": "Speichern",
+      "install": "Installieren",
+      "uninstall": "Deinstallieren",
+      "availableCatalog": "Verfügbare Plugins",
+      "apiKeyPrompt": "API-Schlüssel für dieses Plugin eingeben (optional):",
       "loading": "Plugins werden geladen...",
       "emptyServerTitle": "Keine Plugins auf dem Server gefunden.",
       "emptyServerHint": "Füge Plugins zum Datenverzeichnis deines Servers hinzu, damit sie hier erscheinen.",
@@ -267,7 +296,9 @@
     "statusBar": {
       "defaultServerName": "Mino Server",
       "uptime": "Laufzeit: {{seconds}}s",
-      "settings": "Einstellungen"
+      "settings": "Einstellungen",
+      "openAgent": "Agent öffnen",
+      "hideAgent": "Agent ausblenden"
     },
     "noteList": {
       "syncing": "Notizen werden synchronisiert...",
@@ -280,12 +311,38 @@
       "saving": "Speichern...",
       "savedAt": "Gespeichert {{time}}",
       "share": "Teilen",
+      "untitled": "Ohne Titel",
       "startWriting": "Beginne zu schreiben...",
       "markdown": "Markdown",
       "encoding": "UTF-8"
     },
+    "agent": {
+      "title": "KI-Assistent",
+      "close": "Schließen",
+      "empty": "Bitte den Assistenten, Notizen zu finden, zusammenzufassen oder zu erstellen.",
+      "placeholder": "Frag den Mino Agent alles über deinen Vault...",
+      "send": "Senden",
+      "sending": "Wird gesendet...",
+      "error": "Agent konnte nicht erreicht werden.",
+      "promptFindConnections": "Finde Notizen, die verknüpft werden sollten",
+      "promptSummarize": "Fasse die aktuelle Notiz zusammen",
+      "promptCreateChecklist": "Erstelle eine Notiz für die Deployment-Checkliste"
+    },
+    "commandPalette": {
+      "title": "Befehls-Palette",
+      "placeholder": "Notizen und Befehle durchsuchen...",
+      "empty": "Keine passenden Befehle oder Notizen.",
+      "newNote": "Neue Notiz",
+      "toggleAgent": "KI-Agentenbereich umschalten",
+      "openSettings": "Einstellungen öffnen",
+      "hintNavigate": "↑↓ Navigieren",
+      "hintSelect": "↵ Auswählen",
+      "hintClose": "Esc Schließen"
+    },
     "sidebar": {
       "title": "Mino Workspace",
+      "selectServer": "Server auswählen",
+      "connectServer": "Verbinden",
       "library": "Bibliothek",
       "files": "Dateien",
       "localDemoFoldersUnsupported": "Lokale Demo: Ordner werden nicht unterstützt",

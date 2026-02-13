@@ -23,6 +23,8 @@ import { noteRoutes } from "./routes/notes";
 import { folderRoutes } from "./routes/folders";
 import { searchRoutes } from "./routes/search";
 import { pluginRoutes } from "./routes/plugins";
+import { agentRoutes } from "./routes/agent";
+import { channelRoutes, channelWebhookRoutes } from "./routes/channels";
 import type { AppContext } from "./types";
 
 export interface AppDependencies {
@@ -112,6 +114,7 @@ export function createApp(deps: AppDependencies): Hono<AppContext> {
   // ---------------------------------------------------------------------------
   app.route("/api/v1", healthRoutes());
   app.route("/api/v1/system", setupRoutes());
+  app.route("/api/v1/channels/webhook", channelWebhookRoutes());
 
   // ---------------------------------------------------------------------------
   // Protected routes (API key or JWT required)
@@ -125,6 +128,8 @@ export function createApp(deps: AppDependencies): Hono<AppContext> {
   protectedApi.route("/folders", folderRoutes());
   protectedApi.route("/search", searchRoutes());
   protectedApi.route("/plugins", pluginRoutes());
+  protectedApi.route("/agent", agentRoutes());
+  protectedApi.route("/channels", channelRoutes());
 
   app.route("/api/v1", protectedApi);
 

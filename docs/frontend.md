@@ -18,7 +18,7 @@ mino.ink / test.mino.ink (Cloudflare Pages)
   ├─ Landing page + workspace shell
   ├─ Dedicated /link handler (prefilled URL support)
   ├─ Local profile auth (API key in localStorage)
-  ├─ Unified docs explorer (reads /docs + /docstart)
+  ├─ Docs explorer (reads /docs)
   └─ All API calls → user's server (direct HTTPS or Cloudflare Tunnel)
 ```
 
@@ -33,28 +33,18 @@ The exact same Next.js app is served from two places:
 
 The built-in UI works identically to mino.ink — it's the same code, just served from the Docker container's static files instead of Cloudflare.
 
-### Hybrid Auth Model
+### Current Auth Model
 
-No account is ever required. Users have three options:
+Current implementation is API-key profile linking with local persistence:
 
-| Mode               | How it works                                                 | Credentials stored        | Multi-device?                |
-| ------------------ | ------------------------------------------------------------ | ------------------------- | ---------------------------- |
-| **Anonymous**      | Open `/link` (prefilled URL or manual) and link with API key | `localStorage` only       | ❌ Manual per device         |
-| **Google sign-in** | Sign in with Google → link server(s) to account              | Server-side (mino.ink DB) | ✅ Auto-syncs linked servers |
-| **Local instance** | Open `http://localhost:3000` → auto-connected                | Server's own credentials  | ❌ One device                |
+| Mode | How it works | Credentials stored | Multi-device? |
+| --- | --- | --- | --- |
+| **Linked profile** | Open `/link` (prefilled URL or manual), verify, link, and store profile | `localStorage` | ❌ Manual per browser/device |
+| **Local demo mode** | Open `/workspace?mode=local` for a no-server walkthrough | in-memory/local | ❌ Local only |
 
-**The Google account doesn't store notes.** It only stores _which servers the user has linked_. Notes always live on the user's server.
-
-### Free Tier (No Self-Hosting Required)
-
-When a user signs into mino.ink with Google but doesn't link a server, they get a **free managed instance**:
-
-- Limited storage (e.g. 100MB / 1000 notes)
-- Core features: notes, search, folders, tags
-- AI Agent: bring your own API key (OpenAI/Anthropic)
-- No local tools (Whisper, OCR) — API keys required for those
-- No sandbox, no custom plugins
-- Upgrade path: deploy your own server for unlimited everything
+Planned but not yet shipped in this repo:
+1. Google account sync for linked server profiles.
+2. Managed free-tier hosted vaults.
 
 ### Page Structure
 
@@ -63,7 +53,7 @@ When a user signs into mino.ink with Google but doesn't link a server, they get 
 | **Landing**       | `/`                       | Marketing + onboarding entrypoint                                                                    |
 | **Link Server**   | `/link`                   | Dedicated handler that parses `serverUrl` + `apiKey`, verifies, links, stores profile, and redirects |
 | **Workspace**     | `/workspace?profile=<id>` | Main shell with linked-server status and authenticated note list                                     |
-| **Docs Explorer** | `/docs`                   | Serves both blueprint docs (`/docs`) and implementation docs (`/docstart`)                           |
+| **Docs Explorer** | `/docs`                   | Serves documentation from the repository `/docs` folder                                                |
 
 ### `/link` Handler Contract
 
@@ -111,40 +101,16 @@ Relay note:
     - `NEXT_PUBLIC_DEFAULT_LINK_TARGET=https://mino.ink`
     - `NEXT_PUBLIC_RELAY_URL=https://relay.mino.ink`
 
-### Workspace Layout (from screen.png mockup)
+### Current Workspace Features
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│  [≡] WORKSPACE               [👤+3] [Share] [Publish]       │
-├────────────┬────────────────────────────────────────────┬────┤
-│            │  Projects > Project_Alpha.md               │    │
-│  📁 Projects│                                           │ [A]│
-│   ├─ Project │  1  # Project Alpha: System Architecture │ [🖼]│
-│   ├─ Roadmap │  2                                       │ [🔗]│
-│  📁 Daily    │  3  ## Core Objectives                   │ [✏]│
-│   ├─ Personal│  4  - Establish robust sync using CRDTs. │    │
-│   └─ Ideas   │  5  - Implement end-to-end encryption.   │    │
-│  📁 Archive  │  ...                                      │    │
-│            │                                             │    │
-│ [⚙] [👥]  │                                             │    │
-│ Storage 42%│  ● SYNCED  UTF-8  <> MARKDOWN  1,242 WORDS │    │
-└────────────┴─────────────────────────────────────────────┴────┘
-```
-
-### Key UI Features
-
-- **Fluid navbar** — Floating, glass-effect navbar from mino.ink with pill-shaped active indicators
-- **Split-pane editor** — Resizable panels (sidebar / note list / editor) using `react-resizable-panels`
-- **Real-time markdown** — Live preview with syntax highlighting via `react-markdown` + `react-syntax-highlighter`
-- **Command palette** — `Cmd+K` to search notes, run commands, switch servers (using `cmdk`)
-- **File tree** — Collapsible folder tree with drag-and-drop reordering (using `@dnd-kit`)
-- **AI chat panel** — Slide-out panel to chat with the AI organizer
-- **Plugin marketplace** — Browse available plugins, one-click install, configure via UI
-- **Server settings** — API keys, agent config, resource detection results — all visual, no terminal
-- **Theme switching** — Dark/light mode with smooth transitions (using `next-themes`)
-- **Status bar** — Sync status, word count, encoding, cursor position (inspired by VS Code)
-- **Collaboration cursors** — Show other users' cursors in real-time (Yjs awareness)
-- **Server picker** — Switch between multiple linked servers (for multi-server setups)
+- Left sidebar with file tree, server picker dropdown, and inline settings entry.
+- Note list with real filtering (title/path/tags) and controlled search input.
+- Obsidian-style title editing (`h1` title field directly updates markdown content).
+- Command palette (`Cmd/Ctrl+K`) with note search + workspace actions.
+- Hotkeys: `Cmd/Ctrl+N` (new note), `Cmd/Ctrl+J` (toggle agent panel), `Cmd/Ctrl+,` (settings).
+- Agent chat slide-out panel backed by `/api/v1/agent/chat`.
+- Settings tabs for Server, Agent, Channels (Telegram/WhatsApp), and Plugins.
+- Landing behavior for linked users: "Get Started" resumes workspace; "My Relays" shortcut opens server settings.
 
 ### Landing Page Design
 

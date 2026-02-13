@@ -3,7 +3,7 @@
 import { fetchNoteDetail, Note, NoteSummary, updateNote } from "@/lib/api";
 import { useTranslation } from "@/components/i18n-provider";
 import { LinkedServerProfile } from "@/lib/storage";
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 interface NoteEditorProps {
   profile: LinkedServerProfile | null;
@@ -11,45 +11,104 @@ interface NoteEditorProps {
   onSave?: (note: Note) => void;
 }
 
+interface TitleBodyDraft {
+  title: string;
+  body: string;
+}
+
+function splitTitleAndBody(markdown: string, fallbackTitle: string): TitleBodyDraft {
+  const normalized = markdown.replace(/\r\n/g, "\n");
+  const titleMatch = normalized.match(/^#\s+(.+?)\s*(?:\n|$)/);
+
+  if (!titleMatch) {
+    return {
+      title: fallbackTitle,
+      body: normalized,
+    };
+  }
+
+  const title = titleMatch[1]?.trim() || fallbackTitle;
+  const body = normalized.slice(titleMatch[0].length).replace(/^\n+/, "");
+  return { title, body };
+}
+
+function composeMarkdown(title: string, body: string): string {
+  const safeTitle = title.trim() || "Untitled";
+  const cleanedBody = body.replace(/^\n+/, "");
+  return cleanedBody.length > 0
+    ? `# ${safeTitle}\n\n${cleanedBody}`
+    : `# ${safeTitle}\n`;
+}
+
 export function NoteEditor({ profile, noteSummary, onSave }: NoteEditorProps) {
   const { t } = useTranslation();
   const [note, setNote] = useState<Note | null>(null);
-  const [content, setContent] = useState("");
+  const [title, setTitle] = useState("");
+  const [body, setBody] = useState("");
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Fetch full note content when summary changes
+  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const noteRef = useRef<Note | null>(null);
+  const draftRef = useRef<TitleBodyDraft>({ title: "", body: "" });
+  const profileRef = useRef<LinkedServerProfile | null>(profile);
+
   useEffect(() => {
+    noteRef.current = note;
+  }, [note]);
+
+  useEffect(() => {
+    profileRef.current = profile;
+  }, [profile]);
+
+  useEffect(() => {
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+      saveTimeoutRef.current = null;
+    }
+
     if (!profile || !noteSummary) {
       setNote(null);
-      setContent("");
+      setTitle("");
+      setBody("");
+      draftRef.current = { title: "", body: "" };
       return;
     }
 
     if (profile.source === "local") {
-      setContent(
-        `# ${noteSummary.title}\n\n${t("workspace.localDemo.noteBody")}`,
-      );
+      const localDraft = {
+        title: noteSummary.title,
+        body: t("workspace.localDemo.noteBody"),
+      };
       setNote({
         ...noteSummary,
-        content: "",
+        content: composeMarkdown(localDraft.title, localDraft.body),
         frontmatter: {},
       });
+      setTitle(localDraft.title);
+      setBody(localDraft.body);
+      draftRef.current = localDraft;
       return;
     }
+
+    const activeProfile = profile;
+    const activeSummary = noteSummary;
 
     async function loadNote() {
       try {
         setLoading(true);
         const detail = await fetchNoteDetail(
-          profile!.serverUrl,
-          profile!.apiKey,
-          noteSummary!.path,
+          activeProfile.serverUrl,
+          activeProfile.apiKey,
+          activeSummary.path,
         );
+        const parsed = splitTitleAndBody(detail.content, detail.title);
         setNote(detail);
-        setContent(detail.content);
+        setTitle(parsed.title);
+        setBody(parsed.body);
+        draftRef.current = parsed;
+        setLastSaved(null);
       } catch (err) {
         console.error("Failed to load note:", err);
       } finally {
@@ -60,12 +119,20 @@ export function NoteEditor({ profile, noteSummary, onSave }: NoteEditorProps) {
     void loadNote();
   }, [profile, noteSummary, t]);
 
-  // Handle auto-save
-  const handleContentChange = (newContent: string) => {
-    setContent(newContent);
+  useEffect(() => {
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
+  }, []);
 
-    if (profile?.source === "local") return;
-    if (!profile || !note) return;
+  const scheduleSave = (nextDraft: TitleBodyDraft) => {
+    const activeProfile = profileRef.current;
+    const activeNote = noteRef.current;
+    if (!activeProfile || activeProfile.source === "local" || !activeNote) {
+      return;
+    }
 
     if (saveTimeoutRef.current) {
       clearTimeout(saveTimeoutRef.current);
@@ -75,30 +142,47 @@ export function NoteEditor({ profile, noteSummary, onSave }: NoteEditorProps) {
     saveTimeoutRef.current = setTimeout(async () => {
       try {
         const updated = await updateNote(
-          profile.serverUrl,
-          profile.apiKey,
-          note.path,
-          newContent,
+          activeProfile.serverUrl,
+          activeProfile.apiKey,
+          activeNote.path,
+          composeMarkdown(nextDraft.title, nextDraft.body),
         );
+        setNote(updated);
         setLastSaved(new Date());
-        if (onSave) onSave(updated);
+        onSave?.(updated);
       } catch (err) {
         console.error("Failed to save note:", err);
       } finally {
         setSaving(false);
       }
-    }, 1000);
+    }, 700);
   };
+
+  const commitDraft = (patch: Partial<TitleBodyDraft>) => {
+    const nextDraft: TitleBodyDraft = {
+      ...draftRef.current,
+      ...patch,
+    };
+    draftRef.current = nextDraft;
+    setTitle(nextDraft.title);
+    setBody(nextDraft.body);
+    scheduleSave(nextDraft);
+  };
+
+  const bodyWordCount = useMemo(() => {
+    const combined = `${title}\n${body}`;
+    return combined.split(/\s+/).filter(Boolean).length;
+  }, [body, title]);
 
   if (!noteSummary) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-mino-base">
-        <div className="text-center animate-fade-up">
-          <div className="text-4xl mb-4 opacity-20">✦</div>
+      <div className="flex flex-1 items-center justify-center bg-mino-base">
+        <div className="animate-fade-up text-center">
+          <div className="mb-4 text-4xl opacity-20">✦</div>
           <h2 className="text-lg font-bold text-[var(--text-tertiary)]">
             {t("nav.selectNote")}
           </h2>
-          <p className="text-sm text-[var(--text-tertiary)] mt-2">
+          <p className="mt-2 text-sm text-[var(--text-tertiary)]">
             {t("nav.autoSync")}
           </p>
         </div>
@@ -108,8 +192,8 @@ export function NoteEditor({ profile, noteSummary, onSave }: NoteEditorProps) {
 
   if (loading) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-mino-base">
-        <div className="animate-pulse text-[var(--text-tertiary)] text-xs uppercase tracking-widest font-bold">
+      <div className="flex flex-1 items-center justify-center bg-mino-base">
+        <div className="animate-pulse text-xs font-bold uppercase tracking-widest text-[var(--text-tertiary)]">
           {t("workspace.noteEditor.loadingContent")}
         </div>
       </div>
@@ -117,25 +201,25 @@ export function NoteEditor({ profile, noteSummary, onSave }: NoteEditorProps) {
   }
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-mino-base overflow-hidden">
-      <div className="p-4 border-b border-white/5 flex items-center justify-between bg-mino-surface/20">
+    <div className="flex h-full flex-1 flex-col overflow-hidden bg-mino-base">
+      <div className="flex items-center justify-between border-b border-white/5 bg-mino-surface/20 p-4">
         <div className="flex items-center gap-4">
-          <button className="text-[10px] text-[var(--text-tertiary)] hover:text-white transition-colors">
+          <button className="text-[10px] text-[var(--text-tertiary)] transition-colors hover:text-white">
             {t("workspace.noteEditor.workspace")}
           </button>
           <span className="text-[10px] text-[var(--text-tertiary)]">/</span>
-          <span className="text-[10px] text-white font-medium truncate max-w-[200px]">
+          <span className="max-w-[220px] truncate text-[10px] font-medium text-white">
             {noteSummary.path}
           </span>
         </div>
         <div className="flex items-center gap-3">
           {saving ? (
-            <span className="text-[10px] text-mino-purple flex items-center gap-1.5 animate-pulse">
+            <span className="flex animate-pulse items-center gap-1.5 text-[10px] text-mino-purple">
               <span className="h-1.5 w-1.5 rounded-full bg-mino-purple" />
               {t("workspace.noteEditor.saving")}
             </span>
           ) : lastSaved ? (
-            <span className="text-[10px] text-success flex items-center gap-1.5">
+            <span className="flex items-center gap-1.5 text-[10px] text-success">
               <span className="h-1.5 w-1.5 rounded-full bg-success" />
               {t("workspace.noteEditor.savedAt", {
                 time: lastSaved.toLocaleTimeString([], {
@@ -145,36 +229,37 @@ export function NoteEditor({ profile, noteSummary, onSave }: NoteEditorProps) {
               })}
             </span>
           ) : null}
-          <button className="button-secondary text-[10px] px-3 py-1">
+          <button className="button-secondary px-3 py-1 text-[10px]">
             {t("workspace.noteEditor.share")}
           </button>
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-8 md:p-12 lg:p-16 max-w-4xl mx-auto w-full">
+      <div className="mx-auto w-full max-w-4xl flex-1 overflow-y-auto p-8 md:p-12 lg:p-16">
         <input
           type="text"
-          value={noteSummary.title}
-          readOnly
-          className="w-full bg-transparent border-none text-4xl font-display font-bold text-white focus:outline-none mb-8"
+          value={title}
+          onChange={(event) => commitDraft({ title: event.target.value })}
+          className="mb-6 w-full bg-transparent text-4xl font-display font-bold text-white placeholder:text-[var(--text-tertiary)] focus:outline-none"
+          placeholder={t("workspace.noteEditor.untitled")}
         />
 
         <textarea
-          className="w-full h-full bg-transparent border-none text-[15px] leading-relaxed text-[var(--text-secondary)] focus:outline-none resize-none min-h-[500px]"
-          value={content}
-          onChange={(e) => handleContentChange(e.target.value)}
+          className="min-h-[500px] h-full w-full resize-none bg-transparent text-[15px] leading-relaxed text-[var(--text-secondary)] focus:outline-none"
+          value={body}
+          onChange={(event) => commitDraft({ body: event.target.value })}
           spellCheck={false}
           placeholder={t("workspace.noteEditor.startWriting")}
         />
       </div>
 
-      <div className="p-3 border-t border-white/5 flex items-center justify-between text-[10px] text-[var(--text-tertiary)] uppercase tracking-widest font-bold">
+      <div className="flex items-center justify-between border-t border-white/5 p-3 text-[10px] font-bold uppercase tracking-widest text-[var(--text-tertiary)]">
         <div className="flex items-center gap-4">
           <span>
-            {t("nav.words")}: {content.split(/\s+/).filter(Boolean).length}
+            {t("nav.words")}: {bodyWordCount}
           </span>
           <span>
-            {t("nav.chars")}: {content.length}
+            {t("nav.chars")}: {body.length}
           </span>
         </div>
         <div className="flex items-center gap-4">

@@ -7,6 +7,8 @@ interface NoteListProps {
   notes: NoteSummary[];
   loading: boolean;
   selectedPath?: string;
+  searchQuery: string;
+  onSearchQueryChange: (value: string) => void;
   onSelectNote: (note: NoteSummary) => void;
 }
 
@@ -14,6 +16,8 @@ export function NoteList({
   notes,
   loading,
   selectedPath,
+  searchQuery,
+  onSearchQueryChange,
   onSelectNote,
 }: NoteListProps) {
   const { t } = useTranslation();
@@ -28,6 +32,8 @@ export function NoteList({
           <input
             type="text"
             placeholder={t("nav.searchPlaceholder")}
+            value={searchQuery}
+            onChange={(event) => onSearchQueryChange(event.target.value)}
             className="w-full bg-white/5 border border-white/5 rounded-mino-md py-1.5 pl-9 pr-4 text-xs text-white focus:outline-none focus:border-mino-purple/40 focus:ring-1 focus:ring-mino-purple/40 transition-all"
           />
         </div>

@@ -10,6 +10,11 @@
 - local prototype reference in this repo (`prototype/`)
 - local Next.js dev app (`apps/web`, default port `5173`)
 
+## Documentation Source Behavior
+
+- Website docs route (`/docs`) now renders repository content from `/docs` only.
+- `/docstart` remains an implementation/runbook track in-repo and is not rendered in the website docs index.
+
 ## Client-To-Server Contract
 
 Clients connect to a Mino server URL and use:
@@ -59,3 +64,11 @@ Open `http://localhost:5173/link`.
 Current state:
 - route is implemented and active
 - URL prefill + verify/link + localStorage persistence + workspace redirect are in place
+- connected users are routed to workspace directly from landing
+- workspace includes inline server switcher + settings entry in the left sidebar
+- note title is edited directly (Obsidian-style title field synced to markdown `#` heading)
+- command palette + hotkeys are wired in workspace (`Cmd/Ctrl+K`, `N`, `J`, `,`)
+- AI chat panel is available in workspace and backed by `/api/v1/agent/chat`
+- channels (Telegram/WhatsApp) and plugin install/config are available in Settings
+- channel provider fields are now capability-driven from `GET /api/v1/channels/providers`
+- plugin runtime state is available via `GET /api/v1/plugins/runtime`

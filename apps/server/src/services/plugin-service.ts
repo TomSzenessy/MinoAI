@@ -1,63 +1,138 @@
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { existsSync, rmSync } from "node:fs";
+import {
+  buildPluginRuntimeRegistry,
+  createInstalledManifest,
+  discoverBundledPluginCatalog,
+  ensurePluginsDir,
+  loadInstalledPlugins,
+  resolvePluginInstallDir,
+  writeInstalledManifest,
+} from "../plugins/registry";
+import type {
+  InstalledPluginManifest,
+  PluginCatalogManifest,
+  PluginRuntimeRegistry,
+} from "../plugins/types";
 
-export interface PluginManifest {
+export interface PluginManifest extends InstalledPluginManifest {}
+
+export interface PluginCatalogItem {
   id: string;
   name: string;
   version: string;
-  description?: string;
+  description: string;
+  source: "builtin";
+  defaultEnabled: boolean;
+  channels?: string[];
+  configSchema?: Record<string, unknown>;
+}
+
+export interface ResolvedPluginCatalogItem extends PluginCatalogItem {
+  installed: boolean;
   enabled: boolean;
 }
 
+function toCatalogItem(entry: PluginCatalogManifest): PluginCatalogItem {
+  return {
+    id: entry.id,
+    name: entry.name,
+    version: entry.version,
+    description: entry.description,
+    source: entry.source,
+    defaultEnabled: entry.defaultEnabled,
+    channels: entry.channels,
+    configSchema: entry.configSchema,
+  };
+}
+
 export class PluginService {
-  private readonly pluginsDir: string;
+  private readonly dataDir: string;
 
   constructor(dataDir: string) {
-    this.pluginsDir = join(dataDir, "plugins");
-    if (!existsSync(this.pluginsDir)) {
-      mkdirSync(this.pluginsDir, { recursive: true });
-    }
+    this.dataDir = dataDir;
+    ensurePluginsDir(dataDir);
   }
 
   async listPlugins(): Promise<PluginManifest[]> {
-    if (!existsSync(this.pluginsDir)) return [];
+    return loadInstalledPlugins(this.dataDir);
+  }
 
-    const entries = readdirSync(this.pluginsDir, { withFileTypes: true });
-    const plugins: PluginManifest[] = [];
-
-    for (const entry of entries) {
-      if (entry.isDirectory()) {
-        const manifestPath = join(this.pluginsDir, entry.name, "manifest.json");
-        if (existsSync(manifestPath)) {
-          try {
-            const manifest = JSON.parse(readFileSync(manifestPath, "utf-8"));
-            plugins.push({
-              ...manifest,
-              id: entry.name,
-              enabled: manifest.enabled ?? true,
-            });
-          } catch (err) {
-            console.error(`Failed to read manifest for plugin ${entry.name}:`, err);
-          }
-        }
-      }
-    }
-
-    return plugins;
+  async runtimeRegistry(): Promise<PluginRuntimeRegistry> {
+    return buildPluginRuntimeRegistry(this.dataDir);
   }
 
   async togglePlugin(id: string, enabled: boolean): Promise<PluginManifest | null> {
-    const manifestPath = join(this.pluginsDir, id, "manifest.json");
-    if (!existsSync(manifestPath)) return null;
-
-    try {
-      const manifest = JSON.parse(readFileSync(manifestPath, "utf-8"));
-      manifest.enabled = enabled;
-      writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
-      return { ...manifest, id, enabled };
-    } catch (err) {
-      console.error(`Failed to toggle plugin ${id}:`, err);
+    const plugins = await this.listPlugins();
+    const manifest = plugins.find((plugin) => plugin.id === id);
+    if (!manifest) {
       return null;
     }
+
+    const next: PluginManifest = {
+      ...manifest,
+      enabled,
+      updatedAt: new Date().toISOString(),
+    };
+    writeInstalledManifest(this.dataDir, id, next);
+    return next;
+  }
+
+  async listCatalog(): Promise<ResolvedPluginCatalogItem[]> {
+    const catalog = discoverBundledPluginCatalog().map(toCatalogItem);
+    const installed = await this.listPlugins();
+    const installedMap = new Map(installed.map((plugin) => [plugin.id, plugin]));
+
+    return catalog.map((entry) => {
+      const manifest = installedMap.get(entry.id);
+      return {
+        ...entry,
+        installed: Boolean(manifest),
+        enabled: manifest?.enabled ?? false,
+      };
+    });
+  }
+
+  async installPlugin(id: string): Promise<PluginManifest | null> {
+    const catalogItem = discoverBundledPluginCatalog().find((entry) => entry.id === id);
+    if (!catalogItem) {
+      return null;
+    }
+
+    const existing = (await this.listPlugins()).find((entry) => entry.id === id);
+    const manifest = createInstalledManifest(catalogItem, existing);
+    writeInstalledManifest(this.dataDir, id, manifest);
+    return manifest;
+  }
+
+  async uninstallPlugin(id: string): Promise<boolean> {
+    const pluginDir = resolvePluginInstallDir(this.dataDir, id);
+    if (!existsSync(pluginDir)) {
+      return false;
+    }
+
+    rmSync(pluginDir, { recursive: true, force: true });
+    return true;
+  }
+
+  async updatePluginConfig(
+    id: string,
+    config: Record<string, unknown>,
+  ): Promise<PluginManifest | null> {
+    const manifest = (await this.listPlugins()).find((plugin) => plugin.id === id);
+    if (!manifest) {
+      return null;
+    }
+
+    const next: PluginManifest = {
+      ...manifest,
+      config: {
+        ...(manifest.config ?? {}),
+        ...config,
+      },
+      updatedAt: new Date().toISOString(),
+    };
+
+    writeInstalledManifest(this.dataDir, id, next);
+    return next;
   }
 }

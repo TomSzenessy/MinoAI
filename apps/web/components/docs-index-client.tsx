@@ -17,12 +17,31 @@ interface DocsIndexClientProps {
 export function DocsIndexClient({ pages }: DocsIndexClientProps) {
   const { t } = useTranslation();
 
-  const groups = {
-    gettingStarted: pages.filter((page) => page.relativePath.startsWith("getting-started/")),
-    reference: pages.filter((page) => page.relativePath.startsWith("reference/")),
-    frontend: pages.filter((page) => page.relativePath === "frontend.md"),
-    root: pages.filter((page) => page.relativePath === "README.md"),
-  };
+  const overviewOrder = [
+    "README.md",
+    "architecture.md",
+    "frontend.md",
+    "server.md",
+    "ai-agent.md",
+  ] as const;
+  const referenceOrder = [
+    "relay.md",
+    "security.md",
+    "design-system.md",
+    "roadmap.md",
+  ] as const;
+
+  const overview = overviewOrder
+    .map((path) => pages.find((page) => page.relativePath === path))
+    .filter((page): page is DocItem => Boolean(page));
+  const reference = referenceOrder
+    .map((path) => pages.find((page) => page.relativePath === path))
+    .filter((page): page is DocItem => Boolean(page));
+  const uncategorized = pages.filter(
+    (page) =>
+      !overview.some((entry) => entry.href === page.href) &&
+      !reference.some((entry) => entry.href === page.href),
+  );
 
   return (
     <main className="relative min-h-screen overflow-hidden px-6 py-8 md:px-10">
@@ -54,7 +73,7 @@ export function DocsIndexClient({ pages }: DocsIndexClientProps) {
               {t("docs.gettingStarted")}
             </h2>
             <ul className="space-y-2">
-              {[...groups.root, ...groups.gettingStarted].map((page) => (
+              {overview.map((page) => (
                 <li key={page.href}>
                   <Link
                     href={page.href}
@@ -71,7 +90,7 @@ export function DocsIndexClient({ pages }: DocsIndexClientProps) {
           <section className="glass-card rounded-mino-2xl p-6">
             <h2 className="mb-1 font-display text-2xl font-semibold text-[var(--text-primary)]">{t("docs.reference")}</h2>
             <ul className="space-y-2">
-              {[...groups.reference, ...groups.frontend].map((page) => (
+              {[...reference, ...uncategorized].map((page) => (
                 <li key={page.href}>
                   <Link
                     href={page.href}

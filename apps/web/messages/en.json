@@ -4,6 +4,7 @@
     "features": "Features",
     "howItWorks": "How It Works",
     "agent": "AI Agent",
+    "myRelays": "My Relays",
     "stack": "Stack",
     "openSource": "Open Source",
     "getStarted": "Get Started",
@@ -144,6 +145,7 @@
       "general": "General",
       "server": "Server",
       "agent": "Agent",
+      "channels": "Channels",
       "plugins": "Plugins",
       "about": "About"
     },
@@ -169,6 +171,8 @@
     "agent": {
       "title": "AI Agent Configuration",
       "enabled": "Agent Enabled",
+      "runtimeStatus": "Runtime",
+      "statusUnknown": "Status unavailable",
       "model": "Model",
       "apiKey": "API Key",
       "apiKeyPlaceholder": "Enter your API key",
@@ -179,6 +183,27 @@
       "delete": "Delete notes",
       "organize": "Auto-organize"
     },
+    "channels": {
+      "title": "Messaging Channels",
+      "subtitle": "Connect Telegram and WhatsApp so the AI agent can process incoming messages.",
+      "provider": "Provider",
+      "name": "Channel Name",
+      "namePlaceholder": "Primary Telegram Bot",
+      "webhookSecret": "Webhook Secret",
+      "webhookSecretPlaceholder": "Shared secret for webhook validation",
+      "botToken": "Telegram Bot Token",
+      "botTokenPlaceholder": "123456:ABC-DEF...",
+      "accessToken": "WhatsApp Access Token",
+      "accessTokenPlaceholder": "EAAB...",
+      "phoneNumberId": "WhatsApp Phone Number ID",
+      "phoneNumberIdPlaceholder": "1029384756",
+      "add": "Add Channel",
+      "remove": "Remove",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "loading": "Loading channels...",
+      "empty": "No channels configured yet."
+    },
     "plugins": {
       "title": "Plugins",
       "subtitle": "Extend Mino with powerful integrations.",
@@ -188,6 +213,10 @@
       "configure": "Configure",
       "close": "Close",
       "save": "Save",
+      "install": "Install",
+      "uninstall": "Uninstall",
+      "availableCatalog": "Available Plugins",
+      "apiKeyPrompt": "Enter API key for this plugin (optional):",
       "loading": "Loading plugins...",
       "emptyServerTitle": "No plugins found on the server.",
       "emptyServerHint": "Add plugins to your server's data directory to see them here.",
@@ -270,7 +299,9 @@
     "statusBar": {
       "defaultServerName": "Mino Server",
       "uptime": "Uptime: {{seconds}}s",
-      "settings": "Settings"
+      "settings": "Settings",
+      "openAgent": "Open Agent",
+      "hideAgent": "Hide Agent"
     },
     "noteList": {
       "syncing": "Syncing notes...",
@@ -283,12 +314,38 @@
       "saving": "Saving...",
       "savedAt": "Saved {{time}}",
       "share": "Share",
+      "untitled": "Untitled",
       "startWriting": "Start writing...",
       "markdown": "Markdown",
       "encoding": "UTF-8"
     },
+    "agent": {
+      "title": "AI Assistant",
+      "close": "Close",
+      "empty": "Ask the assistant to find, summarize, or create notes for you.",
+      "placeholder": "Ask Mino Agent anything about your vault...",
+      "send": "Send",
+      "sending": "Sending...",
+      "error": "Unable to reach the agent.",
+      "promptFindConnections": "Find notes that should be linked together",
+      "promptSummarize": "Summarize the current note",
+      "promptCreateChecklist": "Create note for deployment checklist"
+    },
+    "commandPalette": {
+      "title": "Command Palette",
+      "placeholder": "Search notes and commands...",
+      "empty": "No matching commands or notes.",
+      "newNote": "New note",
+      "toggleAgent": "Toggle AI agent panel",
+      "openSettings": "Open settings",
+      "hintNavigate": "↑↓ Navigate",
+      "hintSelect": "↵ Select",
+      "hintClose": "Esc Close"
+    },
     "sidebar": {
       "title": "Mino Workspace",
+      "selectServer": "Select server",
+      "connectServer": "Connect",
       "library": "Library",
       "files": "Files",
       "localDemoFoldersUnsupported": "Local demo: folders not supported",

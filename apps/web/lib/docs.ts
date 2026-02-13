@@ -19,7 +19,7 @@ function findWorkspaceRoot(start = process.cwd()): string {
   let current = resolve(start);
 
   while (true) {
-    if (hasDirectory(join(current, "docstart"))) {
+    if (hasDirectory(join(current, "docs"))) {
       return current;
     }
 
@@ -37,7 +37,7 @@ function findWorkspaceRoot(start = process.cwd()): string {
 }
 
 function sourceDirectory(): string {
-  return join(findWorkspaceRoot(), "docstart");
+  return join(findWorkspaceRoot(), "docs");
 }
 
 function walkMarkdownFiles(dir: string): string[] {

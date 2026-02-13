@@ -25,15 +25,15 @@ function countMarkdownFiles(dir: string): number {
 }
 
 describe("docs", () => {
-  it("finds docstart when workspace marker file is absent", () => {
+  it("finds docs when workspace marker file is absent", () => {
     const originalCwd = process.cwd();
     const tempRoot = mkdtempSync(join(tmpdir(), "mino-docs-"));
     const nestedCwd = join(tempRoot, "apps", "web");
-    const docFile = join(tempRoot, "docstart", "getting-started", "intro.md");
+    const docFile = join(tempRoot, "docs", "getting-started", "intro.md");
 
     try {
       mkdirSync(nestedCwd, { recursive: true });
-      mkdirSync(join(tempRoot, "docstart", "getting-started"), { recursive: true });
+      mkdirSync(join(tempRoot, "docs", "getting-started"), { recursive: true });
       writeFileSync(docFile, "# Intro\n\nWelcome.");
 
       process.chdir(nestedCwd);
@@ -49,14 +49,14 @@ describe("docs", () => {
     }
   });
 
-  it("indexes only docstart markdown pages", () => {
+  it("indexes only docs markdown pages", () => {
     const pages = getAllDocPages();
 
     const workspaceRoot = resolve(process.cwd(), "../..");
-    const docstartCount = countMarkdownFiles(join(workspaceRoot, "docstart"));
+    const docsCount = countMarkdownFiles(join(workspaceRoot, "docs"));
 
-    expect(pages.length).toBe(docstartCount);
-    expect(pages.every((page) => !page.relativePath.startsWith("docs/"))).toBe(true);
+    expect(pages.length).toBe(docsCount);
+    expect(pages.every((page) => !page.relativePath.startsWith("docstart/"))).toBe(true);
   });
 
   it("resolves index page and href", () => {

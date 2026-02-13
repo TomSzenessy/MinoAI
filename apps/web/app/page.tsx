@@ -7,7 +7,7 @@ import { LandingBg } from "@/components/landing-bg";
 import { Navbar } from "@/components/navbar";
 import { useTranslation } from "@/components/i18n-provider";
 import type { TranslationKey } from "@/lib/i18n";
-import { getActiveProfile } from "@/lib/storage";
+import { getFallbackProfile } from "@/lib/storage";
 
 const SECTION_IDS = [
   "hero",
@@ -26,7 +26,7 @@ export default function LandingPage() {
   const [activeProfileId, setActiveProfileId] = useState<string | null>(null);
 
   useEffect(() => {
-    const profile = getActiveProfile();
+    const profile = getFallbackProfile();
     if (profile) {
       setActiveProfileId(profile.id);
     }
@@ -189,6 +189,14 @@ export default function LandingPage() {
         sections={navSections}
         activeSection={activeSection}
         onNavigate={navigateTo}
+        getStartedHref={
+          activeProfileId
+            ? `/workspace?profile=${encodeURIComponent(activeProfileId)}`
+            : "/workspace"
+        }
+        getStartedLabel={activeProfileId ? t("hero.ctaResume") : t("nav.getStarted")}
+        relaysHref={activeProfileId ? "/settings?tab=server" : undefined}
+        relaysLabel={activeProfileId ? t("nav.myRelays") : undefined}
       />
 
       <LandingSection id="hero" className="pt-32 pb-24 md:pt-36">
@@ -212,12 +220,17 @@ export default function LandingPage() {
               href={
                 activeProfileId
                   ? `/workspace?profile=${activeProfileId}`
-                  : "/workspace?mode=local"
+                  : "/workspace"
               }
               className="button-primary px-8 py-3 text-lg"
             >
-              {activeProfileId ? t("hero.ctaResume") : t("hero.ctaPrimary")}
+              {activeProfileId ? t("hero.ctaResume") : t("nav.getStarted")}
             </Link>
+            {activeProfileId ? (
+              <Link href="/settings?tab=server" className="button-secondary px-8 py-3 text-lg">
+                {t("nav.myRelays")}
+              </Link>
+            ) : null}
             <a
               href="https://github.com/ToumS/Mino"
               target="_blank"

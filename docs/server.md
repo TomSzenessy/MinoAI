@@ -64,7 +64,7 @@ The server bundles the same web interface as mino.ink:
 http://localhost:3000/           → Full web UI (identical to mino.ink)
 http://localhost:3000/link       → Dedicated server-link handler
 http://localhost:3000/workspace  → Workspace shell
-http://localhost:3000/docs       → Docs explorer (blueprint + docstart)
+http://localhost:3000/docs       → Docs explorer (repository `/docs` content)
 http://localhost:3000/api/v1/system/setup → First-run setup payload
 http://localhost:3000/api/v1/    → REST API
 http://localhost:3000/ws         → WebSocket
@@ -175,58 +175,58 @@ All configuration is editable through the web UI (**Settings** page). No need to
 
 ## Plugin System
 
-### Plugin Lifecycle
+### Plugin Lifecycle (Current Implementation)
 
-Inspired by the OpenClaw plugin architecture (`discovery.ts` → `install.ts` → `loader.ts` → `registry.ts`):
+The current runtime is manifest-driven and follows the same separation model used by OpenClaw (discovery/install/registry), adapted to Mino:
 
 ```
-Browse marketplace (UI)  →  "Install" button click
-  → POST /api/v1/plugins/install { name: "web-search" }
-    → Server downloads plugin from npm / GitHub
-      → Extracts to /data/plugins/web-search/
-        → Loads plugin, registers tools with Agent Runtime
-          → WebSocket push: "Plugin installed ✓"
-            → Immediately available on ALL channels
+Server startup
+  → Discover bundled catalog from src/plugins/builtin/*/plugin.json
+  → Read installed manifests from /data/plugins/<id>/manifest.json
+  → Build runtime registry (plugins + enabled ids + diagnostics)
+
+Install flow
+  → POST /api/v1/plugins/install { id }
+  → Write installed manifest to /data/plugins/<id>/manifest.json
+  → Plugin is immediately visible in list/runtime endpoints
 ```
 
-### Plugin Install API
+Bundled catalog currently includes:
+- `web-search`
+- `obsidian-import`
+- `youtube-transcript`
+- `telegram-bot`
+- `whatsapp-bot`
+
+### Plugin API (Current)
 
 ```yaml
-# === PLUGINS ===
-GET    /api/v1/plugins                    # List installed plugins
-GET    /api/v1/plugins/marketplace        # Browse available plugins
-POST   /api/v1/plugins/install            # Install a plugin by name
-DELETE /api/v1/plugins/:name              # Uninstall a plugin
-POST   /api/v1/plugins/:name/update       # Update a plugin
-GET    /api/v1/plugins/:name/config       # Get plugin config
-PUT    /api/v1/plugins/:name/config       # Update plugin config
+GET    /api/v1/plugins                  # installed plugin manifests
+GET    /api/v1/plugins/catalog          # bundled catalog + installed/enabled flags
+GET    /api/v1/plugins/runtime          # runtime registry snapshot
+POST   /api/v1/plugins/install          # install from bundled catalog by id
+POST   /api/v1/plugins/:id/toggle       # enable/disable installed plugin
+PUT    /api/v1/plugins/:id/config       # merge config into manifest
+DELETE /api/v1/plugins/:id              # uninstall plugin (remove directory)
 ```
 
-### Plugin Example
+### Channel API (Current)
 
-```typescript
-// /data/plugins/whisper-local/index.ts
-import { definePlugin } from '@mino-ink/plugin-sdk';
+Telegram and WhatsApp are implemented as provider adapters with a shared registry:
 
-export default definePlugin({
-  name: 'whisper-local',
-  description: 'Transcribe audio files using locally-installed Whisper',
-  requiresResources: { ram: '4GB', binary: 'whisper' },
-  tools: [
-    {
-      name: 'transcribe_audio',
-      description: 'Transcribe an audio file to text',
-      parameters: {
-        filePath: { type: 'string', description: 'Path to audio file' },
-        language: { type: 'string', default: 'en' },
-      },
-      execute: async ({ filePath, language }) => {
-        // Uses locally installed Whisper binary
-      },
-    },
-  ],
-});
+```yaml
+GET    /api/v1/channels                    # list channels
+GET    /api/v1/channels/providers          # provider capability metadata
+POST   /api/v1/channels                    # create/update channel
+POST   /api/v1/channels/:id/toggle         # enable/disable channel
+DELETE /api/v1/channels/:id                # delete channel
+POST   /api/v1/channels/webhook/:provider  # public webhook ingestion
 ```
+
+Provider adapters are responsible for:
+1. credential sanitization
+2. credential validation
+3. inbound message extraction for agent handoff
 
 ---
 
@@ -242,57 +242,54 @@ export default definePlugin({
 6. **Pagination** — cursor-based for lists
 7. **Rate limiting** — per-API-key, configurable
 
-### API Endpoints
+### API Endpoints (Current)
 
 ```yaml
-# === NOTES ===
-GET    /api/v1/notes                     # List notes (paginated, filterable)
-GET    /api/v1/notes/:path               # Get note content + metadata
-POST   /api/v1/notes                     # Create a new note
-PUT    /api/v1/notes/:path               # Replace entire note content
-PATCH  /api/v1/notes/:path               # Partial update (frontmatter, content section)
-DELETE /api/v1/notes/:path               # Delete note (soft delete by default)
-PATCH  /api/v1/notes/:path/move          # Move/rename note
+# Public
+GET    /api/v1/health
+GET    /api/v1/system/setup
+POST   /api/v1/channels/webhook/:provider
 
-# === SEARCH ===
-GET    /api/v1/search?q=...&limit=...    # Full-text search
-POST   /api/v1/search/semantic           # Semantic search (embeddings)
+# Auth / setup
+POST   /api/v1/auth/verify
+POST   /api/v1/auth/link
+POST   /api/v1/auth/pair-code/rotate
 
-# === FOLDERS ===
-GET    /api/v1/tree                      # Get entire folder tree (compacted)
-GET    /api/v1/tree/:path                # Get subtree
-POST   /api/v1/folders                   # Create folder
-DELETE /api/v1/folders/:path             # Delete folder (+ contents)
+# System
+GET    /api/v1/system/capabilities
+GET    /api/v1/system/config
 
-# === TAGS ===
-GET    /api/v1/tags                      # List all tags with counts
-GET    /api/v1/tags/:tag/notes           # Get notes with specific tag
+# Notes
+GET    /api/v1/notes
+GET    /api/v1/notes/:path
+POST   /api/v1/notes
+PUT    /api/v1/notes/:path
+DELETE /api/v1/notes/:path
 
-# === AGENT ===
-POST   /api/v1/agent/chat               # Send message to AI agent
-GET    /api/v1/agent/suggestions         # Get organization suggestions
-POST   /api/v1/agent/organize            # Trigger auto-organization
+# Search + folders
+GET    /api/v1/search?q=...&limit=...&folder=...
+GET    /api/v1/folders/tree
+GET    /api/v1/folders/tree/:path
 
-# === PLUGINS ===
-GET    /api/v1/plugins                   # List installed plugins
-GET    /api/v1/plugins/marketplace       # Browse available plugins
-POST   /api/v1/plugins/install           # Install a plugin
-DELETE /api/v1/plugins/:name             # Uninstall a plugin
-POST   /api/v1/plugins/:name/update      # Update a plugin
+# Agent
+GET    /api/v1/agent/status
+POST   /api/v1/agent/chat
 
-# === AUTH ===
-POST   /api/v1/auth/link                # Link server to mino.ink account
-POST   /api/v1/auth/verify              # Verify API key / credentials
-POST   /api/v1/auth/refresh             # Refresh JWT token
-POST   /api/v1/auth/api-keys            # Generate additional API key
-DELETE /api/v1/auth/api-keys/:id        # Revoke API key
+# Plugins
+GET    /api/v1/plugins
+GET    /api/v1/plugins/catalog
+GET    /api/v1/plugins/runtime
+POST   /api/v1/plugins/install
+POST   /api/v1/plugins/:id/toggle
+PUT    /api/v1/plugins/:id/config
+DELETE /api/v1/plugins/:id
 
-# === SYSTEM ===
-GET    /api/v1/health                    # Health check
-GET    /api/v1/stats                     # Server stats (note count, storage)
-GET    /api/v1/config                    # Public server config
-GET    /api/v1/system/capabilities       # Detected resources & enabled features
-GET    /api/v1/system/setup              # First-run setup info + credentials
+# Channels (protected)
+GET    /api/v1/channels
+GET    /api/v1/channels/providers
+POST   /api/v1/channels
+POST   /api/v1/channels/:id/toggle
+DELETE /api/v1/channels/:id
 ```
 
 ### Note Object Schema

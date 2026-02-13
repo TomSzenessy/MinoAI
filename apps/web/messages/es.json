@@ -4,6 +4,7 @@
     "features": "Características",
     "howItWorks": "Cómo Funciona",
     "agent": "Agente IA",
+    "myRelays": "Mis Relays",
     "stack": "Stack",
     "openSource": "Código Abierto",
     "getStarted": "Empezar",
@@ -144,6 +145,7 @@
       "general": "General",
       "server": "Servidor",
       "agent": "Agente",
+      "channels": "Canales",
       "plugins": "Plugins",
       "about": "Acerca de"
     },
@@ -169,6 +171,8 @@
     "agent": {
       "title": "Configuración del Agente IA",
       "enabled": "Agente Habilitado",
+      "runtimeStatus": "Runtime",
+      "statusUnknown": "Estado no disponible",
       "model": "Modelo",
       "apiKey": "Clave API",
       "apiKeyPlaceholder": "Introduce tu clave API",
@@ -179,6 +183,27 @@
       "delete": "Eliminar notas",
       "organize": "Auto-organizar"
     },
+    "channels": {
+      "title": "Canales de Mensajería",
+      "subtitle": "Conecta Telegram y WhatsApp para que el agente IA procese mensajes entrantes.",
+      "provider": "Proveedor",
+      "name": "Nombre del canal",
+      "namePlaceholder": "Bot principal de Telegram",
+      "webhookSecret": "Secreto del webhook",
+      "webhookSecretPlaceholder": "Secreto compartido para validar webhooks",
+      "botToken": "Token del bot de Telegram",
+      "botTokenPlaceholder": "123456:ABC-DEF...",
+      "accessToken": "Token de acceso de WhatsApp",
+      "accessTokenPlaceholder": "EAAB...",
+      "phoneNumberId": "ID del número de WhatsApp",
+      "phoneNumberIdPlaceholder": "1029384756",
+      "add": "Agregar canal",
+      "remove": "Eliminar",
+      "enabled": "Habilitado",
+      "disabled": "Deshabilitado",
+      "loading": "Cargando canales...",
+      "empty": "Aún no hay canales configurados."
+    },
     "plugins": {
       "title": "Plugins",
       "subtitle": "Extiende Mino con integraciones potentes.",
@@ -188,6 +213,10 @@
       "configure": "Configurar",
       "close": "Cerrar",
       "save": "Guardar",
+      "install": "Instalar",
+      "uninstall": "Desinstalar",
+      "availableCatalog": "Plugins disponibles",
+      "apiKeyPrompt": "Introduce una clave API para este plugin (opcional):",
       "loading": "Cargando plugins...",
       "emptyServerTitle": "No se encontraron plugins en el servidor.",
       "emptyServerHint": "Agrega plugins al directorio de datos de tu servidor para verlos aquí.",
@@ -267,7 +296,9 @@
     "statusBar": {
       "defaultServerName": "Servidor Mino",
       "uptime": "Tiempo activo: {{seconds}}s",
-      "settings": "Configuración"
+      "settings": "Configuración",
+      "openAgent": "Abrir agente",
+      "hideAgent": "Ocultar agente"
     },
     "noteList": {
       "syncing": "Sincronizando notas...",
@@ -280,12 +311,38 @@
       "saving": "Guardando...",
       "savedAt": "Guardado {{time}}",
       "share": "Compartir",
+      "untitled": "Sin título",
       "startWriting": "Empieza a escribir...",
       "markdown": "Markdown",
       "encoding": "UTF-8"
     },
+    "agent": {
+      "title": "Asistente IA",
+      "close": "Cerrar",
+      "empty": "Pídele al asistente que encuentre, resuma o cree notas para ti.",
+      "placeholder": "Pregunta a Mino Agent lo que quieras sobre tu bóveda...",
+      "send": "Enviar",
+      "sending": "Enviando...",
+      "error": "No se pudo contactar al agente.",
+      "promptFindConnections": "Encuentra notas que deberían estar conectadas",
+      "promptSummarize": "Resume la nota actual",
+      "promptCreateChecklist": "Crear nota para checklist de despliegue"
+    },
+    "commandPalette": {
+      "title": "Paleta de Comandos",
+      "placeholder": "Buscar notas y comandos...",
+      "empty": "No hay comandos o notas que coincidan.",
+      "newNote": "Nueva nota",
+      "toggleAgent": "Alternar panel del agente IA",
+      "openSettings": "Abrir configuración",
+      "hintNavigate": "↑↓ Navegar",
+      "hintSelect": "↵ Seleccionar",
+      "hintClose": "Esc Cerrar"
+    },
     "sidebar": {
       "title": "Workspace de Mino",
+      "selectServer": "Seleccionar servidor",
+      "connectServer": "Conectar",
       "library": "Biblioteca",
       "files": "Archivos",
       "localDemoFoldersUnsupported": "Demo local: las carpetas no están disponibles",

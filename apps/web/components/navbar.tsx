@@ -16,9 +16,21 @@ interface NavbarProps {
   sections: NavbarSection[];
   activeSection: string;
   onNavigate: (sectionId: string) => void;
+  getStartedHref?: string;
+  getStartedLabel?: string;
+  relaysHref?: string;
+  relaysLabel?: string;
 }
 
-export function Navbar({ sections, activeSection, onNavigate }: NavbarProps) {
+export function Navbar({
+  sections,
+  activeSection,
+  onNavigate,
+  getStartedHref = "/link",
+  getStartedLabel,
+  relaysHref,
+  relaysLabel,
+}: NavbarProps) {
   const { locale, setLocale, t } = useTranslation();
   const { resolvedTheme, setTheme } = useTheme();
 
@@ -122,8 +134,14 @@ export function Navbar({ sections, activeSection, onNavigate }: NavbarProps) {
             <span className="theme-toggle-icon">{themeIcon}</span>
           </button>
 
-          <Link href="/link" className="button-primary text-sm">
-            {t("nav.getStarted")}
+          {relaysHref ? (
+            <Link href={relaysHref} className="button-secondary text-sm">
+              {relaysLabel ?? t("nav.myRelays")}
+            </Link>
+          ) : null}
+
+          <Link href={getStartedHref} className="button-primary text-sm">
+            {getStartedLabel ?? t("nav.getStarted")}
           </Link>
         </div>
 
@@ -175,8 +193,22 @@ export function Navbar({ sections, activeSection, onNavigate }: NavbarProps) {
           {themeIcon} {t("settings.general.theme")}
         </button>
 
-        <Link href="/link" className="button-primary mt-2" onClick={() => setMobileOpen(false)}>
-          {t("nav.getStarted")}
+        {relaysHref ? (
+          <Link
+            href={relaysHref}
+            className="button-secondary mt-2"
+            onClick={() => setMobileOpen(false)}
+          >
+            {relaysLabel ?? t("nav.myRelays")}
+          </Link>
+        ) : null}
+
+        <Link
+          href={getStartedHref}
+          className="button-primary mt-2"
+          onClick={() => setMobileOpen(false)}
+        >
+          {getStartedLabel ?? t("nav.getStarted")}
         </Link>
       </aside>
     </>

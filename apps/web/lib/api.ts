@@ -50,6 +50,61 @@ export interface PluginManifest {
   version: string;
   description?: string;
   enabled: boolean;
+  config?: Record<string, unknown>;
+}
+
+export interface PluginCatalogItem {
+  id: string;
+  name: string;
+  version: string;
+  description: string;
+  source: "builtin";
+  defaultEnabled: boolean;
+  installed: boolean;
+  enabled: boolean;
+}
+
+export interface AgentToolAction {
+  type: "search" | "read" | "create";
+  summary: string;
+  path?: string;
+}
+
+export interface AgentChatPayload {
+  reply: string;
+  actions: AgentToolAction[];
+  relatedNotes: Array<{ path: string; title: string }>;
+  model: string;
+  provider: string;
+  createdAt: string;
+}
+
+export interface AgentStatusPayload {
+  enabled: boolean;
+  provider: string;
+  model: string;
+}
+
+export type ChannelProvider = "telegram" | "whatsapp";
+
+export interface ChannelConfig {
+  id: string;
+  type: ChannelProvider;
+  name: string;
+  accountId?: string;
+  enabled: boolean;
+  webhookSecret: string;
+  credentials: Record<string, string>;
+  settings?: Record<string, string | number | boolean>;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ChannelProviderCapabilities {
+  provider: ChannelProvider;
+  label: string;
+  requiredCredentials: string[];
+  optionalCredentials: string[];
 }
 
 export interface TreeItem {
@@ -329,6 +384,40 @@ export async function fetchPlugins(
   return response.data;
 }
 
+export async function fetchPluginCatalog(
+  serverUrl: string,
+  apiKey: string,
+): Promise<PluginCatalogItem[]> {
+  const response = await requestJson<{ success: true; data: PluginCatalogItem[] }>(
+    serverUrl,
+    "/api/v1/plugins/catalog",
+    {
+      method: "GET",
+      headers: authHeaders(apiKey),
+    },
+  );
+
+  return response.data;
+}
+
+export async function installPluginOnServer(
+  serverUrl: string,
+  apiKey: string,
+  id: string,
+): Promise<PluginManifest> {
+  const response = await requestJson<{ success: true; data: PluginManifest }>(
+    serverUrl,
+    "/api/v1/plugins/install",
+    {
+      method: "POST",
+      headers: authHeaders(apiKey),
+      body: JSON.stringify({ id }),
+    },
+  );
+
+  return response.data;
+}
+
 export async function togglePluginOnServer(
   serverUrl: string,
   apiKey: string,
@@ -346,4 +435,212 @@ export async function togglePluginOnServer(
   );
 
   return response.data;
+}
+
+export async function uninstallPluginOnServer(
+  serverUrl: string,
+  apiKey: string,
+  id: string,
+): Promise<void> {
+  await requestJson<{ success: true; data: { deleted: string } }>(
+    serverUrl,
+    `/api/v1/plugins/${encodeURIComponent(id)}`,
+    {
+      method: "DELETE",
+      headers: authHeaders(apiKey),
+    },
+  );
+}
+
+export async function updatePluginConfigOnServer(
+  serverUrl: string,
+  apiKey: string,
+  id: string,
+  config: Record<string, unknown>,
+): Promise<PluginManifest> {
+  const response = await requestJson<{ success: true; data: PluginManifest }>(
+    serverUrl,
+    `/api/v1/plugins/${encodeURIComponent(id)}/config`,
+    {
+      method: "PUT",
+      headers: authHeaders(apiKey),
+      body: JSON.stringify({ config }),
+    },
+  );
+
+  return response.data;
+}
+
+function buildLocalAgentReply(message: string): AgentChatPayload {
+  const topic = message.trim() || "your vault";
+  return {
+    reply: `Local mode response for "${topic}". Connect a server to enable full agent tools.`,
+    actions: [],
+    relatedNotes: [],
+    model: "mino-local-demo",
+    provider: "local",
+    createdAt: new Date().toISOString(),
+  };
+}
+
+export async function fetchAgentStatus(
+  serverUrl: string,
+  apiKey: string,
+): Promise<AgentStatusPayload> {
+  if (serverUrl.startsWith("local://")) {
+    return {
+      enabled: false,
+      provider: "local",
+      model: "mino-local-demo",
+    };
+  }
+
+  const response = await requestJson<{ success: true; data: AgentStatusPayload }>(
+    serverUrl,
+    "/api/v1/agent/status",
+    {
+      method: "GET",
+      headers: authHeaders(apiKey),
+    },
+  );
+
+  return response.data;
+}
+
+export async function sendAgentChat(
+  serverUrl: string,
+  apiKey: string,
+  input: {
+    message: string;
+    notePath?: string;
+    channel?: ChannelProvider | "web";
+  },
+): Promise<AgentChatPayload> {
+  if (serverUrl.startsWith("local://")) {
+    return buildLocalAgentReply(input.message);
+  }
+
+  const response = await requestJson<{ success: true; data: AgentChatPayload }>(
+    serverUrl,
+    "/api/v1/agent/chat",
+    {
+      method: "POST",
+      headers: authHeaders(apiKey),
+      body: JSON.stringify(input),
+    },
+  );
+
+  return response.data;
+}
+
+export async function fetchChannels(
+  serverUrl: string,
+  apiKey: string,
+): Promise<ChannelConfig[]> {
+  if (serverUrl.startsWith("local://")) {
+    return [];
+  }
+
+  const response = await requestJson<{ success: true; data: ChannelConfig[] }>(
+    serverUrl,
+    "/api/v1/channels",
+    {
+      method: "GET",
+      headers: authHeaders(apiKey),
+    },
+  );
+
+  return response.data;
+}
+
+export async function fetchChannelProviders(
+  serverUrl: string,
+  apiKey: string,
+): Promise<ChannelProviderCapabilities[]> {
+  if (serverUrl.startsWith("local://")) {
+    return [
+      {
+        provider: "telegram",
+        label: "Telegram",
+        requiredCredentials: [],
+        optionalCredentials: ["botToken"],
+      },
+      {
+        provider: "whatsapp",
+        label: "WhatsApp",
+        requiredCredentials: [],
+        optionalCredentials: ["accessToken", "phoneNumberId"],
+      },
+    ];
+  }
+
+  const response = await requestJson<{ success: true; data: ChannelProviderCapabilities[] }>(
+    serverUrl,
+    "/api/v1/channels/providers",
+    {
+      method: "GET",
+      headers: authHeaders(apiKey),
+    },
+  );
+
+  return response.data;
+}
+
+export async function upsertChannelOnServer(
+  serverUrl: string,
+  apiKey: string,
+  input: {
+    id?: string;
+    type: ChannelProvider;
+    name: string;
+    enabled?: boolean;
+    webhookSecret?: string;
+    credentials?: Record<string, string>;
+  },
+): Promise<ChannelConfig> {
+  const response = await requestJson<{ success: true; data: ChannelConfig }>(
+    serverUrl,
+    "/api/v1/channels",
+    {
+      method: "POST",
+      headers: authHeaders(apiKey),
+      body: JSON.stringify(input),
+    },
+  );
+
+  return response.data;
+}
+
+export async function toggleChannelOnServer(
+  serverUrl: string,
+  apiKey: string,
+  channelId: string,
+  enabled: boolean,
+): Promise<ChannelConfig> {
+  const response = await requestJson<{ success: true; data: ChannelConfig }>(
+    serverUrl,
+    `/api/v1/channels/${encodeURIComponent(channelId)}/toggle`,
+    {
+      method: "POST",
+      headers: authHeaders(apiKey),
+      body: JSON.stringify({ enabled }),
+    },
+  );
+
+  return response.data;
+}
+
+export async function deleteChannelOnServer(
+  serverUrl: string,
+  apiKey: string,
+  channelId: string,
+): Promise<void> {
+  await requestJson<{ success: true; data: { deleted: string } }>(
+    serverUrl,
+    `/api/v1/channels/${encodeURIComponent(channelId)}`,
+    {
+      method: "DELETE",
+      headers: authHeaders(apiKey),
+    },
+  );
 }

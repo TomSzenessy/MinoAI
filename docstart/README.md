@@ -34,7 +34,7 @@ This folder is the practical documentation track for:
 
 ## About `/docs`
 
-`/docs` remains the blueprint/planning track (architecture and long-term product plan).
-`/docstart` is the implementation/use track.
+`/docs` is the website-rendered documentation source (blueprint + product docs).
+`/docstart` is the implementation/use runbook track kept in-repo for operators and local workflows.
 
-On the web client, `test.mino.ink/docs` now exposes both tracks in one browser entrypoint.
+On the web client, `test.mino.ink/docs` now renders `/docs` only.

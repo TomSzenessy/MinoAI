@@ -171,7 +171,7 @@ The server bundles the same web interface as mino.ink:
 http://localhost:3000/           → Full web UI (identical to mino.ink)
 http://localhost:3000/link       → Dedicated link handler
 http://localhost:3000/workspace  → Workspace shell
-http://localhost:3000/docs       → Docs explorer (`/docs` + `/docstart`)
+http://localhost:3000/docs       → Docs explorer (`/docs`)
 http://localhost:3000/api/v1/system/setup → First-run setup payload
 http://localhost:3000/api/v1/    → REST API
 http://localhost:3000/ws         → WebSocket

@@ -1,5 +1,12 @@
 import { describe, expect, it } from "bun:test";
-import { createProfileId, readStore, upsertProfile, type StorageLike } from "../lib/storage";
+import {
+  createProfileId,
+  getFallbackProfile,
+  readStore,
+  setActiveProfile,
+  upsertProfile,
+  type StorageLike,
+} from "../lib/storage";
 
 class MemoryStorage implements StorageLike {
   private readonly map = new Map<string, string>();
@@ -51,5 +58,38 @@ describe("profile storage", () => {
     expect(store.profiles).toHaveLength(1);
     expect(store.profiles[0]?.apiKey).toBe("mino_sk_2");
     expect(store.activeProfileId).toBe(store.profiles[0]?.id ?? null);
+  });
+
+  it("can set active profile and resolve fallback", () => {
+    const storage = new MemoryStorage();
+
+    const first = upsertProfile(
+      {
+        serverUrl: "https://a.example",
+        apiKey: "mino_sk_1",
+        setupComplete: true,
+        source: "manual",
+      },
+      storage,
+    );
+
+    const second = upsertProfile(
+      {
+        serverUrl: "https://b.example",
+        apiKey: "mino_sk_2",
+        setupComplete: true,
+        source: "manual",
+      },
+      storage,
+    );
+
+    const activated = setActiveProfile(first.id, storage);
+    expect(activated?.id).toBe(first.id);
+    expect(getFallbackProfile(storage)?.id).toBe(first.id);
+
+    const resetStore = readStore(storage);
+    resetStore.activeProfileId = null;
+    storage.setItem("mino.linkedServers.v1", JSON.stringify(resetStore));
+    expect(getFallbackProfile(storage)?.id).toBe(first.id);
   });
 });

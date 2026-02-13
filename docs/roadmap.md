@@ -50,8 +50,8 @@ All methods result in:
 
 ### Phase 0: Foundation (Weeks 1-2)
 
-- [ ] Set up monorepo structure (pnpm + Turborepo)
-- [ ] Create `@mino-ink/shared` package (types, utils)
+- [x] Set up monorepo structure (pnpm + Turborepo)
+- [x] Create `@mino-ink/shared` package (types, utils)
 - [ ] Create `@mino-ink/design-tokens` (CSS variables, Tailwind preset)
 - [ ] Set up CI/CD pipeline (GitHub Actions → GHCR + Cloudflare Pages)
 - [ ] Write `design-tokens.css` and `tailwind.preset.js`
@@ -59,43 +59,43 @@ All methods result in:
 
 ### Phase 1: Server Core (Weeks 3-5)
 
-- [ ] Bun + Hono server scaffolding
-- [ ] Auto-bootstrap on first run (credentials, config, folder structure)
-- [ ] File system manager (CRUD on .md files)
+- [x] Bun + Hono server scaffolding
+- [x] Auto-bootstrap on first run (credentials, config, folder structure)
+- [x] File system manager (CRUD on .md files)
 - [ ] SQLite index with FTS5
-- [ ] REST API for notes, folders, search
-- [ ] API key authentication (from auto-generated credentials)
-- [ ] Server-link endpoint (`POST /api/v1/auth/link`)
+- [x] REST API for notes, folders, search
+- [x] API key authentication (from auto-generated credentials)
+- [x] Server-link endpoint (`POST /api/v1/auth/link`)
 - [ ] File watcher for external changes
 - [ ] Resource detection (CPU/RAM/GPU/disk)
-- [ ] Plugin loader (discovery, install, load, registry)
+- [x] Plugin loader (manifest discovery, install, registry endpoints)
 - [ ] OpenAPI spec auto-generation
 - [ ] Docker image with multi-arch support (amd64 + arm64)
 - [ ] Publish to `ghcr.io/tomszenessy/mino-server`
 
 ### Phase 2: Web App + Built-in UI (Weeks 5-8)
 
-- [ ] Next.js app with landing page (from mino.ink design)
+- [x] Next.js app with landing page (from mino.ink design)
 - [ ] Deploy to Cloudflare Pages (mino.ink)
 - [ ] Hybrid auth: Google sign-in + anonymous localStorage mode
-- [ ] Server-link page (paste URL + API key, or sign in with Google)
+- [x] Server-link page (paste URL + API key, plus relay pairing params)
 - [ ] Free tier managed instance for non-self-hosters
-- [ ] Workspace layout (sidebar + note list + editor)
+- [x] Workspace layout (sidebar + note list + editor)
 - [ ] Markdown editor (CodeMirror 6 or TipTap)
 - [ ] File tree with drag-and-drop
-- [ ] Command palette (Cmd+K)
-- [ ] Theme switching (dark/light)
-- [ ] Settings UI (agent config, API keys, server info — all visual)
-- [ ] Plugin marketplace UI (browse, install, configure)
+- [x] Command palette (Cmd+K)
+- [x] Theme switching (dark/light)
+- [x] Settings UI (agent config, API keys, server info — all visual)
+- [x] Plugin marketplace UI (browse, install, configure)
 - [ ] Bundle static export into Docker image (built-in UI)
 - [ ] Real-time sync via WebSocket
 
 ### Phase 3: AI Agent (Weeks 8-11)
 
-- [ ] Agent runtime with tool system (server-side)
+- [x] Agent runtime with tool system (server-side)
 - [ ] Core tools (search, read, write, edit, move, tree)
 - [ ] Context strategy (compact tree, snippets, search-and-replace)
-- [ ] Chat panel in web app (slide-out)
+- [x] Chat panel in web app (slide-out)
 - [ ] Auto-organization suggestions
 - [ ] Permission model (visual config in Settings)
 - [ ] Sandbox container for code execution (optional Docker sidecar)
@@ -122,15 +122,42 @@ All methods result in:
 ### Phase 6: Plugins (Weeks 16-20)
 
 - [ ] Plugin SDK (`definePlugin()` API)
-- [ ] Plugin marketplace / registry
-- [ ] One-click install from web UI
+- [x] Plugin marketplace / registry
+- [x] One-click install from web UI
 - [ ] Resource-aware plugins (auto-detect local capabilities)
-- [ ] Web search plugin
-- [ ] YouTube transcript plugin
+- [x] Web search plugin (bundled manifest + installable runtime entry)
+- [x] YouTube transcript plugin (bundled manifest + installable runtime entry)
 - [ ] Whisper plugin (local + API versions)
 - [ ] OCR plugin (local Tesseract + API versions)
 - [ ] Email import plugin
-- [ ] Obsidian vault import tool
+- [x] Obsidian vault import tool (bundled manifest + installable runtime entry)
+
+### Implemented in this sprint
+
+- [x] Landing page now routes connected users directly to workspace and exposes a `My Relays` shortcut.
+- [x] Sidebar server switcher with inline settings entry for multi-server workflows.
+- [x] Obsidian-style direct note title editing (`h1` title field drives markdown content).
+- [x] Workspace command palette + keyboard shortcuts (`Cmd/Ctrl+K`, `N`, `J`, `,`) and real note filtering.
+- [x] Agent chat API and slide-out workspace chat panel.
+- [x] Channel management + webhook ingestion for Telegram and WhatsApp.
+- [x] Channel provider adapter registry + capability endpoint (`/api/v1/channels/providers`) for modular channel UX.
+- [x] Plugin runtime migrated to manifest-driven registry with `/api/v1/plugins/runtime`.
+
+### Prototype Parity Snapshot (`prototype/index.html`)
+
+- [x] Multi-section landing page with animated background and section navigation.
+- [x] "Get Started" now correctly resumes workspace for already-linked users.
+- [x] Workspace shell parity (sidebar, note list, editor, status/agent controls).
+- [ ] Rich preview-only visuals from prototype (mock window animations/marketing micro-interactions) still need deeper polish pass.
+
+### OpenClaw-Inspired Alignment
+
+Reference direction: OpenClaw’s plugin/channel modularization patterns.
+
+- [x] Channel adapters split by provider (`telegram.ts`, `whatsapp.ts`) with shared registry resolution.
+- [x] Provider capabilities endpoint enables UI-driven forms instead of hardcoded credential wiring.
+- [x] Plugin discovery/install/runtime concerns are separated (`plugins/registry.ts`, `plugin-service.ts`).
+- [ ] Pluggable SDK execution model (`definePlugin()` runtime loading external packages) remains future work.
 
 ### Phase 7: Infrastructure & Polish (Weeks 20-24)
 
