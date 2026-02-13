@@ -1,0 +1,33 @@
+{
+	"name": "@mino-ink/api-client",
+	"version": "0.1.0",
+	"description": "TypeScript SDK for the Mino API",
+	"type": "module",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		}
+	},
+	"scripts": {
+		"build": "tsc",
+		"clean": "rm -rf dist",
+		"typecheck": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@mino-ink/shared": "workspace:*"
+	},
+	"devDependencies": {
+		"typescript": "^5.7.0"
+	},
+	"keywords": [
+		"mino",
+		"api-client",
+		"sdk",
+		"knowledge-management"
+	],
+	"author": "Mino",
+	"license": "MIT"
+}

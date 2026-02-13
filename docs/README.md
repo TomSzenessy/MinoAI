@@ -14,6 +14,7 @@
 | [**Server**](./server.md) | Mino server, auto-bootstrap, REST API, built-in UI, plugins, sandbox |
 | [**Frontend**](./frontend.md) | mino.ink (Cloudflare Pages), local UI, mobile apps, hybrid auth |
 | [**AI Agent**](./ai-agent.md) | "The Organizer" agent, server-hosted runtime, plugin install, MCP |
+| [**Integrations**](./integrations.md) | MCP setup plus Cursor and Antigravity integration examples |
 | [**Security**](./security.md) | Hybrid auth, credential flow, Cloudflare Tunnel, security hardening |
 | [**Roadmap**](./roadmap.md) | Phased plan, deployment priorities, risk analysis, open questions |
 

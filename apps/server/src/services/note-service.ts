@@ -1,156 +1,205 @@
 /**
  * NoteService — Business logic for note operations.
  *
- * Orchestrates between the FileManager (disk I/O) and the
- * markdown parser. In Phase 2, this will also synchronize
- * with the SQLite index (IndexDB).
+ * Orchestrates between the FileManager (disk I/O), the
+ * markdown parser, and the SQLite index (IndexDB).
+ *
+ * The index is used for:
+ * - Fast full-text search (FTS5)
+ * - Backlink tracking
+ * - Tag queries
  */
 
-import type { Note, NoteMetadata, SearchResult } from "@mino-ink/shared";
-import { FileManager } from "./file-manager";
-import { parseMarkdown } from "../utils/markdown";
+import type { Note, NoteMetadata, SearchResult } from '@mino-ink/shared';
+import { FileManager } from './file-manager';
+import { IndexDB } from './index-db';
+import { parseMarkdown } from '../utils/markdown';
 
 export class NoteService {
-  private readonly fm: FileManager;
-  private readonly dataDir: string;
+	private readonly fm: FileManager;
+	private readonly index: IndexDB;
+	private readonly dataDir: string;
 
-  constructor(dataDir: string) {
-    this.dataDir = dataDir;
-    this.fm = new FileManager(dataDir);
-  }
+	constructor(dataDir: string) {
+		this.dataDir = dataDir;
+		this.fm = new FileManager(dataDir);
+		this.index = new IndexDB(dataDir);
+		this.index.initialize();
+	}
 
-  /** Lists all notes (metadata only, no content). */
-  async listNotes(): Promise<NoteMetadata[]> {
-    const files = await this.fm.listAllFiles();
-    const notes: NoteMetadata[] = [];
+	/** Gets the underlying index for direct access. */
+	getIndex(): IndexDB {
+		return this.index;
+	}
 
-    for (const filePath of files) {
-      const content = await this.fm.readFile(filePath);
-      if (content === null) continue;
+	/** Ensures the index is populated (lazy rebuild on first use). */
+	async ensureIndex(): Promise<void> {
+		if (this.index.needsRebuild()) {
+			await this.index.rebuildIndex(this.dataDir);
+		}
+	}
 
-      const parsed = parseMarkdown(content);
-      notes.push(this.toMetadata(filePath, parsed, content));
-    }
+	/** Lists all notes (metadata only, no content). */
+	async listNotes(): Promise<NoteMetadata[]> {
+		await this.ensureIndex();
 
-    return notes;
-  }
+		const files = await this.fm.listAllFiles();
+		const notes: NoteMetadata[] = [];
 
-  /** Gets a single note with full content. */
-  async getNote(path: string): Promise<Note | null> {
-    const content = await this.fm.readFile(path);
-    if (content === null) return null;
+		for (const filePath of files) {
+			// Try to get from index first (faster)
+			const indexed = this.index.getNoteMetadata(filePath);
+			if (indexed) {
+				notes.push(indexed);
+				continue;
+			}
 
-    const parsed = parseMarkdown(content);
-    return {
-      ...this.toMetadata(path, parsed, content),
-      content: parsed.content,
-      frontmatter: parsed.frontmatter,
-    };
-  }
+			// Fall back to file read
+			const content = await this.fm.readFile(filePath);
+			if (content === null) continue;
 
-  /** Creates a new note at the given path. */
-  async createNote(path: string, content: string): Promise<Note> {
-    await this.fm.writeFile(path, content);
+			const parsed = parseMarkdown(content);
+			notes.push(this.toMetadata(filePath, parsed, content));
+		}
 
-    const parsed = parseMarkdown(content);
-    return {
-      ...this.toMetadata(path, parsed, content),
-      content: parsed.content,
-      frontmatter: parsed.frontmatter,
-    };
-  }
+		return notes;
+	}
 
-  /** Replaces the content of an existing note. */
-  async updateNote(path: string, content: string): Promise<Note> {
-    await this.fm.writeFile(path, content);
+	/** Gets a single note with full content. */
+	async getNote(path: string): Promise<Note | null> {
+		const content = await this.fm.readFile(path);
+		if (content === null) return null;
 
-    const parsed = parseMarkdown(content);
-    return {
-      ...this.toMetadata(path, parsed, content),
-      content: parsed.content,
-      frontmatter: parsed.frontmatter,
-    };
-  }
+		const parsed = parseMarkdown(content);
+		const backlinks = this.index.getBacklinks(path);
 
-  /** Checks if a note exists at the given path. */
-  async noteExists(path: string): Promise<boolean> {
-    return this.fm.fileExists(path);
-  }
+		return {
+			...this.toMetadata(path, parsed, content),
+			backlinks,
+			content: parsed.content,
+			frontmatter: parsed.frontmatter
+		};
+	}
 
-  /** Deletes a note at the given path. */
-  async deleteNote(path: string): Promise<void> {
-    await this.fm.deleteFile(path);
-  }
+	/** Creates a new note at the given path. */
+	async createNote(path: string, content: string): Promise<Note> {
+		await this.fm.writeFile(path, content);
 
-  /** Moves a note to a new path and returns updated metadata. */
-  async moveNote(fromPath: string, toPath: string): Promise<Note | null> {
-    await this.fm.moveFile(fromPath, toPath);
-    return this.getNote(toPath);
-  }
+		// Update the index
+		this.index.indexNote(path, content);
 
-  /**
-   * Searches notes by content (simple substring match for now).
-   * Phase 2 will replace this with SQLite FTS5 full-text search.
-   */
-  async searchNotes(
-    query: string,
-    options: { limit?: number; folder?: string } = {},
-  ): Promise<SearchResult[]> {
-    const { limit = 20, folder } = options;
-    const files = await this.fm.listAllFiles(folder);
-    const results: SearchResult[] = [];
-    const queryLower = query.toLowerCase();
+		const parsed = parseMarkdown(content);
+		return {
+			...this.toMetadata(path, parsed, content),
+			content: parsed.content,
+			frontmatter: parsed.frontmatter
+		};
+	}
 
-    for (const filePath of files) {
-      if (results.length >= limit) break;
+	/** Replaces the content of an existing note. */
+	async updateNote(path: string, content: string): Promise<Note> {
+		await this.fm.writeFile(path, content);
 
-      const content = await this.fm.readFile(filePath);
-      if (content === null) continue;
+		// Update the index
+		this.index.indexNote(path, content);
 
-      const contentLower = content.toLowerCase();
-      const matchIndex = contentLower.indexOf(queryLower);
+		const parsed = parseMarkdown(content);
+		return {
+			...this.toMetadata(path, parsed, content),
+			content: parsed.content,
+			frontmatter: parsed.frontmatter
+		};
+	}
 
-      if (matchIndex !== -1) {
-        const parsed = parseMarkdown(content);
-        const snippetStart = Math.max(0, matchIndex - 80);
-        const snippetEnd = Math.min(content.length, matchIndex + query.length + 120);
-        const snippet = content.slice(snippetStart, snippetEnd).trim();
+	/** Checks if a note exists at the given path. */
+	async noteExists(path: string): Promise<boolean> {
+		return this.fm.fileExists(path);
+	}
 
-        results.push({
-          path: filePath,
-          title: parsed.title,
-          snippet: (snippetStart > 0 ? "..." : "") + snippet + (snippetEnd < content.length ? "..." : ""),
-          score: 1.0, // Phase 2: FTS5 rank score
-          tags: parsed.tags,
-        });
-      }
-    }
+	/** Deletes a note at the given path. */
+	async deleteNote(path: string): Promise<void> {
+		await this.fm.deleteFile(path);
 
-    return results;
-  }
+		// Remove from index
+		this.index.removeNote(path);
+	}
 
-  // -----------------------------------------------------------------------
-  // Private helpers
-  // -----------------------------------------------------------------------
+	/** Moves a note to a new path and returns updated metadata. */
+	async moveNote(fromPath: string, toPath: string): Promise<Note | null> {
+		// Read content before move
+		const content = await this.fm.readFile(fromPath);
+		if (content === null) return null;
 
-  /** Converts parsed markdown + file path into NoteMetadata. */
-  private toMetadata(
-    path: string,
-    parsed: ReturnType<typeof parseMarkdown>,
-    rawContent: string,
-  ): NoteMetadata {
-    // Use file stats for timestamps (best effort)
-    const now = new Date().toISOString();
-    return {
-      path,
-      title: parsed.title,
-      tags: parsed.tags,
-      links: parsed.links,
-      backlinks: [], // Phase 2: computed from index
-      wordCount: parsed.wordCount,
-      createdAt: (parsed.frontmatter.created as string) ?? now,
-      updatedAt: now,
-      checksum: parsed.checksum,
-    };
-  }
+		// Move the file
+		await this.fm.moveFile(fromPath, toPath);
+
+		// Update index: remove old, add new
+		this.index.removeNote(fromPath);
+		this.index.indexNote(toPath, content);
+
+		return this.getNote(toPath);
+	}
+
+	/**
+	 * Searches notes using SQLite FTS5 full-text search.
+	 * Returns ranked results with snippets.
+	 */
+	async searchNotes(
+		query: string,
+		options: { limit?: number; folder?: string; tags?: string[] } = {}
+	): Promise<SearchResult[]> {
+		await this.ensureIndex();
+
+		// Use the index for FTS5 search
+		return this.index.search(query, options);
+	}
+
+	/** Gets all unique tags from the index. */
+	getAllTags(): string[] {
+		return this.index.getAllTags();
+	}
+
+	/** Gets notes that have a specific tag. */
+	getNotesByTag(tag: string): string[] {
+		return this.index.getNotesByTag(tag);
+	}
+
+	/** Gets backlinks for a note. */
+	getBacklinks(path: string): string[] {
+		return this.index.getBacklinks(path);
+	}
+
+	/** Rebuilds the search index from scratch. */
+	async rebuildIndex(): Promise<void> {
+		await this.index.rebuildIndex(this.dataDir);
+	}
+
+	/** Gets index statistics. */
+	getIndexStats() {
+		return this.index.getStats();
+	}
+
+	// -----------------------------------------------------------------------
+	// Private helpers
+	// -----------------------------------------------------------------------
+
+	/** Converts parsed markdown + file path into NoteMetadata. */
+	private toMetadata(
+		path: string,
+		parsed: ReturnType<typeof parseMarkdown>,
+		rawContent: string
+	): NoteMetadata {
+		const now = new Date().toISOString();
+		return {
+			path,
+			title: parsed.title,
+			tags: parsed.tags,
+			links: parsed.links,
+			backlinks: [],
+			wordCount: parsed.wordCount,
+			createdAt: (parsed.frontmatter.created as string) ?? now,
+			updatedAt: now,
+			checksum: parsed.checksum
+		};
+	}
 }

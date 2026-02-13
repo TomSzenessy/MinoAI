@@ -1,0 +1,32 @@
+{
+	"name": "@mino-ink/design-tokens",
+	"version": "0.1.0",
+	"description": "Design tokens, CSS variables, and Tailwind preset for Mino",
+	"type": "module",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		},
+		"./css": "./dist/tokens.css",
+		"./tailwind": "./dist/tailwind.preset.js"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"scripts": {
+		"build": "tsc && cp src/tokens.css dist/tokens.css && cp src/tailwind.preset.ts dist/tailwind.preset.js",
+		"clean": "rm -rf dist",
+		"typecheck": "tsc --noEmit"
+	},
+	"peerDependencies": {
+		"tailwindcss": ">=3.4.0"
+	},
+	"devDependencies": {
+		"tailwindcss": "^3.4.0",
+		"typescript": "^5.7.0"
+	}
+}

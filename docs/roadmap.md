@@ -10,14 +10,14 @@
 
 ### Deployment Options
 
-| Method | Complexity | Best For |
-|--------|------------|----------|
-| **Docker Compose (Portainer)** | ⭐ Easy | Copy-paste → deploy → running in 10s |
-| **Docker CLI** | ⭐ Easy | `docker compose up -d` on any server |
-| **Single binary** | ⭐ Easy | Minimal servers, Raspberry Pi, NAS |
-| **From source (git clone)** | ⭐⭐ Medium | Development, customization, local UI only |
-| **npm / curl** | ⭐⭐ Medium | Quick local install for development |
-| **Free tier (mino.ink)** | ⭐ Easy | No self-hosting, limited features |
+| Method                         | Complexity  | Best For                                  |
+| ------------------------------ | ----------- | ----------------------------------------- |
+| **Docker Compose (Portainer)** | ⭐ Easy     | Copy-paste → deploy → running in 10s      |
+| **Docker CLI**                 | ⭐ Easy     | `docker compose up -d` on any server      |
+| **Single binary**              | ⭐ Easy     | Minimal servers, Raspberry Pi, NAS        |
+| **From source (git clone)**    | ⭐⭐ Medium | Development, customization, local UI only |
+| **npm / curl**                 | ⭐⭐ Medium | Quick local install for development       |
+| **Free tier (mino.ink)**       | ⭐ Easy     | No self-hosting, limited features         |
 
 ### Installation Methods
 
@@ -39,6 +39,7 @@ cd mino && pnpm install && pnpm dev
 ```
 
 All methods result in:
+
 1. Server running at `http://localhost:3000`
 2. Built-in web UI accessible immediately
 3. Credentials auto-generated and exposed via `/api/v1/system/setup`
@@ -52,26 +53,26 @@ All methods result in:
 
 - [x] Set up monorepo structure (pnpm + Turborepo)
 - [x] Create `@mino-ink/shared` package (types, utils)
-- [ ] Create `@mino-ink/design-tokens` (CSS variables, Tailwind preset)
-- [ ] Set up CI/CD pipeline (GitHub Actions → GHCR + Cloudflare Pages)
-- [ ] Write `design-tokens.css` and `tailwind.preset.js`
-- [ ] Create Dockerfile (multi-stage: build web → embed in server)
+- [x] Create `@mino-ink/design-tokens` (CSS variables, Tailwind preset)
+- [x] Set up CI/CD pipeline (GitHub Actions → GHCR + Cloudflare Pages)
+- [x] Write `design-tokens.css` and `tailwind.preset.js`
+- [x] Create Dockerfile (multi-stage: build web → embed in server)
 
 ### Phase 1: Server Core (Weeks 3-5)
 
 - [x] Bun + Hono server scaffolding
 - [x] Auto-bootstrap on first run (credentials, config, folder structure)
 - [x] File system manager (CRUD on .md files)
-- [ ] SQLite index with FTS5
+- [x] SQLite index with FTS5
 - [x] REST API for notes, folders, search
 - [x] API key authentication (from auto-generated credentials)
 - [x] Server-link endpoint (`POST /api/v1/auth/link`)
-- [ ] File watcher for external changes
-- [ ] Resource detection (CPU/RAM/GPU/disk)
+- [x] File watcher for external changes
+- [x] Resource detection (CPU/RAM/GPU/disk)
 - [x] Plugin loader (manifest discovery, install, registry endpoints)
-- [ ] OpenAPI spec auto-generation
-- [ ] Docker image with multi-arch support (amd64 + arm64)
-- [ ] Publish to `ghcr.io/tomszenessy/mino-server`
+- [x] OpenAPI spec auto-generation
+- [x] Docker image with multi-arch support (amd64 + arm64)
+- [x] Publish to `ghcr.io/tomszenessy/mino-server`
 
 ### Phase 2: Web App + Built-in UI (Weeks 5-8)
 
@@ -93,7 +94,7 @@ All methods result in:
 ### Phase 3: AI Agent (Weeks 8-11)
 
 - [x] Agent runtime with tool system (server-side)
-- [ ] Core tools (search, read, write, edit, move, tree)
+- [x] Core tools (search, read, write, edit, move, tree)
 - [ ] Context strategy (compact tree, snippets, search-and-replace)
 - [x] Chat panel in web app (slide-out)
 - [ ] Auto-organization suggestions
@@ -102,11 +103,11 @@ All methods result in:
 
 ### Phase 4: MCP & Agent SDK (Weeks 11-12)
 
-- [ ] MCP server package
-- [ ] TypeScript SDK for API access
-- [ ] Documentation for agent integrations
-- [ ] Example: Antigravity skill/MCP for Mino
-- [ ] Example: Cursor rules for Mino
+- [x] MCP server package
+- [x] TypeScript SDK for API access
+- [x] Documentation for agent integrations
+- [x] Example: Antigravity skill/MCP for Mino
+- [x] Example: Cursor rules for Mino
 
 ### Phase 5: Mobile App (Weeks 12-16)
 
@@ -121,7 +122,7 @@ All methods result in:
 
 ### Phase 6: Plugins (Weeks 16-20)
 
-- [ ] Plugin SDK (`definePlugin()` API)
+- [x] Plugin SDK (`definePlugin()` API)
 - [x] Plugin marketplace / registry
 - [x] One-click install from web UI
 - [ ] Resource-aware plugins (auto-detect local capabilities)
@@ -144,6 +145,7 @@ All methods result in:
 - [x] Plugin runtime migrated to manifest-driven registry with `/api/v1/plugins/runtime`.
 - [x] Note move support (`PATCH /api/v1/notes/:path/move`) with workspace file-tree drag-to-folder interactions.
 - [x] Agent toolset expanded with move/tree intents (plus existing search/read/create) for more complete core tool coverage.
+- [x] Agent integration docs with concrete Cursor + Antigravity examples and MCP runbook.
 
 ### Prototype Parity Snapshot (`prototype/index.html`)
 
@@ -176,18 +178,18 @@ Reference direction: OpenClaw’s plugin/channel modularization patterns.
 
 ## Risk Analysis & Mitigation
 
-| Risk | Impact | Probability | Mitigation |
-|------|--------|-------------|------------|
-| **Scope creep** | Schedule delays | High | Strict phase gates. Each phase has a Definition of Done. |
-| **File sync conflicts** | Data loss | Medium | CRDTs (Yjs) guarantee convergence. Soft-delete for safety. |
-| **LLM token costs** | User expense | Medium | Aggressive token optimization. Local model support. Usage dashboard. |
-| **Security vulnerabilities** | Trust erosion | Medium | Security audit before launch. Bug bounty program. Minimal attack surface. |
-| **SQLite scaling limits** | Performance degradation at >100K notes | Low | SQLite handles millions of rows easily. Sharding/partitioning as escape hatch. |
-| **Mobile offline complexity** | Bugs, data inconsistency | Medium | Extensive testing. Yjs is battle-tested. Start with read-only offline, add write later. |
-| **Plugin ecosystem** | Fragmentation, quality issues | Low | Curated plugin registry. Official plugins first. Community plugins later. |
-| **Competing with Obsidian** | Adoption challenges | Medium | Don't compete on features. Compete on AI-native experience. Different audience. |
-| **Free tier abuse** | Resource costs | Medium | Rate limits, storage caps, require Google sign-in for free tier. |
-| **Cloudflare Tunnel reliability** | Remote access downtime | Low | Tunnel auto-reconnects. Fallback to direct access if available. |
+| Risk                              | Impact                                 | Probability | Mitigation                                                                              |
+| --------------------------------- | -------------------------------------- | ----------- | --------------------------------------------------------------------------------------- |
+| **Scope creep**                   | Schedule delays                        | High        | Strict phase gates. Each phase has a Definition of Done.                                |
+| **File sync conflicts**           | Data loss                              | Medium      | CRDTs (Yjs) guarantee convergence. Soft-delete for safety.                              |
+| **LLM token costs**               | User expense                           | Medium      | Aggressive token optimization. Local model support. Usage dashboard.                    |
+| **Security vulnerabilities**      | Trust erosion                          | Medium      | Security audit before launch. Bug bounty program. Minimal attack surface.               |
+| **SQLite scaling limits**         | Performance degradation at >100K notes | Low         | SQLite handles millions of rows easily. Sharding/partitioning as escape hatch.          |
+| **Mobile offline complexity**     | Bugs, data inconsistency               | Medium      | Extensive testing. Yjs is battle-tested. Start with read-only offline, add write later. |
+| **Plugin ecosystem**              | Fragmentation, quality issues          | Low         | Curated plugin registry. Official plugins first. Community plugins later.               |
+| **Competing with Obsidian**       | Adoption challenges                    | Medium      | Don't compete on features. Compete on AI-native experience. Different audience.         |
+| **Free tier abuse**               | Resource costs                         | Medium      | Rate limits, storage caps, require Google sign-in for free tier.                        |
+| **Cloudflare Tunnel reliability** | Remote access downtime                 | Low         | Tunnel auto-reconnects. Fallback to direct access if available.                         |
 
 ---
 
@@ -195,24 +197,24 @@ Reference direction: OpenClaw’s plugin/channel modularization patterns.
 
 ### Decisions Made
 
-| Decision | Choice | Rationale |
-|----------|--------|-----------|
-| Server language | TypeScript (Bun) | Code sharing across stack |
-| Mobile framework | React Native + Expo | Code sharing with web |
-| Primary database | SQLite | Portable, zero-config, fast |
-| Data format | Markdown files | No lock-in, agent-compatible |
-| Sync protocol | CRDTs (Yjs) | Offline-first, conflict-free |
-| CSS framework | Tailwind CSS | Consistent design tokens |
-| Component library | shadcn/ui | Accessible, customizable |
-| **Container registry** | **GitHub Container Registry (ghcr.io)** | No pull limits, native Actions integration, free |
-| **Web hosting** | **Cloudflare Pages** | Free, global CDN, static export |
-| **Auth model** | **Hybrid (API key + Google OAuth + localStorage)** | No account required, multi-device optional |
-| **Server deployment** | **Docker Compose (Portainer-friendly)** | One-paste deploy, auto-bootstrap, zero config |
-| **Remote access** | **Cloudflare Tunnel (free, optional)** | Zero ports, encrypted, DDoS protection |
-| **Auto-updates** | **Watchtower** | Watches GHCR for new tags, zero-downtime |
-| **Agent hosting** | **Server-side** | File access, sandbox, multi-channel, security |
-| **Plugin install** | **One-click from web UI** | npm/GitHub download, hot-load, no restart |
-| **Free tier** | **Limited managed instance on mino.ink** | No self-hosting needed, upgrade path to self-hosted |
+| Decision               | Choice                                             | Rationale                                           |
+| ---------------------- | -------------------------------------------------- | --------------------------------------------------- |
+| Server language        | TypeScript (Bun)                                   | Code sharing across stack                           |
+| Mobile framework       | React Native + Expo                                | Code sharing with web                               |
+| Primary database       | SQLite                                             | Portable, zero-config, fast                         |
+| Data format            | Markdown files                                     | No lock-in, agent-compatible                        |
+| Sync protocol          | CRDTs (Yjs)                                        | Offline-first, conflict-free                        |
+| CSS framework          | Tailwind CSS                                       | Consistent design tokens                            |
+| Component library      | shadcn/ui                                          | Accessible, customizable                            |
+| **Container registry** | **GitHub Container Registry (ghcr.io)**            | No pull limits, native Actions integration, free    |
+| **Web hosting**        | **Cloudflare Pages**                               | Free, global CDN, static export                     |
+| **Auth model**         | **Hybrid (API key + Google OAuth + localStorage)** | No account required, multi-device optional          |
+| **Server deployment**  | **Docker Compose (Portainer-friendly)**            | One-paste deploy, auto-bootstrap, zero config       |
+| **Remote access**      | **Cloudflare Tunnel (free, optional)**             | Zero ports, encrypted, DDoS protection              |
+| **Auto-updates**       | **Watchtower**                                     | Watches GHCR for new tags, zero-downtime            |
+| **Agent hosting**      | **Server-side**                                    | File access, sandbox, multi-channel, security       |
+| **Plugin install**     | **One-click from web UI**                          | npm/GitHub download, hot-load, no restart           |
+| **Free tier**          | **Limited managed instance on mino.ink**           | No self-hosting needed, upgrade path to self-hosted |
 
 ### Open Questions for Discussion
 

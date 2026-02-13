@@ -262,10 +262,13 @@ Settings → Plugins
 Every Mino server can expose its API as an **MCP (Model Context Protocol) server**, so AI agents like Antigravity, Cursor, and Claude Code can directly read/write notes:
 
 ```bash
-# Start the MCP server
-npx @mino-ink/mcp-server \
-  --endpoint https://your-server.com \
-  --api-key YOUR_KEY
+# From this repository
+cd tools/mcp-server
+pnpm build
+
+MINO_SERVER_URL="https://test.mino.ink" \
+MINO_API_KEY="mino_sk_your_key_here" \
+node dist/cli.js
 ```
 
 The MCP server exposes these tools to any connected agent:
@@ -277,3 +280,9 @@ The MCP server exposes these tools to any connected agent:
 - `mino_tree` — Get folder structure
 - `mino_move` — Move/rename a note
 - `mino_delete` — Delete a note
+
+Detailed integration examples:
+
+- [`docs/integrations.md`](./integrations.md)
+- [`docs/examples/cursor-rules.md`](./examples/cursor-rules.md)
+- [`docs/examples/antigravity-skill.md`](./examples/antigravity-skill.md)
