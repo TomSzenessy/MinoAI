@@ -1,0 +1,16 @@
+{
+  "id": "youtube-transcript",
+  "name": "YouTube Transcript",
+  "version": "0.1.0",
+  "description": "Extract transcripts from YouTube videos and create structured notes.",
+  "source": "builtin",
+  "defaultEnabled": false,
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "properties": {
+      "language": { "type": "string" },
+      "autoSummarize": { "type": "boolean" }
+    }
+  }
+}

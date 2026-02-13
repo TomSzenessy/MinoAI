@@ -108,6 +108,52 @@ export function noteRoutes(): Hono<AppContext> {
   });
 
   /**
+   * PATCH /api/v1/notes/:path/move
+   * Moves/renames a note to a different path.
+   * Body: { path: "folder/new-name.md" }
+   */
+  router.patch("/:path{.+}/move", async (c) => {
+    const fromPath = c.req.param("path");
+    const fromPathError = validateNotePath(fromPath);
+    if (fromPathError) {
+      throw new HttpError(400, "VALIDATION_ERROR", fromPathError);
+    }
+
+    const body = await c.req.json<{ path?: string }>();
+    if (!body.path) {
+      throw new HttpError(400, "VALIDATION_ERROR", "path is required");
+    }
+
+    const toPath = body.path;
+    const toPathError = validateNotePath(toPath);
+    if (toPathError) {
+      throw new HttpError(400, "VALIDATION_ERROR", toPathError);
+    }
+
+    if (fromPath === toPath) {
+      throw new HttpError(400, "VALIDATION_ERROR", "source and destination paths are the same");
+    }
+
+    const service = new NoteService(c.get("dataDir"));
+    const sourceExists = await service.noteExists(fromPath);
+    if (!sourceExists) {
+      throw new HttpError(404, "NOTE_NOT_FOUND", `Note not found: ${fromPath}`);
+    }
+
+    const destinationExists = await service.noteExists(toPath);
+    if (destinationExists) {
+      throw new HttpError(409, "NOTE_ALREADY_EXISTS", `Note already exists: ${toPath}`);
+    }
+
+    const moved = await service.moveNote(fromPath, toPath);
+    if (!moved) {
+      throw new HttpError(500, "NOTE_MOVE_FAILED", "Failed to move note");
+    }
+
+    return c.json({ success: true, data: moved });
+  });
+
+  /**
    * DELETE /api/v1/notes/:path
    * Delete a note (permanent).
    */

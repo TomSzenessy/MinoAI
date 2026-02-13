@@ -82,7 +82,7 @@ All methods result in:
 - [ ] Free tier managed instance for non-self-hosters
 - [x] Workspace layout (sidebar + note list + editor)
 - [ ] Markdown editor (CodeMirror 6 or TipTap)
-- [ ] File tree with drag-and-drop
+- [x] File tree with drag-and-drop
 - [x] Command palette (Cmd+K)
 - [x] Theme switching (dark/light)
 - [x] Settings UI (agent config, API keys, server info — all visual)
@@ -142,6 +142,8 @@ All methods result in:
 - [x] Channel management + webhook ingestion for Telegram and WhatsApp.
 - [x] Channel provider adapter registry + capability endpoint (`/api/v1/channels/providers`) for modular channel UX.
 - [x] Plugin runtime migrated to manifest-driven registry with `/api/v1/plugins/runtime`.
+- [x] Note move support (`PATCH /api/v1/notes/:path/move`) with workspace file-tree drag-to-folder interactions.
+- [x] Agent toolset expanded with move/tree intents (plus existing search/read/create) for more complete core tool coverage.
 
 ### Prototype Parity Snapshot (`prototype/index.html`)
 

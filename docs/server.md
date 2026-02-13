@@ -264,6 +264,7 @@ GET    /api/v1/notes
 GET    /api/v1/notes/:path
 POST   /api/v1/notes
 PUT    /api/v1/notes/:path
+PATCH  /api/v1/notes/:path/move
 DELETE /api/v1/notes/:path
 
 # Search + folders

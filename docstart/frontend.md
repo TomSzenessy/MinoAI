@@ -68,6 +68,7 @@ Current state:
 - workspace includes inline server switcher + settings entry in the left sidebar
 - note title is edited directly (Obsidian-style title field synced to markdown `#` heading)
 - command palette + hotkeys are wired in workspace (`Cmd/Ctrl+K`, `N`, `J`, `,`)
+- file tree supports drag-to-folder note moves (backed by `PATCH /api/v1/notes/:path/move`)
 - AI chat panel is available in workspace and backed by `/api/v1/agent/chat`
 - channels (Telegram/WhatsApp) and plugin install/config are available in Settings
 - channel provider fields are now capability-driven from `GET /api/v1/channels/providers`

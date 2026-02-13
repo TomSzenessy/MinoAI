@@ -1,0 +1,16 @@
+{
+  "id": "whatsapp-bot",
+  "name": "WhatsApp Bot",
+  "version": "0.1.0",
+  "description": "Capture WhatsApp messages and hand them off to the AI agent.",
+  "source": "builtin",
+  "defaultEnabled": false,
+  "channels": ["whatsapp"],
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "properties": {
+      "channelId": { "type": "string" }
+    }
+  }
+}

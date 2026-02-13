@@ -103,6 +103,56 @@ describe("Notes API", () => {
     expect((await res.json()).data.title).toBe("New Title");
   });
 
+  it("moves a note to a new path", async () => {
+    await app.request("/api/v1/notes", {
+      method: "POST",
+      headers: headers(),
+      body: JSON.stringify({ path: "move-me.md", content: "# Move Me\n\nBody." }),
+    });
+
+    const moveRes = await app.request("/api/v1/notes/move-me.md/move", {
+      method: "PATCH",
+      headers: headers(),
+      body: JSON.stringify({ path: "archive/move-me.md" }),
+    });
+
+    expect(moveRes.status).toBe(200);
+    const moved = (await moveRes.json()).data;
+    expect(moved.path).toBe("archive/move-me.md");
+
+    const oldRes = await app.request("/api/v1/notes/move-me.md", {
+      headers: { "X-Mino-Key": apiKey },
+    });
+    expect(oldRes.status).toBe(404);
+
+    const newRes = await app.request("/api/v1/notes/archive/move-me.md", {
+      headers: { "X-Mino-Key": apiKey },
+    });
+    expect(newRes.status).toBe(200);
+  });
+
+  it("prevents moving a note onto an existing path", async () => {
+    await app.request("/api/v1/notes", {
+      method: "POST",
+      headers: headers(),
+      body: JSON.stringify({ path: "source.md", content: "# Source" }),
+    });
+    await app.request("/api/v1/notes", {
+      method: "POST",
+      headers: headers(),
+      body: JSON.stringify({ path: "target.md", content: "# Target" }),
+    });
+
+    const moveRes = await app.request("/api/v1/notes/source.md/move", {
+      method: "PATCH",
+      headers: headers(),
+      body: JSON.stringify({ path: "target.md" }),
+    });
+
+    expect(moveRes.status).toBe(409);
+    expect((await moveRes.json()).error.code).toBe("NOTE_ALREADY_EXISTS");
+  });
+
   it("deletes a note", async () => {
     await app.request("/api/v1/notes", {
       method: "POST",

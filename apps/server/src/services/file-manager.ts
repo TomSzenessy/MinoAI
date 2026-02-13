@@ -6,7 +6,7 @@
  * prevent traversal attacks.
  */
 
-import { readdir, stat, mkdir, unlink } from "node:fs/promises";
+import { readdir, stat, mkdir, unlink, rename } from "node:fs/promises";
 import { join, relative, extname } from "node:path";
 import { existsSync } from "node:fs";
 import type { FolderNode, FolderTree } from "@mino-ink/shared";
@@ -46,6 +46,16 @@ export class FileManager {
   async deleteFile(relativePath: string): Promise<void> {
     const absPath = resolveNotePath(this.notesDir, relativePath);
     await unlink(absPath);
+  }
+
+  /** Moves (renames) a file to a new relative path. */
+  async moveFile(fromRelativePath: string, toRelativePath: string): Promise<void> {
+    const fromAbsPath = resolveNotePath(this.notesDir, fromRelativePath);
+    const toAbsPath = resolveNotePath(this.notesDir, toRelativePath);
+    const destinationDir = join(toAbsPath, "..");
+
+    await mkdir(destinationDir, { recursive: true });
+    await rename(fromAbsPath, toAbsPath);
   }
 
   /**

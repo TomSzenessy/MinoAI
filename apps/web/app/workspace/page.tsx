@@ -12,6 +12,7 @@ import {
   fetchHealth,
   fetchNotes,
   createNote,
+  moveNote,
   type HealthPayload,
   type NoteSummary,
 } from "@/lib/api";
@@ -219,6 +220,59 @@ export default function WorkspacePage() {
     }
   };
 
+  const handleMoveNote = async (fromPath: string, targetFolderPath: string) => {
+    if (!profile) return;
+
+    const fileName = fromPath.split("/").pop();
+    if (!fileName) return;
+
+    const destinationPath = targetFolderPath ? `${targetFolderPath}/${fileName}` : fileName;
+    if (destinationPath === fromPath) {
+      return;
+    }
+
+    if (profile.source === "local") {
+      const now = new Date().toISOString();
+      setNotes((prev) =>
+        prev.map((note) =>
+          note.path === fromPath
+            ? {
+                ...note,
+                path: destinationPath,
+                updatedAt: now,
+              }
+            : note,
+        ),
+      );
+      setSelectedNote((prev) =>
+        prev && prev.path === fromPath
+          ? {
+              ...prev,
+              path: destinationPath,
+              updatedAt: now,
+            }
+          : prev,
+      );
+      return;
+    }
+
+    try {
+      const moved = await moveNote(
+        profile.serverUrl,
+        profile.apiKey,
+        fromPath,
+        destinationPath,
+      );
+      const refreshed = await fetchNotes(profile.serverUrl, profile.apiKey);
+      setNotes(refreshed);
+      setSelectedNote((prev) => (prev?.path === fromPath ? moved : prev));
+    } catch (caught) {
+      setError(
+        caught instanceof Error ? caught.message : t("workspace.errors.loadData"),
+      );
+    }
+  };
+
   const statusTone = useMemo(() => {
     if (error) return "error";
     if (health?.status === "ok") return "ok";
@@ -226,6 +280,10 @@ export default function WorkspacePage() {
   }, [error, health?.status]);
 
   const normalizedSearch = searchQuery.trim().toLowerCase();
+  const treeVersion = useMemo(
+    () => notes.map((note) => `${note.path}:${note.updatedAt}`).join("|"),
+    [notes],
+  );
 
   const filteredNotes = useMemo(() => {
     if (!normalizedSearch) {
@@ -297,6 +355,7 @@ export default function WorkspacePage() {
       <div className="relative z-20 flex flex-1 overflow-hidden">
         <Sidebar
           noteCount={filteredNotes.length}
+          treeVersion={treeVersion}
           onNewNote={handleNewNote}
           profileName={profile?.name}
           profile={profile}
@@ -310,6 +369,7 @@ export default function WorkspacePage() {
               setSelectedNote(note);
             }
           }}
+          onMoveNote={handleMoveNote}
         />
         <NoteList
           notes={filteredNotes}

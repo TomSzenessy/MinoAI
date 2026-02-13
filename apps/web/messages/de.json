@@ -348,6 +348,7 @@
       "connectServer": "Verbinden",
       "library": "Bibliothek",
       "files": "Dateien",
+      "dropToRoot": "Hier ablegen, um ins Root zu verschieben",
       "localDemoFoldersUnsupported": "Lokale Demo: Ordner werden nicht unterstützt",
       "noFoldersFound": "Keine Ordner gefunden"
     }

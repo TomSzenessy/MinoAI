@@ -348,6 +348,7 @@
       "connectServer": "Conectar",
       "library": "Biblioteca",
       "files": "Archivos",
+      "dropToRoot": "Suelta aquí para mover a la raíz",
       "localDemoFoldersUnsupported": "Demo local: las carpetas no están disponibles",
       "noFoldersFound": "No se encontraron carpetas"
     }

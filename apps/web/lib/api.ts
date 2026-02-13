@@ -65,7 +65,7 @@ export interface PluginCatalogItem {
 }
 
 export interface AgentToolAction {
-  type: "search" | "read" | "create";
+  type: "search" | "read" | "create" | "move" | "tree";
   summary: string;
   path?: string;
 }
@@ -114,6 +114,30 @@ export interface TreeItem {
   path: string;
   children?: TreeItem[];
   itemCount?: number;
+}
+
+interface FolderNodePayload {
+  name: string;
+  path: string;
+  isDirectory: boolean;
+  fileCount?: number;
+  children?: FolderNodePayload[];
+}
+
+interface FolderTreePayload {
+  root: FolderNodePayload;
+  totalFiles: number;
+}
+
+function mapFolderNodeToTreeItem(node: FolderNodePayload): TreeItem {
+  return {
+    id: node.path || node.name,
+    name: node.name,
+    type: node.isDirectory ? "folder" : "file",
+    path: node.path,
+    itemCount: node.fileCount,
+    children: node.children?.map(mapFolderNodeToTreeItem),
+  };
 }
 
 function sanitizeMessage(value: unknown, fallback: string): string {
@@ -352,11 +376,33 @@ export async function deleteNote(
   );
 }
 
+export async function moveNote(
+  serverUrl: string,
+  apiKey: string,
+  fromPath: string,
+  toPath: string,
+): Promise<Note> {
+  const response = await requestJson<{ success: true; data: Note }>(
+    serverUrl,
+    `/api/v1/notes/${encodeURIComponent(fromPath)}/move`,
+    {
+      method: "PATCH",
+      headers: authHeaders(apiKey),
+      body: JSON.stringify({ path: toPath }),
+    },
+  );
+
+  return response.data;
+}
+
 export async function fetchFileTree(
   serverUrl: string,
   apiKey: string,
 ): Promise<TreeItem[]> {
-  const response = await requestJson<{ success: true; data: TreeItem[] }>(
+  const response = await requestJson<{
+    success: true;
+    data: TreeItem[] | FolderTreePayload;
+  }>(
     serverUrl,
     "/api/v1/folders/tree",
     {
@@ -365,7 +411,17 @@ export async function fetchFileTree(
     },
   );
 
-  return response.data;
+  const payload = response.data;
+  if (Array.isArray(payload)) {
+    return payload;
+  }
+
+  if (payload?.root) {
+    const root = mapFolderNodeToTreeItem(payload.root);
+    return root.children ?? [];
+  }
+
+  return [];
 }
 
 export async function fetchPlugins(

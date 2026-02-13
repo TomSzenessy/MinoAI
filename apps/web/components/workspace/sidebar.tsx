@@ -7,6 +7,7 @@ import { useEffect, useMemo, useState } from "react";
 
 interface SidebarProps {
   noteCount: number;
+  treeVersion?: string;
   onNewNote?: () => void;
   profileName?: string;
   profile?: LinkedServerProfile | null;
@@ -15,10 +16,12 @@ interface SidebarProps {
   onOpenSettings?: () => void;
   onConnectServer?: () => void;
   onSelectNote?: (path: string) => void;
+  onMoveNote?: (fromPath: string, targetFolderPath: string) => void;
 }
 
 export function Sidebar({
   noteCount,
+  treeVersion,
   onNewNote,
   profileName,
   profile,
@@ -27,10 +30,13 @@ export function Sidebar({
   onOpenSettings,
   onConnectServer,
   onSelectNote,
+  onMoveNote,
 }: SidebarProps) {
   const { t } = useTranslation();
   const [tree, setTree] = useState<TreeItem[]>([]);
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  const [draggingPath, setDraggingPath] = useState<string | null>(null);
+  const [dropTarget, setDropTarget] = useState<string | null>(null);
 
   useEffect(() => {
     if (!profile || profile.source === "local") {
@@ -41,7 +47,7 @@ export function Sidebar({
     fetchFileTree(profile.serverUrl, profile.apiKey)
       .then(setTree)
       .catch(console.error);
-  }, [profile]);
+  }, [profile, treeVersion]);
 
   const selectableProfiles = useMemo(() => {
     if (profiles.length > 0) {
@@ -55,9 +61,21 @@ export function Sidebar({
     setExpanded((prev) => ({ ...prev, [path]: !prev[path] }));
   };
 
+  const handleDropToFolder = (targetFolderPath: string) => {
+    if (!draggingPath || !onMoveNote) {
+      setDropTarget(null);
+      return;
+    }
+
+    onMoveNote(draggingPath, targetFolderPath);
+    setDraggingPath(null);
+    setDropTarget(null);
+  };
+
   const renderTreeItem = (item: TreeItem, level = 0) => {
     const isExpanded = expanded[item.path];
     const isFolder = item.type === "folder";
+    const isDropTarget = isFolder && dropTarget === item.path;
 
     return (
       <div key={item.path}>
@@ -65,7 +83,40 @@ export function Sidebar({
           onClick={() =>
             isFolder ? toggleFolder(item.path) : onSelectNote?.(item.path)
           }
-          className="flex w-full items-center gap-2 px-4 py-1.5 text-xs transition-colors hover:bg-white/5"
+          draggable={!isFolder}
+          onDragStart={(event) => {
+            if (isFolder) return;
+            setDraggingPath(item.path);
+            event.dataTransfer.setData("text/plain", item.path);
+            event.dataTransfer.effectAllowed = "move";
+          }}
+          onDragEnd={() => {
+            setDraggingPath(null);
+            setDropTarget(null);
+          }}
+          onDragOver={(event) => {
+            if (!isFolder || !draggingPath || draggingPath === item.path) return;
+            event.preventDefault();
+            event.dataTransfer.dropEffect = "move";
+            setDropTarget(item.path);
+          }}
+          onDragLeave={() => {
+            if (isFolder && dropTarget === item.path) {
+              setDropTarget(null);
+            }
+          }}
+          onDrop={(event) => {
+            if (!isFolder) return;
+            event.preventDefault();
+            const droppedPath = event.dataTransfer.getData("text/plain");
+            if (droppedPath && !draggingPath) {
+              setDraggingPath(droppedPath);
+            }
+            handleDropToFolder(item.path);
+          }}
+          className={`flex w-full items-center gap-2 px-4 py-1.5 text-xs transition-colors ${
+            isDropTarget ? "bg-white/10 ring-1 ring-[var(--purple-300)]" : "hover:bg-white/5"
+          }`}
           style={{ paddingLeft: `${1 + level * 0.75}rem` }}
         >
           <span className="opacity-40">{isFolder ? (isExpanded ? "▾" : "▸") : "📄"}</span>
@@ -159,6 +210,34 @@ export function Sidebar({
               <span className="font-medium">{t("nav.allNotes")}</span>
               <span className="ml-auto text-[10px] opacity-50">{noteCount}</span>
             </div>
+          </button>
+
+          <button
+            className={`mt-1 w-full rounded-md border border-dashed px-4 py-1.5 text-left text-[10px] uppercase tracking-widest transition-colors ${
+              dropTarget === ""
+                ? "border-[var(--purple-300)] bg-white/10 text-white"
+                : "border-white/10 text-[var(--text-tertiary)] hover:border-white/20 hover:text-white"
+            }`}
+            onDragOver={(event) => {
+              if (!draggingPath) return;
+              event.preventDefault();
+              setDropTarget("");
+            }}
+            onDragLeave={() => {
+              if (dropTarget === "") {
+                setDropTarget(null);
+              }
+            }}
+            onDrop={(event) => {
+              event.preventDefault();
+              const droppedPath = event.dataTransfer.getData("text/plain");
+              if (droppedPath && !draggingPath) {
+                setDraggingPath(droppedPath);
+              }
+              handleDropToFolder("");
+            }}
+          >
+            {t("workspace.sidebar.dropToRoot")}
           </button>
 
           <div className="mt-6">

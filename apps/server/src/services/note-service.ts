@@ -82,6 +82,12 @@ export class NoteService {
     await this.fm.deleteFile(path);
   }
 
+  /** Moves a note to a new path and returns updated metadata. */
+  async moveNote(fromPath: string, toPath: string): Promise<Note | null> {
+    await this.fm.moveFile(fromPath, toPath);
+    return this.getNote(toPath);
+  }
+
   /**
    * Searches notes by content (simple substring match for now).
    * Phase 2 will replace this with SQLite FTS5 full-text search.

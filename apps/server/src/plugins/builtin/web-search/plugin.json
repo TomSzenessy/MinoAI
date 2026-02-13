@@ -1,0 +1,16 @@
+{
+  "id": "web-search",
+  "name": "Web Search",
+  "version": "0.1.0",
+  "description": "Search the web and save results directly as markdown notes.",
+  "source": "builtin",
+  "defaultEnabled": true,
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "properties": {
+      "provider": { "type": "string" },
+      "apiKey": { "type": "string" }
+    }
+  }
+}

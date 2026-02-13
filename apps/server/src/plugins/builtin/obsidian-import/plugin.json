@@ -1,0 +1,16 @@
+{
+  "id": "obsidian-import",
+  "name": "Obsidian Import",
+  "version": "0.1.0",
+  "description": "Import an Obsidian vault while preserving links, tags, and folders.",
+  "source": "builtin",
+  "defaultEnabled": true,
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "properties": {
+      "vaultPath": { "type": "string" },
+      "preserveFrontmatter": { "type": "boolean" }
+    }
+  }
+}

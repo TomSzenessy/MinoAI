@@ -351,6 +351,7 @@
       "connectServer": "Connect",
       "library": "Library",
       "files": "Files",
+      "dropToRoot": "Drop Here To Move To Root",
       "localDemoFoldersUnsupported": "Local demo: folders not supported",
       "noFoldersFound": "No folders found"
     }
