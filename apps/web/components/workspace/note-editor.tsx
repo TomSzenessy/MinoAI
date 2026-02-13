@@ -53,6 +53,7 @@ export function NoteEditor({ profile, noteSummary, onSave }: NoteEditorProps) {
   const noteRef = useRef<Note | null>(null);
   const draftRef = useRef<TitleBodyDraft>({ title: "", body: "" });
   const profileRef = useRef<LinkedServerProfile | null>(profile);
+  const bodyInputRef = useRef<HTMLTextAreaElement | null>(null);
 
   useEffect(() => {
     noteRef.current = note;
@@ -240,11 +241,18 @@ export function NoteEditor({ profile, noteSummary, onSave }: NoteEditorProps) {
           type="text"
           value={title}
           onChange={(event) => commitDraft({ title: event.target.value })}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              event.preventDefault();
+              bodyInputRef.current?.focus();
+            }
+          }}
           className="mb-6 w-full bg-transparent text-4xl font-display font-bold text-white placeholder:text-[var(--text-tertiary)] focus:outline-none"
           placeholder={t("workspace.noteEditor.untitled")}
         />
 
         <textarea
+          ref={bodyInputRef}
           className="min-h-[500px] h-full w-full resize-none bg-transparent text-[15px] leading-relaxed text-[var(--text-secondary)] focus:outline-none"
           value={body}
           onChange={(event) => commitDraft({ body: event.target.value })}

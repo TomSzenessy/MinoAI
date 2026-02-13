@@ -641,7 +641,7 @@ export default function SettingsPage() {
 
             {channelCredentialKeys.length === 0 ? (
               <p className="rounded-lg border border-dashed border-white/10 px-3 py-2 text-xs text-[var(--text-tertiary)]">
-                No provider credentials required for this channel.
+                {t("settings.channels.noCredentialsRequired")}
               </p>
             ) : (
               <div className="grid gap-3">
@@ -654,7 +654,7 @@ export default function SettingsPage() {
                       {channelCredentialLabel(key)}
                       {isRequired ? (
                         <span className="ml-1 text-[10px] uppercase tracking-widest text-[var(--text-tertiary)]">
-                          Required
+                          {t("settings.channels.requiredField")}
                         </span>
                       ) : null}
                       <input
@@ -708,7 +708,7 @@ export default function SettingsPage() {
             </button>
             {missingRequiredChannelCredentials ? (
               <p className="text-xs text-[var(--text-tertiary)]">
-                Fill all required credentials before adding this channel.
+                {t("settings.channels.requiredCredentialsHint")}
               </p>
             ) : null}
           </div>
