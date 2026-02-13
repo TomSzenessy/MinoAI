@@ -61,6 +61,7 @@ upsert_gradle_property() {
 
 echo "Enforcing Android Kotlin version ${ANDROID_KOTLIN_VERSION} for Compose compatibility..."
 upsert_gradle_property "android.kotlinVersion" "${ANDROID_KOTLIN_VERSION}"
+upsert_gradle_property "kotlinVersion" "${ANDROID_KOTLIN_VERSION}"
 
 echo "Generating release signing keystore..."
 keytool -genkeypair -v \
