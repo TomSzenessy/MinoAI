@@ -37,24 +37,31 @@
 
   /* Glass */
   --glass-bg: rgba(255, 255, 255, 0.04);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-hover: rgba(255, 255, 255, 0.08);
+  --glass-border: rgba(187, 134, 252, 0.1);
+  --glass-hover: rgba(187, 134, 252, 0.15);
 
   /* Radii */
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
   --radius-xl: 20px;
-  --radius-2xl: 24px;
+  --radius-2xl: 28px;
+  --radius-full: 9999px;
 
   /* Glow */
-  --glow-sm: 0 0 12px rgba(187, 134, 252, 0.15);
-  --glow-md: 0 0 24px rgba(187, 134, 252, 0.20);
-  --glow-lg: 0 0 48px rgba(187, 134, 252, 0.25);
+  --glow-sm: 0 0 20px -4px rgba(187, 134, 252, 0.3);
+  --glow-md: 0 0 40px -8px rgba(187, 134, 252, 0.25);
+  --glow-lg: 0 0 80px -12px rgba(187, 134, 252, 0.2);
 
   /* Misc */
-  --navbar-bg: rgba(10, 10, 15, 0.85);
-  --code-bg: rgba(255, 255, 255, 0.06);
+  --navbar-bg: rgba(18, 18, 18, 0.75);
+  --code-bg: rgba(187, 134, 252, 0.08);
+
+  /* Ease & Duration */
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-fast: 150ms;
+  --duration: 250ms;
+  --duration-slow: 400ms;
 }
 
 /* ── Light theme ──────────────────────────────────────────────────────── */
@@ -125,14 +132,121 @@ body {
 /* ── Grid overlay ─────────────────────────────────────────────────────── */
 .mino-grid-overlay {
   pointer-events: none;
-  position: fixed;
+  position: absolute;
   inset: 0;
   z-index: 0;
   background-image:
-    linear-gradient(var(--glass-border) 1px, transparent 1px),
-    linear-gradient(90deg, var(--glass-border) 1px, transparent 1px);
-  background-size: 64px 64px;
-  opacity: 0.3;
+    linear-gradient(rgba(187, 134, 252, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(187, 134, 252, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* ── Orbs ─────────────────────────────────────────────────────────────── */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.4;
+  animation: float 20s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.orb-1 {
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, var(--purple-600), transparent 70%);
+  top: -200px; left: -100px;
+}
+
+.orb-2 {
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, var(--purple-700), transparent 70%);
+  bottom: -150px; right: -100px;
+  animation-delay: -7s;
+}
+
+.orb-3 {
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, var(--purple-500), transparent 70%);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  animation-delay: -14s;
+  opacity: 0.2;
+}
+
+@keyframes float {
+  0% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(30px, -40px) scale(1.05); }
+  50% { transform: translate(-20px, 20px) scale(0.95); }
+  75% { transform: translate(40px, 10px) scale(1.02); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+
+/* ── Theme Toggle ─────────────────────────────────────────────────────── */
+.theme-toggle {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  cursor: pointer;
+  transition: all var(--duration);
+  overflow: hidden;
+}
+
+.theme-toggle:hover {
+  background: var(--glass-hover);
+  border-color: var(--purple-400);
+  box-shadow: var(--glow-sm);
+}
+
+.theme-toggle-orb {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, var(--purple-500), transparent 70%);
+  opacity: 0;
+  transform: scale(0.5);
+  transition: all var(--duration-slow) var(--ease);
+}
+
+.theme-toggle:hover .theme-toggle-orb {
+  opacity: 0.2;
+  transform: scale(1.2);
+}
+
+.theme-toggle-icon {
+  position: relative;
+  z-index: 1;
+  font-size: 1.2rem;
+  transition: transform var(--duration) var(--ease);
+}
+
+.theme-toggle:active .theme-toggle-icon {
+  transform: scale(0.9);
 }
 
 /* ── Glass cards ──────────────────────────────────────────────────────── */

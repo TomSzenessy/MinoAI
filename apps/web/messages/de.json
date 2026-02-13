@@ -10,7 +10,17 @@
     "docs": "Dokumentation",
     "settings": "Einstellungen",
     "connectServer": "Server verbinden",
-    "workspace": "Workspace"
+    "workspace": "Workspace",
+    "allNotes": "Alle Notizen",
+    "projects": "Projekte",
+    "dailyNotes": "Tägliche Notizen",
+    "tags": "Tags",
+    "searchPlaceholder": "Notizen durchsuchen...",
+    "newNote": "Neue Notiz",
+    "selectNote": "Wähle eine Notiz zum Anzeigen oder Bearbeiten",
+    "autoSync": "Alle Änderungen werden automatisch synchronisiert.",
+    "words": "Wörter",
+    "chars": "Zeichen"
   },
   "hero": {
     "badge": "Open Source & Selbstgehostet",
@@ -19,7 +29,8 @@
     "subtitle": "Eine agenten-native, markdown-basierte Wissensplattform. Lass KI deine Notizen organisieren, während du dich auf das Wesentliche konzentrierst.",
     "ctaPrimary": "✦ Schreib los",
     "ctaSecondary": "↗ Auf GitHub ansehen",
-    "scrollHint": "In Aktion sehen"
+    "scrollHint": "In Aktion sehen",
+    "ctaResume": "Workspace fortsetzen"
   },
   "preview": {
     "url": "mino.ink/workspace"
@@ -151,7 +162,9 @@
       "disconnected": "Getrennt",
       "serverUrl": "Server-URL",
       "lastVerified": "Zuletzt verifiziert",
-      "relink": "Server neu verbinden"
+      "relink": "Server neu verbinden",
+      "status": "Status",
+      "loadError": "Serverstatus konnte nicht geladen werden."
     },
     "agent": {
       "title": "KI-Agent Konfiguration",
@@ -174,7 +187,11 @@
       "comingSoon": "Demnächst",
       "configure": "Konfigurieren",
       "close": "Schließen",
-      "save": "Speichern"
+      "save": "Speichern",
+      "loading": "Plugins werden geladen...",
+      "emptyServerTitle": "Keine Plugins auf dem Server gefunden.",
+      "emptyServerHint": "Füge Plugins zum Datenverzeichnis deines Servers hinzu, damit sie hier erscheinen.",
+      "localInterfaceTitle": "Lokale Interface-Plugins"
     },
     "about": {
       "title": "Über Mino",
@@ -201,5 +218,81 @@
     "cookiesTitle": "Cookie-Richtlinie",
     "privacyTitle": "Datenschutzerklärung",
     "lastUpdated": "Zuletzt aktualisiert"
+  },
+  "a11y": {
+    "language": "Sprache",
+    "toggleTheme": "Design umschalten",
+    "menu": "Menü",
+    "cookieConsent": "Cookie-Einwilligung"
+  },
+  "link": {
+    "title": "Server verbinden",
+    "description": "Nutze eine vorausgefüllte URL oder gib die Serverdaten manuell ein.",
+    "noPrefill": "Es wurden keine vorausgefüllten Zugangsdaten in der URL gefunden. Füge die Serverdaten oben ein.",
+    "submitting": "Verbinde...",
+    "submit": "Server verbinden",
+    "fields": {
+      "serverUrl": "Server-URL",
+      "serverUrlPlaceholder": "https://dein-server.beispiel",
+      "apiKey": "API-Schlüssel",
+      "apiKeyPlaceholder": "mino_sk_...",
+      "profileName": "Profilname (optional)",
+      "profileNamePlaceholder": "Persönlicher Server"
+    },
+    "steps": {
+      "resolving": "Relay-Code wird aufgelöst",
+      "validating": "URL wird geprüft",
+      "verifying": "API-Schlüssel wird verifiziert",
+      "linking": "Server wird verbunden",
+      "persisting": "Profil wird gespeichert",
+      "done": "Fertig"
+    },
+    "errors": {
+      "failedToLink": "Server konnte nicht verbunden werden.",
+      "failedToExchangeRelay": "Relay-Code konnte nicht ausgetauscht werden."
+    }
+  },
+  "workspace": {
+    "errors": {
+      "loadData": "Workspace-Daten konnten nicht geladen werden.",
+      "createNote": "Notiz konnte nicht erstellt werden."
+    },
+    "prompts": {
+      "noteName": "Notizname eingeben (z. B. hallo.md):",
+      "defaultNoteName": "neue-notiz.md"
+    },
+    "localDemo": {
+      "noteBody": "Dies ist eine lokale Demo-Notiz. Änderungen werden nicht auf einen Server gespeichert."
+    },
+    "statusBar": {
+      "defaultServerName": "Mino Server",
+      "uptime": "Laufzeit: {{seconds}}s",
+      "settings": "Einstellungen"
+    },
+    "noteList": {
+      "syncing": "Notizen werden synchronisiert...",
+      "emptyTitle": "Keine Notizen gefunden.",
+      "emptySubtitle": "Erstelle deine erste Notiz!"
+    },
+    "noteEditor": {
+      "loadingContent": "Inhalt wird geladen...",
+      "workspace": "Workspace",
+      "saving": "Speichern...",
+      "savedAt": "Gespeichert {{time}}",
+      "share": "Teilen",
+      "startWriting": "Beginne zu schreiben...",
+      "markdown": "Markdown",
+      "encoding": "UTF-8"
+    },
+    "sidebar": {
+      "title": "Mino Workspace",
+      "library": "Bibliothek",
+      "files": "Dateien",
+      "localDemoFoldersUnsupported": "Lokale Demo: Ordner werden nicht unterstützt",
+      "noFoldersFound": "Keine Ordner gefunden"
+    }
+  },
+  "testing": {
+    "onlyEnFallback": "Fallback aus Englisch"
   }
 }

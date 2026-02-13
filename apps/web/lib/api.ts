@@ -39,6 +39,28 @@ export interface NoteSummary {
   updatedAt: string;
 }
 
+export interface Note extends NoteSummary {
+  content: string;
+  frontmatter: Record<string, unknown>;
+}
+
+export interface PluginManifest {
+  id: string;
+  name: string;
+  version: string;
+  description?: string;
+  enabled: boolean;
+}
+
+export interface TreeItem {
+  id: string;
+  name: string;
+  type: "file" | "folder";
+  path: string;
+  children?: TreeItem[];
+  itemCount?: number;
+}
+
 function sanitizeMessage(value: unknown, fallback: string): string {
   if (typeof value !== "string" || value.trim().length === 0) {
     return fallback;
@@ -74,6 +96,12 @@ async function requestJson<T>(
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+  if (serverUrl.startsWith("local://")) {
+    console.warn("Bypassing fetch for local mode:", serverUrl);
+    // Return empty but successful responses for local mode to prevent UI crashes
+    return { success: true, data: {} } as unknown as T;
+  }
 
   try {
     const response = await fetch(`${serverUrl}${path}`, {
@@ -193,6 +221,127 @@ export async function fetchNotes(
     {
       method: "GET",
       headers: authHeaders(apiKey),
+    },
+  );
+
+  return response.data;
+}
+
+export async function fetchNoteDetail(
+  serverUrl: string,
+  apiKey: string,
+  path: string,
+): Promise<Note> {
+  const response = await requestJson<{ success: true; data: Note }>(
+    serverUrl,
+    `/api/v1/notes/${encodeURIComponent(path)}`,
+    {
+      method: "GET",
+      headers: authHeaders(apiKey),
+    },
+  );
+
+  return response.data;
+}
+
+export async function createNote(
+  serverUrl: string,
+  apiKey: string,
+  path: string,
+  content: string,
+): Promise<Note> {
+  const response = await requestJson<{ success: true; data: Note }>(
+    serverUrl,
+    "/api/v1/notes",
+    {
+      method: "POST",
+      headers: authHeaders(apiKey),
+      body: JSON.stringify({ path, content }),
+    },
+  );
+
+  return response.data;
+}
+
+export async function updateNote(
+  serverUrl: string,
+  apiKey: string,
+  path: string,
+  content: string,
+): Promise<Note> {
+  const response = await requestJson<{ success: true; data: Note }>(
+    serverUrl,
+    `/api/v1/notes/${encodeURIComponent(path)}`,
+    {
+      method: "PUT",
+      headers: authHeaders(apiKey),
+      body: JSON.stringify({ content }),
+    },
+  );
+
+  return response.data;
+}
+
+export async function deleteNote(
+  serverUrl: string,
+  apiKey: string,
+  path: string,
+): Promise<void> {
+  await requestJson<{ success: true }>(
+    serverUrl,
+    `/api/v1/notes/${encodeURIComponent(path)}`,
+    {
+      method: "DELETE",
+      headers: authHeaders(apiKey),
+    },
+  );
+}
+
+export async function fetchFileTree(
+  serverUrl: string,
+  apiKey: string,
+): Promise<TreeItem[]> {
+  const response = await requestJson<{ success: true; data: TreeItem[] }>(
+    serverUrl,
+    "/api/v1/folders/tree",
+    {
+      method: "GET",
+      headers: authHeaders(apiKey),
+    },
+  );
+
+  return response.data;
+}
+
+export async function fetchPlugins(
+  serverUrl: string,
+  apiKey: string,
+): Promise<PluginManifest[]> {
+  const response = await requestJson<{ success: true; data: PluginManifest[] }>(
+    serverUrl,
+    "/api/v1/plugins",
+    {
+      method: "GET",
+      headers: authHeaders(apiKey),
+    },
+  );
+
+  return response.data;
+}
+
+export async function togglePluginOnServer(
+  serverUrl: string,
+  apiKey: string,
+  id: string,
+  enabled: boolean,
+): Promise<PluginManifest> {
+  const response = await requestJson<{ success: true; data: PluginManifest }>(
+    serverUrl,
+    `/api/v1/plugins/${id}/toggle`,
+    {
+      method: "POST",
+      headers: authHeaders(apiKey),
+      body: JSON.stringify({ enabled }),
     },
   );
 

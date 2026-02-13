@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { BrandLogo } from "@/components/brand-logo";
+import type { TranslationFn } from "@/lib/i18n";
 
 export type SettingsTabId = "general" | "server" | "agent" | "plugins" | "about";
 
@@ -11,7 +12,7 @@ interface TabItem {
   label: string;
 }
 
-export function buildSettingsTabs(t: (key: string) => string): TabItem[] {
+export function buildSettingsTabs(t: TranslationFn): TabItem[] {
   return [
     { id: "general", label: t("settings.tabs.general") },
     { id: "server", label: t("settings.tabs.server") },

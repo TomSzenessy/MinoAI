@@ -51,7 +51,7 @@ export function CookieConsent() {
   return (
     <div
       role="dialog"
-      aria-label="Cookie consent"
+      aria-label={t("a11y.cookieConsent")}
       className="fixed bottom-0 left-0 right-0 z-[9999] p-4 md:p-6"
     >
       <div className="mx-auto flex max-w-4xl flex-col gap-3 rounded-2xl border border-[var(--glass-border)] bg-[var(--bg-surface)] p-4 shadow-lg backdrop-blur-xl sm:flex-row sm:items-center sm:gap-4 md:p-5">

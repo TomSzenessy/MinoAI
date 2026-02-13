@@ -91,7 +91,7 @@ export function Navbar({ sections, activeSection, onNavigate }: NavbarProps) {
             <button
               className="lang-btn"
               onClick={() => setLangOpen((open) => !open)}
-              aria-label="Language"
+              aria-label={t("a11y.language")}
             >
               {locale.toUpperCase()} <span aria-hidden>▾</span>
             </button>
@@ -116,9 +116,10 @@ export function Navbar({ sections, activeSection, onNavigate }: NavbarProps) {
           <button
             className="theme-toggle"
             onClick={() => setTheme(resolvedTheme === "light" ? "dark" : "light")}
-            aria-label="Toggle theme"
+            aria-label={t("a11y.toggleTheme")}
           >
-            {themeIcon}
+            <span className="theme-toggle-orb" />
+            <span className="theme-toggle-icon">{themeIcon}</span>
           </button>
 
           <Link href="/link" className="button-primary text-sm">
@@ -126,7 +127,7 @@ export function Navbar({ sections, activeSection, onNavigate }: NavbarProps) {
           </Link>
         </div>
 
-        <button className="hamburger" onClick={() => setMobileOpen((open) => !open)} aria-label="Menu">
+        <button className="hamburger" onClick={() => setMobileOpen((open) => !open)} aria-label={t("a11y.menu")}>
           <span />
           <span />
           <span />

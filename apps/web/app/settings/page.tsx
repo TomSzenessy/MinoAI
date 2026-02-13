@@ -5,8 +5,8 @@ import { useTheme } from "next-themes";
 import { useEffect, useMemo, useState } from "react";
 import { LOCALE_NAMES, SUPPORTED_LOCALES, useTranslation } from "@/components/i18n-provider";
 import { SettingsLayout, buildSettingsTabs, type SettingsTabId } from "@/components/settings-layout";
-import { fetchHealth, type HealthPayload } from "@/lib/api";
-import { PLUGIN_REGISTRY, isPluginEnabled, togglePlugin } from "@/lib/plugins";
+import { fetchHealth, fetchPlugins, togglePluginOnServer, type HealthPayload, type PluginManifest } from "@/lib/api";
+import { isPluginEnabled, PLUGIN_REGISTRY, togglePlugin } from "@/lib/plugins";
 import { readSettings, writeSettings, type UserSettings, type UserSettingsUpdate } from "@/lib/settings";
 import { getActiveProfile, type LinkedServerProfile } from "@/lib/storage";
 
@@ -19,6 +19,8 @@ export default function SettingsPage() {
   const [profile, setProfile] = useState<LinkedServerProfile | null>(null);
   const [health, setHealth] = useState<HealthPayload | null>(null);
   const [healthError, setHealthError] = useState<string | null>(null);
+  const [serverPlugins, setServerPlugins] = useState<PluginManifest[]>([]);
+  const [loadingPlugins, setLoadingPlugins] = useState(false);
 
   useEffect(() => {
     const initial = readSettings();
@@ -34,14 +36,23 @@ export default function SettingsPage() {
     if (!activeProfile) return;
 
     fetchHealth(activeProfile.serverUrl, activeProfile.apiKey)
-      .then((data) => {
+      .then((data: HealthPayload) => {
         setHealth(data);
         setHealthError(null);
       })
-      .catch((error) => {
-        setHealthError(error instanceof Error ? error.message : "Unable to load server status.");
+      .catch((error: Error | unknown) => {
+        console.error("Health check failed:", error);
+        setHealthError(error instanceof Error ? error.message : t("settings.server.loadError"));
       });
-  }, [locale, setLocale]);
+
+    if (activeProfile.source !== "local") {
+      setLoadingPlugins(true);
+      fetchPlugins(activeProfile.serverUrl, activeProfile.apiKey)
+        .then(setServerPlugins)
+        .catch(console.error)
+        .finally(() => setLoadingPlugins(false));
+    }
+  }, [locale, setLocale, t]);
 
   const tabs = useMemo(() => buildSettingsTabs(t), [t]);
 
@@ -124,7 +135,7 @@ export default function SettingsPage() {
           </div>
 
           <div className="rounded-mino-xl border border-[var(--glass-border)] bg-[var(--bg-elevated)] p-4">
-            <p className="text-sm text-[var(--text-secondary)]">Status</p>
+            <p className="text-sm text-[var(--text-secondary)]">{t("settings.server.status")}</p>
             <p className="font-medium text-[var(--text-primary)]">
               {profile ? (healthError ? t("settings.server.disconnected") : t("settings.server.connected")) : t("settings.server.disconnected")}
             </p>
@@ -241,36 +252,68 @@ export default function SettingsPage() {
           <h2 className="font-display text-xl font-semibold text-[var(--text-primary)]">{t("settings.plugins.title")}</h2>
           <p className="text-sm text-[var(--text-secondary)]">{t("settings.plugins.subtitle")}</p>
 
-          <div className="grid gap-2">
-            {PLUGIN_REGISTRY.slice(0, 5).map((plugin) => {
-              const enabled = isPluginEnabled(plugin.id, settings.enabledPlugins);
-
-              return (
+          {loadingPlugins ? (
+            <div className="animate-pulse text-sm text-[var(--text-tertiary)] py-4">{t("settings.plugins.loading")}</div>
+          ) : serverPlugins.length > 0 ? (
+            <div className="grid gap-2">
+              {serverPlugins.map((plugin) => (
                 <div
                   key={plugin.id}
                   className="flex items-center justify-between rounded-lg border border-[var(--glass-border)] bg-[var(--bg-elevated)] px-3 py-2"
                 >
                   <div>
                     <p className="font-medium text-[var(--text-primary)]">{plugin.name}</p>
-                    <p className="text-xs text-[var(--text-secondary)]">{plugin.description}</p>
+                    <p className="text-xs text-[var(--text-secondary)]">{plugin.description || `v${plugin.version}`}</p>
                   </div>
                   <button
-                    className={`toggle-switch ${enabled ? "active" : ""}`}
-                    onClick={() =>
-                      updateSettings({
-                        enabledPlugins: togglePlugin(plugin.id, settings.enabledPlugins),
-                      })
-                    }
-                    disabled={plugin.status !== "available"}
+                    className={`toggle-switch ${plugin.enabled ? "active" : ""}`}
+                    onClick={async () => {
+                      if (!profile) return;
+                      try {
+                        const updated = await togglePluginOnServer(profile.serverUrl, profile.apiKey, plugin.id, !plugin.enabled);
+                        setServerPlugins(prev => prev.map(p => p.id === updated.id ? updated : p));
+                      } catch (err) {
+                        console.error("Toggle failed:", err);
+                      }
+                    }}
                   />
                 </div>
-              );
-            })}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-mino-lg border border-dashed border-white/10 p-8 text-center">
+              <p className="text-sm text-[var(--text-tertiary)]">{t("settings.plugins.emptyServerTitle")}</p>
+              <p className="text-xs text-[var(--text-tertiary)] mt-1">{t("settings.plugins.emptyServerHint")}</p>
+            </div>
+          )}
 
-          <Link href="/settings/plugins" className="button-secondary inline-flex text-sm">
-            {t("settings.plugins.configure")}
-          </Link>
+          <section className="mt-8">
+            <h3 className="text-sm font-bold uppercase tracking-widest text-[var(--text-tertiary)] mb-4">{t("settings.plugins.localInterfaceTitle")}</h3>
+            <div className="grid gap-2">
+              {PLUGIN_REGISTRY.map((plugin) => {
+                const enabled = isPluginEnabled(plugin.id, settings.enabledPlugins);
+                return (
+                  <div
+                    key={plugin.id}
+                    className="flex items-center justify-between rounded-lg border border-[var(--glass-border)] bg-[var(--bg-elevated)/40 backdrop-blur-sm px-3 py-2"
+                  >
+                    <div>
+                      <p className="font-medium text-[var(--text-primary)]">{plugin.name}</p>
+                      <p className="text-xs text-[var(--text-secondary)]">{plugin.description}</p>
+                    </div>
+                    <button
+                      className={`toggle-switch ${enabled ? "active" : ""}`}
+                      onClick={() =>
+                        updateSettings({
+                          enabledPlugins: togglePlugin(plugin.id, settings.enabledPlugins),
+                        })
+                      }
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          </section>
         </div>
       ) : null}
 

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
-import { createTranslator, getLocale, setLocale } from "../lib/i18n";
+import { createTranslator, getLocale, hasTranslationKey, setLocale } from "../lib/i18n";
 
 type LocalStorageMock = {
   getItem: (key: string) => string | null;
@@ -71,8 +71,19 @@ describe("i18n", () => {
     expect(t("nav.home")).toBe("Startseite");
   });
 
-  it("falls back to english when key is missing in target locale", () => {
-    const t = createTranslator("es");
-    expect(t("testing.onlyEnFallback")).toBe("Fallback from English");
+  it("interpolates template variables", () => {
+    const t = createTranslator("en");
+    expect(t("workspace.statusBar.uptime", { seconds: 42 })).toBe("Uptime: 42s");
+  });
+
+  it("reports known keys", () => {
+    expect(hasTranslationKey("en", "nav.home")).toBe(true);
+    expect(hasTranslationKey("en", "this.key.does.not.exist")).toBe(false);
+  });
+
+  it("returns a safe fallback for unknown keys", () => {
+    const t = createTranslator("en");
+    const tUnsafe = t as unknown as (key: string) => string;
+    expect(tUnsafe("missing.deepKeyValue")).toBe("Deep Key Value");
   });
 });

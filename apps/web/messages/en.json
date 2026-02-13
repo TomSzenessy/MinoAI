@@ -10,15 +10,26 @@
     "docs": "Docs",
     "settings": "Settings",
     "connectServer": "Connect Server",
-    "workspace": "Workspace"
+    "workspace": "Workspace",
+    "allNotes": "All Notes",
+    "projects": "Projects",
+    "dailyNotes": "Daily Notes",
+    "tags": "Tags",
+    "searchPlaceholder": "Search notes...",
+    "newNote": "New Note",
+    "selectNote": "Select a note to view or edit",
+    "autoSync": "All changes are synced automatically.",
+    "words": "Words",
+    "chars": "Chars"
   },
   "hero": {
-    "badge": "Open Source & Self-Hostable",
+    "subtitle": "The agent-native knowledge platform for the modern mind. Local-first, privacy-focused, and infinitely extensible.",
+    "ctaPrimary": "Start Writing",
+    "ctaResume": "Resume Workspace",
+    "ctaSecondary": "View on GitHub",
+    "badge": "Open Source & Self-Hosted",
     "titleLine1": "Your Mind,",
     "titleLine2": "Organized.",
-    "subtitle": "An agent-first, markdown-based knowledge platform. Let AI organize your notes while you focus on what matters.",
-    "ctaPrimary": "✦ Start Writing",
-    "ctaSecondary": "↗ View on GitHub",
     "scrollHint": "See it in action"
   },
   "preview": {
@@ -151,7 +162,9 @@
       "disconnected": "Disconnected",
       "serverUrl": "Server URL",
       "lastVerified": "Last verified",
-      "relink": "Re-link Server"
+      "relink": "Re-link Server",
+      "status": "Status",
+      "loadError": "Unable to load server status."
     },
     "agent": {
       "title": "AI Agent Configuration",
@@ -174,7 +187,11 @@
       "comingSoon": "Coming Soon",
       "configure": "Configure",
       "close": "Close",
-      "save": "Save"
+      "save": "Save",
+      "loading": "Loading plugins...",
+      "emptyServerTitle": "No plugins found on the server.",
+      "emptyServerHint": "Add plugins to your server's data directory to see them here.",
+      "localInterfaceTitle": "Local Interface Plugins"
     },
     "about": {
       "title": "About Mino",
@@ -204,5 +221,78 @@
   },
   "testing": {
     "onlyEnFallback": "Fallback from English"
+  },
+  "a11y": {
+    "language": "Language",
+    "toggleTheme": "Toggle theme",
+    "menu": "Menu",
+    "cookieConsent": "Cookie consent"
+  },
+  "link": {
+    "title": "Link Your Server",
+    "description": "Use a prefilled URL or enter server details manually.",
+    "noPrefill": "No prefilled credentials were found in the URL. Paste server details above.",
+    "submitting": "Linking...",
+    "submit": "Link Server",
+    "fields": {
+      "serverUrl": "Server URL",
+      "serverUrlPlaceholder": "https://your-server.example",
+      "apiKey": "API Key",
+      "apiKeyPlaceholder": "mino_sk_...",
+      "profileName": "Profile Name (optional)",
+      "profileNamePlaceholder": "Personal Server"
+    },
+    "steps": {
+      "resolving": "Resolving relay code",
+      "validating": "Validating URL",
+      "verifying": "Verifying API key",
+      "linking": "Linking server",
+      "persisting": "Saving profile",
+      "done": "Done"
+    },
+    "errors": {
+      "failedToLink": "Failed to link server.",
+      "failedToExchangeRelay": "Failed to exchange relay code."
+    }
+  },
+  "workspace": {
+    "errors": {
+      "loadData": "Failed to load workspace data.",
+      "createNote": "Failed to create note."
+    },
+    "prompts": {
+      "noteName": "Enter note name (e.g. hello.md):",
+      "defaultNoteName": "new-note.md"
+    },
+    "localDemo": {
+      "noteBody": "This is a local demo note. Changes are not persisted to a server."
+    },
+    "statusBar": {
+      "defaultServerName": "Mino Server",
+      "uptime": "Uptime: {{seconds}}s",
+      "settings": "Settings"
+    },
+    "noteList": {
+      "syncing": "Syncing notes...",
+      "emptyTitle": "No notes found.",
+      "emptySubtitle": "Create your first one!"
+    },
+    "noteEditor": {
+      "loadingContent": "Loading content...",
+      "workspace": "Workspace",
+      "saving": "Saving...",
+      "savedAt": "Saved {{time}}",
+      "share": "Share",
+      "startWriting": "Start writing...",
+      "markdown": "Markdown",
+      "encoding": "UTF-8"
+    },
+    "sidebar": {
+      "title": "Mino Workspace",
+      "library": "Library",
+      "files": "Files",
+      "localDemoFoldersUnsupported": "Local demo: folders not supported",
+      "noFoldersFound": "No folders found"
+    }
   }
 }

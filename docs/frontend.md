@@ -26,10 +26,10 @@ mino.ink / test.mino.ink (Cloudflare Pages)
 
 The exact same Next.js app is served from two places:
 
-| Source | URL | When to use |
-|--------|-----|-------------|
-| **Cloudflare Pages** | `https://test.mino.ink` / `https://mino.ink` | Remote access to any linked server |
-| **Built-in server UI** | `http://localhost:3000/` | Local access, air-gapped, no internet needed |
+| Source                 | URL                                          | When to use                                  |
+| ---------------------- | -------------------------------------------- | -------------------------------------------- |
+| **Cloudflare Pages**   | `https://test.mino.ink` / `https://mino.ink` | Remote access to any linked server           |
+| **Built-in server UI** | `http://localhost:3000/`                     | Local access, air-gapped, no internet needed |
 
 The built-in UI works identically to mino.ink — it's the same code, just served from the Docker container's static files instead of Cloudflare.
 
@@ -37,13 +37,13 @@ The built-in UI works identically to mino.ink — it's the same code, just serve
 
 No account is ever required. Users have three options:
 
-| Mode | How it works | Credentials stored | Multi-device? |
-|------|-------------|-------------------|---------------|
-| **Anonymous** | Open `/link` (prefilled URL or manual) and link with API key | `localStorage` only | ❌ Manual per device |
-| **Google sign-in** | Sign in with Google → link server(s) to account | Server-side (mino.ink DB) | ✅ Auto-syncs linked servers |
-| **Local instance** | Open `http://localhost:3000` → auto-connected | Server's own credentials | ❌ One device |
+| Mode               | How it works                                                 | Credentials stored        | Multi-device?                |
+| ------------------ | ------------------------------------------------------------ | ------------------------- | ---------------------------- |
+| **Anonymous**      | Open `/link` (prefilled URL or manual) and link with API key | `localStorage` only       | ❌ Manual per device         |
+| **Google sign-in** | Sign in with Google → link server(s) to account              | Server-side (mino.ink DB) | ✅ Auto-syncs linked servers |
+| **Local instance** | Open `http://localhost:3000` → auto-connected                | Server's own credentials  | ❌ One device                |
 
-**The Google account doesn't store notes.** It only stores *which servers the user has linked*. Notes always live on the user's server.
+**The Google account doesn't store notes.** It only stores _which servers the user has linked_. Notes always live on the user's server.
 
 ### Free Tier (No Self-Hosting Required)
 
@@ -58,12 +58,12 @@ When a user signs into mino.ink with Google but doesn't link a server, they get 
 
 ### Page Structure
 
-| Page | Path | Description |
-|------|------|-------------|
-| **Landing** | `/` | Marketing + onboarding entrypoint |
-| **Link Server** | `/link` | Dedicated handler that parses `serverUrl` + `apiKey`, verifies, links, stores profile, and redirects |
-| **Workspace** | `/workspace?profile=<id>` | Main shell with linked-server status and authenticated note list |
-| **Docs Explorer** | `/docs` | Serves both blueprint docs (`/docs`) and implementation docs (`/docstart`) |
+| Page              | Path                      | Description                                                                                          |
+| ----------------- | ------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **Landing**       | `/`                       | Marketing + onboarding entrypoint                                                                    |
+| **Link Server**   | `/link`                   | Dedicated handler that parses `serverUrl` + `apiKey`, verifies, links, stores profile, and redirects |
+| **Workspace**     | `/workspace?profile=<id>` | Main shell with linked-server status and authenticated note list                                     |
+| **Docs Explorer** | `/docs`                   | Serves both blueprint docs (`/docs`) and implementation docs (`/docstart`)                           |
 
 ### `/link` Handler Contract
 
@@ -84,6 +84,7 @@ If params are missing or invalid, `/link` shows a manual fallback form.
 Use two Pages projects (test + production) with the same build pipeline.
 
 Relay note:
+
 - The `/link?relayCode=...` flow depends on a running relay backend.
 - See `docs/relay.md` for relay deployment and required server variables.
 
@@ -94,21 +95,21 @@ Relay note:
 - Build output directory: `apps/web/out`
 - Root directory: `/`
 - Environment variables:
-  - `NODE_VERSION=20`
-  - `NEXT_PUBLIC_APP_ENV=test`
-  - `NEXT_PUBLIC_APP_ORIGIN=https://test.mino.ink`
-  - `NEXT_PUBLIC_DEFAULT_LINK_TARGET=https://test.mino.ink`
-  - `NEXT_PUBLIC_RELAY_URL=https://relay.mino.ink`
+    - `NODE_VERSION=20`
+    - `NEXT_PUBLIC_APP_ENV=test`
+    - `NEXT_PUBLIC_APP_ORIGIN=https://test.mino.ink`
+    - `NEXT_PUBLIC_DEFAULT_LINK_TARGET=https://test.mino.ink`
+    - `NEXT_PUBLIC_RELAY_URL=https://relay.mino.ink`
 
 #### Production project (`mino.ink`)
 
 - Same build settings as test
 - Environment variables:
-  - `NODE_VERSION=20`
-  - `NEXT_PUBLIC_APP_ENV=production`
-  - `NEXT_PUBLIC_APP_ORIGIN=https://mino.ink`
-  - `NEXT_PUBLIC_DEFAULT_LINK_TARGET=https://mino.ink`
-  - `NEXT_PUBLIC_RELAY_URL=https://relay.mino.ink`
+    - `NODE_VERSION=20`
+    - `NEXT_PUBLIC_APP_ENV=production`
+    - `NEXT_PUBLIC_APP_ORIGIN=https://mino.ink`
+    - `NEXT_PUBLIC_DEFAULT_LINK_TARGET=https://mino.ink`
+    - `NEXT_PUBLIC_RELAY_URL=https://relay.mino.ink`
 
 ### Workspace Layout (from screen.png mockup)
 
@@ -148,6 +149,7 @@ Relay note:
 ### Landing Page Design
 
 Keep the existing mino.ink design language, updated with logo-derived brand colors:
+
 - Deep dark background (`#121212` base, `#1E1E1E` surfaces)
 - `#BB86FC` purple gradient orbs with blur effects
 - Grid pattern overlay with faint purple tint
@@ -162,6 +164,7 @@ Keep the existing mino.ink design language, updated with logo-derived brand colo
 ### Technology Choice: React Native + Expo
 
 **Why not Flutter?** React Native + Expo enables:
+
 - Shared TypeScript types with the server
 - Shared API client with the web app
 - Shared markdown parsing logic
@@ -219,12 +222,12 @@ The mobile app maintains a list of connected servers:
 
 ```typescript
 interface ServerConfig {
-  id: string;
-  name: string;            // "Personal", "Work", etc.
-  endpoint: string;        // "https://my-server.com" or tunnel URL
-  authToken: string;       // API key or JWT
-  syncEnabled: boolean;
-  lastSyncedAt: Date;
+	id: string;
+	name: string; // "Personal", "Work", etc.
+	endpoint: string; // "https://my-server.com" or tunnel URL
+	authToken: string; // API key or JWT
+	syncEnabled: boolean;
+	lastSyncedAt: Date;
 }
 ```
 

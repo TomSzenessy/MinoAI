@@ -5,21 +5,24 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { LinkStatusCard } from "@/components/link-status-card";
 import { BrandLogo } from "@/components/brand-logo";
+import { useTranslation } from "@/components/i18n-provider";
 import { runLinkFlow, type LinkStep } from "@/lib/linking";
+import type { TranslationKey } from "@/lib/i18n";
 import { exchangeRelayCode } from "@/lib/relay";
 import { parseLinkParams, removeSensitiveQueryParams } from "@/lib/url";
 
-const STEP_LABEL: Record<LinkStep, string> = {
-  resolving: "Resolving relay code",
-  validating: "Validating URL",
-  verifying: "Verifying API key",
-  linking: "Linking server",
-  persisting: "Saving profile",
-  done: "Done",
+const STEP_LABEL_KEY: Record<LinkStep, TranslationKey> = {
+  resolving: "link.steps.resolving",
+  validating: "link.steps.validating",
+  verifying: "link.steps.verifying",
+  linking: "link.steps.linking",
+  persisting: "link.steps.persisting",
+  done: "link.steps.done",
 };
 
 export default function LinkPage() {
   const router = useRouter();
+  const { t } = useTranslation();
   const [serverUrl, setServerUrl] = useState("");
   const [apiKey, setApiKey] = useState("");
   const [name, setName] = useState("");
@@ -78,7 +81,7 @@ export default function LinkPage() {
 
       router.replace(`/workspace?profile=${encodeURIComponent(result.profile.id)}`);
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : "Failed to link server.");
+      setError(caught instanceof Error ? caught.message : t("link.errors.failedToLink"));
       setAutoAttempted(true);
       setStep(null);
     } finally {
@@ -101,7 +104,7 @@ export default function LinkPage() {
       setApiKey(exchanged.apiKey);
       await startLinking(exchanged.serverUrl, exchanged.apiKey, nextName, "relay");
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : "Failed to exchange relay code.");
+      setError(caught instanceof Error ? caught.message : t("link.errors.failedToExchangeRelay"));
       setAutoAttempted(true);
       setStep(null);
       setBusy(false);
@@ -115,15 +118,15 @@ export default function LinkPage() {
 
   const description = useMemo(() => {
     if (busy && step) {
-      return `${STEP_LABEL[step]}...`;
+      return `${t(STEP_LABEL_KEY[step])}...`;
     }
 
     if (error) {
       return error;
     }
 
-    return "Use a prefilled URL or enter server details manually.";
-  }, [busy, error, step]);
+    return t("link.description");
+  }, [busy, error, step, t]);
 
   return (
     <main className="relative min-h-screen overflow-hidden px-6 py-8 md:px-10">
@@ -134,20 +137,20 @@ export default function LinkPage() {
           <BrandLogo />
           <div className="flex items-center gap-2">
             <Link href="/" className="button-secondary text-sm">
-              Home
+              {t("nav.home")}
             </Link>
             <Link href="/docs" className="button-secondary text-sm">
-              Docs
+              {t("nav.docs")}
             </Link>
           </div>
         </header>
 
         <div className="mx-auto w-full max-w-xl">
-          <LinkStatusCard title="Link Your Server" description={description}>
+          <LinkStatusCard title={t("link.title")} description={description}>
             <form className="space-y-4" onSubmit={onSubmit}>
               <div>
                 <label htmlFor="server-url" className="mb-2 block text-xs uppercase tracking-wide text-[var(--text-tertiary)]">
-                  Server URL
+                  {t("link.fields.serverUrl")}
                 </label>
                 <input
                   id="server-url"
@@ -155,7 +158,7 @@ export default function LinkPage() {
                   type="text"
                   value={serverUrl}
                   onChange={(event) => setServerUrl(event.target.value)}
-                  placeholder="https://your-server.example"
+                  placeholder={t("link.fields.serverUrlPlaceholder")}
                   autoComplete="url"
                   required
                 />
@@ -163,7 +166,7 @@ export default function LinkPage() {
 
               <div>
                 <label htmlFor="api-key" className="mb-2 block text-xs uppercase tracking-wide text-[var(--text-tertiary)]">
-                  API Key
+                  {t("link.fields.apiKey")}
                 </label>
                 <input
                   id="api-key"
@@ -171,7 +174,7 @@ export default function LinkPage() {
                   type="password"
                   value={apiKey}
                   onChange={(event) => setApiKey(event.target.value)}
-                  placeholder="mino_sk_..."
+                  placeholder={t("link.fields.apiKeyPlaceholder")}
                   autoComplete="off"
                   required
                 />
@@ -179,7 +182,7 @@ export default function LinkPage() {
 
               <div>
                 <label htmlFor="profile-name" className="mb-2 block text-xs uppercase tracking-wide text-[var(--text-tertiary)]">
-                  Profile Name (optional)
+                  {t("link.fields.profileName")}
                 </label>
                 <input
                   id="profile-name"
@@ -187,19 +190,19 @@ export default function LinkPage() {
                   type="text"
                   value={name}
                   onChange={(event) => setName(event.target.value)}
-                  placeholder="Personal Server"
+                  placeholder={t("link.fields.profileNamePlaceholder")}
                 />
               </div>
 
               <button className="button-primary w-full" type="submit" disabled={busy}>
-                {busy ? "Linking..." : "Link Server"}
+                {busy ? t("link.submitting") : t("link.submit")}
               </button>
             </form>
 
             {error ? <p className="mt-4 text-sm text-rose-300">{error}</p> : null}
             {autoAttempted && !busy && !error ? (
               <p className="mt-4 text-sm text-[var(--text-secondary)]">
-                No prefilled credentials were found in the URL. Paste server details above.
+                {t("link.noPrefill")}
               </p>
             ) : null}
           </LinkStatusCard>

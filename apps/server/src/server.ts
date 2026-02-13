@@ -14,6 +14,7 @@ import { corsMiddleware } from "./middleware/cors";
 import { authMiddleware } from "./middleware/auth";
 import { errorHandler, handleAppError } from "./middleware/error-handler";
 import { requestLogger } from "./middleware/request-logger";
+import { apiRateLimitMiddleware } from "./middleware/rate-limit";
 import { healthRoutes } from "./routes/health";
 import { setupRoutes } from "./routes/setup";
 import { systemRoutes } from "./routes/system";
@@ -21,6 +22,7 @@ import { authRoutes } from "./routes/auth";
 import { noteRoutes } from "./routes/notes";
 import { folderRoutes } from "./routes/folders";
 import { searchRoutes } from "./routes/search";
+import { pluginRoutes } from "./routes/plugins";
 import type { AppContext } from "./types";
 
 export interface AppDependencies {
@@ -102,6 +104,7 @@ export function createApp(deps: AppDependencies): Hono<AppContext> {
   // ---------------------------------------------------------------------------
   app.use("*", errorHandler());
   app.use("*", requestLogger());
+  app.use("*", apiRateLimitMiddleware());
   app.use("*", corsMiddleware(deps.config.server.cors));
 
   // ---------------------------------------------------------------------------
@@ -121,6 +124,7 @@ export function createApp(deps: AppDependencies): Hono<AppContext> {
   protectedApi.route("/notes", noteRoutes());
   protectedApi.route("/folders", folderRoutes());
   protectedApi.route("/search", searchRoutes());
+  protectedApi.route("/plugins", pluginRoutes());
 
   app.route("/api/v1", protectedApi);
 

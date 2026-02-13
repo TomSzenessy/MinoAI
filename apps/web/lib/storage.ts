@@ -21,6 +21,8 @@ export interface LinkedServersStore {
   profiles: LinkedServerProfile[];
 }
 
+export const LOCAL_PROFILE_ID = "local_demo_vault";
+
 const STORAGE_KEY = "mino.linkedServers.v1";
 
 function getStorage(storage?: StorageLike): StorageLike | null {
@@ -156,4 +158,17 @@ export function getActiveProfile(storage?: StorageLike): LinkedServerProfile | n
   }
 
   return store.profiles.find((profile) => profile.id === store.activeProfileId) ?? null;
+}
+
+export function getLocalDemoProfile(): LinkedServerProfile {
+  return {
+    id: LOCAL_PROFILE_ID,
+    name: "Local Vault",
+    serverUrl: "local://vault",
+    apiKey: "local_demo_key",
+    linkedAt: new Date().toISOString(),
+    lastVerifiedAt: new Date().toISOString(),
+    setupComplete: true,
+    source: "local",
+  };
 }

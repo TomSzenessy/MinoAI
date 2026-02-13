@@ -10,7 +10,17 @@
     "docs": "Documentación",
     "settings": "Configuración",
     "connectServer": "Conectar Servidor",
-    "workspace": "Espacio de trabajo"
+    "workspace": "Espacio de trabajo",
+    "allNotes": "Todas las notas",
+    "projects": "Proyectos",
+    "dailyNotes": "Notas diarias",
+    "tags": "Etiquetas",
+    "searchPlaceholder": "Buscar notas...",
+    "newNote": "Nueva nota",
+    "selectNote": "Selecciona una nota para verla o editarla",
+    "autoSync": "Todos los cambios se sincronizan automáticamente.",
+    "words": "Palabras",
+    "chars": "Caracteres"
   },
   "hero": {
     "badge": "Código Abierto y Autoalojable",
@@ -19,7 +29,8 @@
     "subtitle": "Una plataforma de conocimiento basada en markdown y orientada a agentes. Deja que la IA organice tus notas mientras tú te enfocas en lo que importa.",
     "ctaPrimary": "✦ Empieza a Escribir",
     "ctaSecondary": "↗ Ver en GitHub",
-    "scrollHint": "Descúbrelo en acción"
+    "scrollHint": "Descúbrelo en acción",
+    "ctaResume": "Continuar en Workspace"
   },
   "preview": {
     "url": "mino.ink/workspace"
@@ -151,7 +162,9 @@
       "disconnected": "Desconectado",
       "serverUrl": "URL del Servidor",
       "lastVerified": "Última verificación",
-      "relink": "Reconectar Servidor"
+      "relink": "Reconectar Servidor",
+      "status": "Estado",
+      "loadError": "No se pudo cargar el estado del servidor."
     },
     "agent": {
       "title": "Configuración del Agente IA",
@@ -174,7 +187,11 @@
       "comingSoon": "Próximamente",
       "configure": "Configurar",
       "close": "Cerrar",
-      "save": "Guardar"
+      "save": "Guardar",
+      "loading": "Cargando plugins...",
+      "emptyServerTitle": "No se encontraron plugins en el servidor.",
+      "emptyServerHint": "Agrega plugins al directorio de datos de tu servidor para verlos aquí.",
+      "localInterfaceTitle": "Plugins de interfaz local"
     },
     "about": {
       "title": "Acerca de Mino",
@@ -201,5 +218,81 @@
     "cookiesTitle": "Política de Cookies",
     "privacyTitle": "Política de Privacidad",
     "lastUpdated": "Última actualización"
+  },
+  "a11y": {
+    "language": "Idioma",
+    "toggleTheme": "Cambiar tema",
+    "menu": "Menú",
+    "cookieConsent": "Consentimiento de cookies"
+  },
+  "link": {
+    "title": "Conecta tu servidor",
+    "description": "Usa una URL precargada o introduce los datos del servidor manualmente.",
+    "noPrefill": "No se encontraron credenciales precargadas en la URL. Pega los datos del servidor arriba.",
+    "submitting": "Conectando...",
+    "submit": "Conectar servidor",
+    "fields": {
+      "serverUrl": "URL del Servidor",
+      "serverUrlPlaceholder": "https://tu-servidor.ejemplo",
+      "apiKey": "Clave API",
+      "apiKeyPlaceholder": "mino_sk_...",
+      "profileName": "Nombre del perfil (opcional)",
+      "profileNamePlaceholder": "Servidor personal"
+    },
+    "steps": {
+      "resolving": "Resolviendo código del relay",
+      "validating": "Validando URL",
+      "verifying": "Verificando clave API",
+      "linking": "Conectando servidor",
+      "persisting": "Guardando perfil",
+      "done": "Listo"
+    },
+    "errors": {
+      "failedToLink": "No se pudo conectar el servidor.",
+      "failedToExchangeRelay": "No se pudo intercambiar el código del relay."
+    }
+  },
+  "workspace": {
+    "errors": {
+      "loadData": "No se pudieron cargar los datos del workspace.",
+      "createNote": "No se pudo crear la nota."
+    },
+    "prompts": {
+      "noteName": "Introduce el nombre de la nota (ej. hola.md):",
+      "defaultNoteName": "nueva-nota.md"
+    },
+    "localDemo": {
+      "noteBody": "Esta es una nota de demostración local. Los cambios no se guardan en un servidor."
+    },
+    "statusBar": {
+      "defaultServerName": "Servidor Mino",
+      "uptime": "Tiempo activo: {{seconds}}s",
+      "settings": "Configuración"
+    },
+    "noteList": {
+      "syncing": "Sincronizando notas...",
+      "emptyTitle": "No se encontraron notas.",
+      "emptySubtitle": "¡Crea la primera!"
+    },
+    "noteEditor": {
+      "loadingContent": "Cargando contenido...",
+      "workspace": "Workspace",
+      "saving": "Guardando...",
+      "savedAt": "Guardado {{time}}",
+      "share": "Compartir",
+      "startWriting": "Empieza a escribir...",
+      "markdown": "Markdown",
+      "encoding": "UTF-8"
+    },
+    "sidebar": {
+      "title": "Workspace de Mino",
+      "library": "Biblioteca",
+      "files": "Archivos",
+      "localDemoFoldersUnsupported": "Demo local: las carpetas no están disponibles",
+      "noFoldersFound": "No se encontraron carpetas"
+    }
+  },
+  "testing": {
+    "onlyEnFallback": "Fallback desde inglés"
   }
 }

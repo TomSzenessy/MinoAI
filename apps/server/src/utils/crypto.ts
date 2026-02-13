@@ -30,8 +30,8 @@ export function generateRelaySecret(): string {
   return randomBytes(32).toString("hex");
 }
 
-/** Generates an 8-char pairing code (uppercase letters + digits). */
-export function generateRelayPairCode(length = 8): string {
+/** Generates a high-entropy pairing code (uppercase letters + digits). */
+export function generateRelayPairCode(length = 10): string {
   const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   const bytes = randomBytes(length);
   let code = "";

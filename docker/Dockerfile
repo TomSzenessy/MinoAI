@@ -58,7 +58,7 @@ RUN test -f 'apps/web/app/docs/[...slug]/page.tsx' \
 RUN cd packages/shared && bun run build
 
 # Build static web app for Cloudflare + built-in UI
-RUN cd apps/web && bun run build
+RUN cd apps/web && MINO_WEB_OUTPUT=export bun run build
 
 # Build server
 RUN cd apps/server && bun run build

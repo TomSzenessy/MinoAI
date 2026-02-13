@@ -17,13 +17,14 @@ import {
   createTranslator,
   getLocale,
   setLocale as persistLocale,
+  type TranslationFn,
   type Locale,
 } from "@/lib/i18n";
 
 interface I18nContextValue {
   locale: Locale;
   setLocale: (locale: Locale) => void;
-  t: (key: string) => string;
+  t: TranslationFn;
 }
 
 const I18nContext = createContext<I18nContextValue | null>(null);
@@ -49,6 +50,11 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       window.removeEventListener("storage", handleStorage);
     };
   }, []);
+
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    document.documentElement.lang = locale;
+  }, [locale]);
 
   const changeLocale = useCallback((next: Locale) => {
     persistLocale(next);
