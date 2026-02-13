@@ -101,26 +101,18 @@ services:
     image: containrrr/watchtower:latest
     container_name: mino-relay-watchtower
     restart: unless-stopped
-    entrypoint: ["/bin/sh", "-ec"]
     command:
-      - |
-        if [ "${WATCHTOWER_POLL_INTERVAL:-300}" = "-1" ]; then
-          echo "Watchtower disabled (WATCHTOWER_POLL_INTERVAL=-1)."
-          exec tail -f /dev/null
-        fi
-        case "${WATCHTOWER_POLL_INTERVAL:-300}" in
-          ''|*[!0-9]*)
-            echo "Invalid WATCHTOWER_POLL_INTERVAL=${WATCHTOWER_POLL_INTERVAL:-300}. Falling back to 300."
-            exec /watchtower --label-enable --scope mino-relay --cleanup --interval "300"
-            ;;
-          *)
-            exec /watchtower --label-enable --scope mino-relay --cleanup --interval "${WATCHTOWER_POLL_INTERVAL:-300}"
-            ;;
-        esac
+      - --label-enable
+      - --scope
+      - mino-relay
+      - --cleanup
+      - --interval
+      - "${WATCHTOWER_POLL_INTERVAL:-300}"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - WATCHTOWER_NO_STARTUP_MESSAGE=true
+      - WATCHTOWER_MONITOR_ONLY=${WATCHTOWER_MONITOR_ONLY:-false}
     depends_on:
       relay:
         condition: service_started
@@ -137,7 +129,8 @@ Set these in Portainer's "Environment variables" section when deploying the stac
 | `RELAY_IMAGE_TAG` | No | `main` | Docker image tag to pull |
 | `RELAY_PORT` | No | `8787` | Port the relay listens on |
 | `RELAY_PORT_BIND` | No | `127.0.0.1` | Host bind address (use `0.0.0.0` to expose directly) |
-| `WATCHTOWER_POLL_INTERVAL` | No | `300` | Seconds between update checks (`-1` disables checks) |
+| `WATCHTOWER_POLL_INTERVAL` | No | `300` | Seconds between update checks |
+| `WATCHTOWER_MONITOR_ONLY` | No | `false` | If `true`, checks/logs updates but does not restart containers |
 
 ## Test Domain Example
 

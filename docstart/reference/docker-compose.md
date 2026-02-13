@@ -71,26 +71,18 @@ services:
     image: containrrr/watchtower:latest
     container_name: mino-watchtower
     restart: unless-stopped
-    entrypoint: ["/bin/sh", "-ec"]
     command:
-      - |
-        if [ "${WATCHTOWER_POLL_INTERVAL:-300}" = "-1" ]; then
-          echo "Watchtower disabled (WATCHTOWER_POLL_INTERVAL=-1)."
-          exec tail -f /dev/null
-        fi
-        case "${WATCHTOWER_POLL_INTERVAL:-300}" in
-          ''|*[!0-9]*)
-            echo "Invalid WATCHTOWER_POLL_INTERVAL=${WATCHTOWER_POLL_INTERVAL:-300}. Falling back to 300."
-            exec /watchtower --label-enable --scope mino-server --cleanup --interval "300"
-            ;;
-          *)
-            exec /watchtower --label-enable --scope mino-server --cleanup --interval "${WATCHTOWER_POLL_INTERVAL:-300}"
-            ;;
-        esac
+      - --label-enable
+      - --scope
+      - mino-server
+      - --cleanup
+      - --interval
+      - "${WATCHTOWER_POLL_INTERVAL:-300}"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - WATCHTOWER_NO_STARTUP_MESSAGE=true
+      - WATCHTOWER_MONITOR_ONLY=${WATCHTOWER_MONITOR_ONLY:-false}
     depends_on:
       mino:
         condition: service_started
@@ -111,7 +103,8 @@ Set these in Portainer's "Environment variables" section:
 | `MINO_IMAGE_TAG` | No | `main` | Docker image tag |
 | `MINO_PORT` | No | `3000` | Server port |
 | `MINO_LOCAL_DEV_UI_ORIGIN` | No | `http://localhost:5173` | Local web client origin used in generated quick-connect links |
-| `WATCHTOWER_POLL_INTERVAL` | No | `300` | Seconds between update checks (`-1` disables checks) |
+| `WATCHTOWER_POLL_INTERVAL` | No | `300` | Seconds between update checks |
+| `WATCHTOWER_MONITOR_ONLY` | No | `false` | If `true`, checks/logs updates but does not restart containers |
 
 ## Test Domain Example
 

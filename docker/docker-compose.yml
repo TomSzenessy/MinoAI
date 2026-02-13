@@ -64,26 +64,18 @@ services:
     image: containrrr/watchtower:latest
     container_name: mino-watchtower
     restart: unless-stopped
-    entrypoint: ["/bin/sh", "-ec"]
     command:
-      - |
-        if [ "${WATCHTOWER_POLL_INTERVAL:-300}" = "-1" ]; then
-          echo "Watchtower disabled (WATCHTOWER_POLL_INTERVAL=-1)."
-          exec tail -f /dev/null
-        fi
-        case "${WATCHTOWER_POLL_INTERVAL:-300}" in
-          ''|*[!0-9]*)
-            echo "Invalid WATCHTOWER_POLL_INTERVAL=${WATCHTOWER_POLL_INTERVAL:-300}. Falling back to 300."
-            exec /watchtower --label-enable --scope mino-server --cleanup --interval "300"
-            ;;
-          *)
-            exec /watchtower --label-enable --scope mino-server --cleanup --interval "${WATCHTOWER_POLL_INTERVAL:-300}"
-            ;;
-        esac
+      - --label-enable
+      - --scope
+      - mino-server
+      - --cleanup
+      - --interval
+      - "${WATCHTOWER_POLL_INTERVAL:-300}"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - WATCHTOWER_NO_STARTUP_MESSAGE=true
+      - WATCHTOWER_MONITOR_ONLY=${WATCHTOWER_MONITOR_ONLY:-false}
     depends_on:
       mino:
         condition: service_started
