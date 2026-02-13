@@ -28,7 +28,7 @@ pnpm --filter @mino-ink/design-tokens build
 pushd "${MOBILE_DIR}" >/dev/null
 
 echo "Preparing Android native project (Expo prebuild)..."
-pnpm exec expo prebuild --platform android --non-interactive --no-install --clean
+CI=1 pnpm exec expo prebuild --platform android --no-install --clean
 
 KEYSTORE_PATH="android/app/mino-upload.keystore"
 GRADLE_PROPERTIES_FILE="android/gradle.properties"
