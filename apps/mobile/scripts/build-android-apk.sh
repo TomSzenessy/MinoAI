@@ -14,7 +14,7 @@ fi
 
 ANDROID_SIGNING_PASSWORD="${ANDROID_SIGNING_PASSWORD:-}"
 ANDROID_KEY_ALIAS="${ANDROID_KEY_ALIAS:-mino-release}"
-ANDROID_KOTLIN_VERSION="${ANDROID_KOTLIN_VERSION:-1.9.25}"
+ANDROID_KOTLIN_VERSION="${ANDROID_KOTLIN_VERSION:-1.9.24}"
 
 if [ -z "${ANDROID_SIGNING_PASSWORD}" ]; then
   echo "ANDROID_SIGNING_PASSWORD is required (set it in .env or environment)."
@@ -62,6 +62,10 @@ upsert_gradle_property() {
 echo "Enforcing Android Kotlin version ${ANDROID_KOTLIN_VERSION} for Compose compatibility..."
 upsert_gradle_property "android.kotlinVersion" "${ANDROID_KOTLIN_VERSION}"
 upsert_gradle_property "kotlinVersion" "${ANDROID_KOTLIN_VERSION}"
+
+echo "Pinning Android build.gradle Kotlin fallback to ${ANDROID_KOTLIN_VERSION}..."
+sed -i.bak -E "s/(kotlinVersion = findProperty\\('android\\.kotlinVersion'\\) \\?: ')[^']+(')/\\1${ANDROID_KOTLIN_VERSION}\\2/" android/build.gradle
+rm -f android/build.gradle.bak
 
 echo "Generating release signing keystore..."
 keytool -genkeypair -v \
