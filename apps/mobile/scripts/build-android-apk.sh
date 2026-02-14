@@ -67,6 +67,10 @@ echo "Pinning Android build.gradle Kotlin fallback to ${ANDROID_KOTLIN_VERSION}.
 sed -i.bak -E "s/(kotlinVersion = findProperty\\('android\\.kotlinVersion'\\) \\?: ')[^']+(')/\\1${ANDROID_KOTLIN_VERSION}\\2/" android/build.gradle
 rm -f android/build.gradle.bak
 
+echo "Resolved Kotlin pins:"
+grep -E '^(android\.kotlinVersion|kotlinVersion)=' "${GRADLE_PROPERTIES_FILE}" || true
+grep -n "kotlinVersion = findProperty\\('android\\.kotlinVersion'\\)" android/build.gradle || true
+
 echo "Generating release signing keystore..."
 keytool -genkeypair -v \
   -storetype PKCS12 \
@@ -112,7 +116,10 @@ fi
 echo "Building Android APKs (debug + release)..."
 pushd android >/dev/null
 chmod +x gradlew
-./gradlew --no-daemon clean assembleDebug assembleRelease
+./gradlew --no-daemon \
+  -Pandroid.kotlinVersion="${ANDROID_KOTLIN_VERSION}" \
+  -PkotlinVersion="${ANDROID_KOTLIN_VERSION}" \
+  clean assembleDebug assembleRelease
 popd >/dev/null
 
 echo "Build complete. APK outputs:"

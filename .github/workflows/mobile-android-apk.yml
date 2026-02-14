@@ -30,6 +30,7 @@ jobs:
     env:
       ANDROID_SIGNING_PASSWORD: ${{ secrets.ANDROID_SIGNING_PASSWORD }}
       ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+      ANDROID_KOTLIN_VERSION: "1.9.24"
 
     steps:
       - name: Checkout repository
@@ -64,7 +65,7 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Validate signing secrets
         run: |
