@@ -10,20 +10,13 @@ import { resolve, normalize, join, relative, extname, basename } from "node:path
 
 /**
  * Returns the data directory path.
- * Priority: MINO_DATA_DIR env var → /data (Docker) → ./data (local dev).
+ * Docker sets MINO_DATA_DIR=/data explicitly. Local development falls back to
+ * ./data relative to the server package instead of guessing based on whether a
+ * top-level /data path exists.
  */
 export function getDataDir(): string {
   if (process.env.MINO_DATA_DIR) {
     return resolve(process.env.MINO_DATA_DIR);
-  }
-
-  // In Docker, /data is the volume mount point.
-  // In local dev, use ./data relative to the server directory.
-  try {
-    const stat = Bun.file("/data").size;
-    if (stat !== undefined) return "/data";
-  } catch {
-    // /data doesn't exist — use local fallback
   }
 
   return resolve(process.cwd(), "data");

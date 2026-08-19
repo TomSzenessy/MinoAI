@@ -70,12 +70,14 @@ services:
       - mino-server
       - --cleanup
       - --interval
-      - "${WATCHTOWER_POLL_INTERVAL:-300}"
+      - "${WATCHTOWER_POLL_INTERVAL:-3600}"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - WATCHTOWER_NO_STARTUP_MESSAGE=true
       - WATCHTOWER_MONITOR_ONLY=${WATCHTOWER_MONITOR_ONLY:-false}
+      - WATCHTOWER_NOTIFICATIONS=none
+      - WATCHTOWER_NOTIFICATIONS_LEVEL=panic
     depends_on:
       mino:
         condition: service_started
