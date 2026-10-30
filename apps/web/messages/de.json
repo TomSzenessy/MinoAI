@@ -21,13 +21,18 @@
     "selectNote": "Wähle eine Notiz zum Anzeigen oder Bearbeiten",
     "autoSync": "Alle Änderungen werden automatisch synchronisiert.",
     "words": "Wörter",
-    "chars": "Zeichen"
+    "chars": "Zeichen",
+    "joinWaitlist": "Auf die Warteliste",
+    "faq": "FAQ",
+    "aiNotes": "KI-Notizen",
+    "selfHosted": "Selbst gehostet",
+    "about": "Über Mino"
   },
   "hero": {
-    "badge": "Open Source & Selbstgehostet",
+    "badge": "Private Beta · Open Source · Selbst gehostet",
     "titleLine1": "Dein Verstand,",
     "titleLine2": "Organisiert.",
-    "subtitle": "Eine agenten-native, markdown-basierte Wissensplattform. Lass KI deine Notizen organisieren, während du dich auf das Wesentliche konzentrierst.",
+    "subtitle": "Mino ist das agenten-native Notizbuch für alle, deren Notizen aus jedem Ordnerbaum herausgewachsen sind. Es sortiert neues Material ein, verknüpft Zusammengehöriges und findet alles wieder — in reinem Markdown, das dir gehört. Der Zugang öffnet in kleinen Gruppen.",
     "ctaPrimary": "✦ Schreib los",
     "ctaSecondary": "↗ Auf GitHub ansehen",
     "scrollHint": "In Aktion sehen",
@@ -131,7 +136,10 @@
     "tagline": "Open Source · Selbstgehostet · Agenten-nativ",
     "terms": "Nutzungsbedingungen",
     "cookies": "Cookie-Richtlinie",
-    "privacy": "Datenschutzerklärung"
+    "privacy": "Datenschutzerklärung",
+    "product": "Produkt",
+    "resources": "Ressourcen",
+    "legal": "Rechtliches"
   },
   "cookieConsent": {
     "message": "Wir verwenden essenzielle Cookies, um die ordnungsgemäße Funktion dieser Website sicherzustellen. Es werden keine Tracking-Cookies verwendet.",
@@ -355,5 +363,36 @@
   },
   "testing": {
     "onlyEnFallback": "Fallback aus Englisch"
+  },
+  "waitlist": {
+    "eyebrow": "FRÜHER ZUGANG",
+    "title": "Sichere dir einen Platz.",
+    "subtitle": "Trag dich ein und wir melden uns, sobald ein Platz frei wird.",
+    "emailLabel": "E-Mail-Adresse",
+    "emailPlaceholder": "du@beispiel.de",
+    "nameLabel": "Vorname (optional)",
+    "namePlaceholder": "Ada",
+    "useCaseLabel": "Wofür wirst du Mino nutzen? (optional)",
+    "useCasePlaceholder": "Bitte wählen",
+    "useCases": {
+      "personal": "Persönliche Wissensbasis",
+      "engineering": "Engineering & Doku",
+      "research": "Recherche & Schreiben",
+      "agents": "KI-Agenten-Workflows",
+      "curious": "Nur neugierig"
+    },
+    "detailsToggle": "Details ergänzen (optional)",
+    "detailsHide": "Details ausblenden",
+    "submit": "Auf die Warteliste",
+    "submitting": "Wird eingetragen…",
+    "successTitle": "Du bist auf der Liste.",
+    "successBody": "Deine Einladung ist für die nächste Gruppe vorgemerkt. Wir schreiben dir, sobald ein Platz frei wird.",
+    "existsTitle": "Du bist schon auf der Liste.",
+    "existsBody": "Nichts weiter zu tun — deine Einladung geht an {{email}}.",
+    "errorTitle": "Das hat nicht geklappt.",
+    "errorBody": "Unterwegs ist etwas schiefgelaufen. Versuch es gleich noch einmal oder schreib uns eine E-Mail.",
+    "invalidEmail": "Diese E-Mail-Adresse sieht nicht richtig aus.",
+    "privacy": "Eine E-Mail, wenn ein Platz frei wird. Kein Newsletter, jederzeit abbestellbar.",
+    "changeEmail": "Andere Adresse verwenden"
   }
 }

@@ -3,4 +3,28 @@
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=(), autoplay=(), payment=()
-  Content-Security-Policy: default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; script-src 'self' 'unsafe-inline'; connect-src 'self' https: http: ws: wss:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';
+  Content-Security-Policy: default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; script-src 'self' 'unsafe-inline'; connect-src 'self' https: http: ws: wss:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';
+
+# Hashed build assets never change; fonts are versioned by filename.
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Per-user app surfaces: also kept out of the index at the header level, so a
+# crawler that ignores the meta tag still gets the message.
+/workspace
+  X-Robots-Tag: noindex, nofollow
+
+/workspace/*
+  X-Robots-Tag: noindex, nofollow
+
+/settings
+  X-Robots-Tag: noindex, nofollow
+
+/settings/*
+  X-Robots-Tag: noindex, nofollow
+
+/link
+  X-Robots-Tag: noindex, nofollow

@@ -17,6 +17,7 @@
 | [**Integrations**](./integrations.md) | MCP setup plus Cursor and Antigravity integration examples |
 | [**Security**](./security.md) | Current API-key auth model, credential flow, hardening checklist |
 | [**Roadmap**](./roadmap.md) | Phased plan, deployment priorities, risk analysis, open questions |
+| [**Growth**](./growth.md) | Early-access funnel, Search Console analysis, SEO changes, how to read signups |
 
 ---
 

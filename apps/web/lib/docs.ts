@@ -4,6 +4,8 @@ import { join, relative, resolve } from "node:path";
 export interface DocPageMeta {
   slug: string[];
   title: string;
+  /** Frontmatter description, or the first useful paragraph as a fallback. */
+  description: string;
   absolutePath: string;
   relativePath: string;
 }
@@ -123,6 +125,32 @@ function parseFrontmatter(content: string): { attributes: Record<string, string>
   };
 }
 
+function excerptFromMarkdown(content: string): string {
+  const paragraph = content
+    .split(/\r?\n\s*\r?\n/)
+    .map((block) => block.trim())
+    .find(
+      (block) =>
+        block.length > 0 &&
+        !block.startsWith("#") &&
+        !block.startsWith("```") &&
+        !block.startsWith("|") &&
+        !block.startsWith(">"),
+    );
+
+  if (!paragraph) {
+    return "";
+  }
+
+  return paragraph
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, "")
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+    .replace(/[*_`]/g, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 158);
+}
+
 function titleFromMarkdown(content: string, fallback: string, frontmatterTitle?: string): string {
   if (frontmatterTitle && frontmatterTitle.trim()) {
     return frontmatterTitle.trim();
@@ -160,6 +188,9 @@ function computePages(files: string[], root: string): DocPageMeta[] {
       return {
         slug: fileToSlug(rel),
         title: titleFromMarkdown(parsed.body, fallbackTitle, parsed.attributes.title),
+        description:
+          (parsed.attributes.description ?? "").trim() ||
+          excerptFromMarkdown(parsed.body),
         absolutePath: file,
         relativePath: rel,
       };

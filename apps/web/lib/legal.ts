@@ -161,7 +161,7 @@ const cookiesEn: LegalDocument = {
     },
     {
       heading: "4. Third-Party Cookies",
-      body: "Mino does not embed any third-party scripts, analytics, or advertising that would set cookies. Google Fonts are loaded from Google's CDN, which may set its own cookies per Google's privacy policy.",
+      body: "Mino does not embed any third-party scripts, analytics, or advertising that would set cookies. Fonts are self-hosted and served from mino.ink, so loading a page makes no request to a font CDN.",
     },
     {
       heading: "5. Managing Cookies",
@@ -196,7 +196,7 @@ const cookiesEs: LegalDocument = {
     },
     {
       heading: "4. Cookies de Terceros",
-      body: "Mino no integra scripts de terceros, análisis o publicidad que establezcan cookies. Google Fonts se carga desde el CDN de Google, que puede establecer sus propias cookies según la política de privacidad de Google.",
+      body: "Mino no integra scripts de terceros, análisis o publicidad que establezcan cookies. Las fuentes se sirven desde mino.ink, así que cargar una página no hace peticiones a ningún CDN de fuentes.",
     },
     {
       heading: "5. Gestión de Cookies",
@@ -231,7 +231,7 @@ const cookiesDe: LegalDocument = {
     },
     {
       heading: "4. Cookies von Drittanbietern",
-      body: "Mino bettet keine Drittanbieter-Skripte, Analysen oder Werbung ein, die Cookies setzen würden. Google Fonts werden vom Google CDN geladen, das möglicherweise eigene Cookies gemäß der Google-Datenschutzrichtlinie setzt.",
+      body: "Mino bettet keine Drittanbieter-Skripte, Analysen oder Werbung ein, die Cookies setzen würden. Schriften werden von mino.ink selbst ausgeliefert; das Laden einer Seite stellt keine Anfrage an ein Schrift-CDN.",
     },
     {
       heading: "5. Cookies Verwalten",
@@ -254,7 +254,7 @@ const cookiesDe: LegalDocument = {
 
 const privacyEn: LegalDocument = {
   title: "Privacy Policy",
-  lastUpdated: "2026-02-12",
+  lastUpdated: "2026-10-30",
   sections: [
     {
       heading: "1. Overview",
@@ -274,7 +274,7 @@ const privacyEn: LegalDocument = {
     },
     {
       heading: "5. Third-Party Services",
-      body: "Google Fonts: loaded from Google's CDN for typography. Google OAuth: optional sign-in (only stores email and server list). AI Providers: if you configure an AI agent, API keys and requests are sent directly from your server to the AI provider. Mino does not proxy or log these requests.",
+      body: "Fonts are self-hosted and served from mino.ink itself, so no request leaves your browser for a font CDN. AI providers: if you configure an agent, API keys and requests go directly from your server to the provider you chose; Mino neither proxies nor logs them. Early access waitlist: the signup form is operated on Mailspool, a self-hosted email service, which stores the address you submit and sends the notification.",
     },
     {
       heading: "6. Your Rights (DSGVO/GDPR)",
@@ -292,12 +292,16 @@ const privacyEn: LegalDocument = {
       heading: "9. Contact / DPO",
       body: "For privacy inquiries or to contact our data protection officer, email legal@mino.ink or open an issue on our GitHub repository.",
     },
+    {
+      heading: "10. Early Access Waitlist",
+      body: "If you join the waitlist we store the email address you enter, and optionally your first name, what you plan to use Mino for, and the page you signed up from. We use it to email you when an early access seat opens and for nothing else: no newsletter, no profiling, no sharing, no selling. The legal basis is your consent (Art. 6(1)(a) GDPR). Submissions are processed by Mailspool on a server operated by the project. Your address is deleted when you unsubscribe or when the waitlist closes, whichever comes first, and you can ask for deletion at any time by replying to any email from us. Every email the waitlist sends carries a one-click unsubscribe link.",
+    },
   ],
 };
 
 const privacyEs: LegalDocument = {
   title: "Política de Privacidad",
-  lastUpdated: "2026-02-12",
+  lastUpdated: "2026-10-30",
   sections: [
     {
       heading: "1. Descripción General",
@@ -317,7 +321,7 @@ const privacyEs: LegalDocument = {
     },
     {
       heading: "5. Servicios de Terceros",
-      body: "Google Fonts: cargado desde el CDN de Google. Google OAuth: inicio de sesión opcional. Proveedores de IA: si configuras un agente, las claves API y solicitudes se envían directamente desde tu servidor al proveedor de IA.",
+      body: "Las fuentes se sirven desde mino.ink, sin CDN externo. Proveedores de IA: si configuras un agente, las claves y solicitudes van directamente de tu servidor al proveedor que elijas. Lista de acceso anticipado: el formulario se opera en Mailspool, un servicio de correo autoalojado, que guarda la dirección que envías y manda la notificación.",
     },
     {
       heading: "6. Tus Derechos (DSGVO/GDPR)",
@@ -335,12 +339,16 @@ const privacyEs: LegalDocument = {
       heading: "9. Contacto / DPO",
       body: "Para consultas de privacidad, envía un email a legal@mino.ink o abre un issue en nuestro repositorio de GitHub.",
     },
+    {
+      heading: "10. Lista de Acceso Anticipado",
+      body: "Si te apuntas a la lista guardamos la dirección de correo que introduces y, opcionalmente, tu nombre, para qué piensas usar Mino y la página desde la que te registraste. La usamos solo para avisarte cuando se abra un acceso anticipado: sin boletín, sin perfilado, sin cesión a terceros. La base legal es tu consentimiento (art. 6.1.a RGPD). El envío se procesa con Mailspool en un servidor operado por el proyecto. Tu dirección se elimina al darte de baja o al cerrar la lista, y puedes pedir la eliminación en cualquier momento respondiendo a un correo nuestro. Todos los correos incluyen un enlace de baja en un clic.",
+    },
   ],
 };
 
 const privacyDe: LegalDocument = {
   title: "Datenschutzerklärung",
-  lastUpdated: "2026-02-12",
+  lastUpdated: "2026-10-30",
   sections: [
     {
       heading: "1. Überblick",
@@ -360,7 +368,7 @@ const privacyDe: LegalDocument = {
     },
     {
       heading: "5. Drittanbieter-Dienste",
-      body: "Google Fonts: vom Google CDN geladen. Google OAuth: optionale Anmeldung. KI-Anbieter: Wenn du einen Agenten konfigurierst, werden API-Schlüssel und Anfragen direkt von deinem Server an den KI-Anbieter gesendet.",
+      body: "Schriften werden von mino.ink selbst ausgeliefert, ohne externes CDN. KI-Anbieter: Wenn du einen Agenten konfigurierst, gehen Schlüssel und Anfragen direkt von deinem Server an den von dir gewählten Anbieter. Warteliste: Das Formular läuft über Mailspool, einen selbst betriebenen E-Mail-Dienst, der die übermittelte Adresse speichert und die Benachrichtigung versendet.",
     },
     {
       heading: "6. Deine Rechte (DSGVO)",
@@ -377,6 +385,10 @@ const privacyDe: LegalDocument = {
     {
       heading: "9. Kontakt / DSB",
       body: "Für Datenschutzanfragen sende eine E-Mail an legal@mino.ink oder öffne ein Issue in unserem GitHub-Repository.",
+    },
+    {
+      heading: "10. Warteliste für den frühen Zugang",
+      body: "Wenn du dich in die Warteliste einträgst, speichern wir die von dir eingegebene E-Mail-Adresse und optional deinen Vornamen, deinen geplanten Verwendungszweck und die Seite, über die du dich angemeldet hast. Wir nutzen sie ausschließlich, um dich zu benachrichtigen, wenn ein Platz frei wird: kein Newsletter, kein Profiling, keine Weitergabe. Rechtsgrundlage ist deine Einwilligung (Art. 6 Abs. 1 lit. a DSGVO). Die Übermittlung läuft über Mailspool auf einem vom Projekt betriebenen Server. Deine Adresse wird gelöscht, wenn du dich abmeldest oder die Warteliste endet – je nachdem, was zuerst eintritt. Jede E-Mail enthält einen Abmeldelink.",
     },
   ],
 };

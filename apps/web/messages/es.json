@@ -21,13 +21,18 @@
     "selectNote": "Selecciona una nota para verla o editarla",
     "autoSync": "Todos los cambios se sincronizan automáticamente.",
     "words": "Palabras",
-    "chars": "Caracteres"
+    "chars": "Caracteres",
+    "joinWaitlist": "Unirme a la lista",
+    "faq": "FAQ",
+    "aiNotes": "Notas con IA",
+    "selfHosted": "Autoalojado",
+    "about": "Acerca de"
   },
   "hero": {
-    "badge": "Código Abierto y Autoalojable",
+    "badge": "Beta privada · Código abierto · Autoalojado",
     "titleLine1": "Tu Mente,",
     "titleLine2": "Organizada.",
-    "subtitle": "Una plataforma de conocimiento basada en markdown y orientada a agentes. Deja que la IA organice tus notas mientras tú te enfocas en lo que importa.",
+    "subtitle": "Mino es el cuaderno nativo para agentes de quienes ya no caben en un árbol de carpetas. Archiva lo nuevo, enlaza lo que va junto y encuentra todo — en Markdown puro que es tuyo. El acceso se abre por tandas.",
     "ctaPrimary": "✦ Empieza a Escribir",
     "ctaSecondary": "↗ Ver en GitHub",
     "scrollHint": "Descúbrelo en acción",
@@ -131,7 +136,10 @@
     "tagline": "Código abierto · Autoalojable · Nativo para agentes",
     "terms": "Términos de Servicio",
     "cookies": "Política de Cookies",
-    "privacy": "Política de Privacidad"
+    "privacy": "Política de Privacidad",
+    "product": "Producto",
+    "resources": "Recursos",
+    "legal": "Legal"
   },
   "cookieConsent": {
     "message": "Usamos cookies esenciales para garantizar el correcto funcionamiento de este sitio. No se usan cookies de seguimiento.",
@@ -355,5 +363,36 @@
   },
   "testing": {
     "onlyEnFallback": "Fallback desde inglés"
+  },
+  "waitlist": {
+    "eyebrow": "ACCESO ANTICIPADO",
+    "title": "Reserva tu sitio.",
+    "subtitle": "Apúntate y te avisamos en cuanto haya un sitio libre.",
+    "emailLabel": "Correo electrónico",
+    "emailPlaceholder": "tu@ejemplo.com",
+    "nameLabel": "Nombre (opcional)",
+    "namePlaceholder": "Ada",
+    "useCaseLabel": "¿Para qué vas a usar Mino? (opcional)",
+    "useCasePlaceholder": "Elige una opción",
+    "useCases": {
+      "personal": "Base de conocimiento personal",
+      "engineering": "Ingeniería y documentación",
+      "research": "Investigación y escritura",
+      "agents": "Flujos con agentes de IA",
+      "curious": "Solo curiosidad"
+    },
+    "detailsToggle": "Añadir detalles (opcional)",
+    "detailsHide": "Ocultar detalles",
+    "submit": "Unirme a la lista",
+    "submitting": "Enviando…",
+    "successTitle": "Ya estás en la lista.",
+    "successBody": "Tu invitación está reservada para la próxima tanda. Te escribimos en cuanto haya sitio.",
+    "existsTitle": "Ya estabas en la lista.",
+    "existsBody": "No tienes que hacer nada más: tu invitación va a {{email}}.",
+    "errorTitle": "No se pudo enviar.",
+    "errorBody": "Algo falló por el camino. Inténtalo de nuevo en un momento o escríbenos un correo.",
+    "invalidEmail": "Ese correo no parece correcto.",
+    "privacy": "Un solo correo cuando haya sitio. Sin boletín, baja cuando quieras.",
+    "changeEmail": "Usar otra dirección"
   }
 }

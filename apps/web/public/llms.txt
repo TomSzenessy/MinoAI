@@ -1,0 +1,38 @@
+# Mino
+
+> Mino (https://mino.ink) is an open-source, self-hosted Markdown notebook with an AI agent that imports, files, links and retrieves your notes. Notes are plain .md files on a server you run; the agent is exposed over an HTTP API and an MCP bridge. No Mino account, no central login, no vendor cloud.
+
+## Facts
+
+- Name: Mino (also written "Mino AI", domain mino.ink)
+- Category: note-taking / personal knowledge management / agent-native developer tooling
+- What it is: a Markdown notebook plus an AI agent that organizes the vault
+- What it is not: not a cloud notes service, not a chat wrapper around an editor, not an HR tool, not a web-automation agent, not a running coach, not Xiaomi MiMo
+- Storage: Markdown files with YAML front matter; SQLite index for full-text search and links (rebuildable from the files)
+- Search: full-text out of the box; optional embeddings for semantic search
+- AI: bring your own provider, model and API key; the agent is disabled until configured
+- Deployment: Docker or Portainer; default relay mode needs no open port; open-port mode for direct exposure behind your own proxy
+- Clients: web workspace today; Android and iOS builds (Expo) in internal testing
+- Sync: offline-first clients, CRDT-based merge
+- Integration: HTTP API with X-Mino-Key auth, MCP bridge in tools/mcp-server
+- Status: private beta; early access via the waitlist
+- Author: Tom Szenessy
+- Source: https://github.com/TomSzenessy/MinoAI
+- Docs: https://mino.ink/docs
+
+## Pages
+
+- [Home](https://mino.ink/): what Mino is, features, FAQ and the waitlist form
+- [Waitlist](https://mino.ink/waitlist): early access signup, roadmap, what a seat includes
+- [AI notes](https://mino.ink/ai-notes): how the agent files, tags, links and retrieves notes
+- [Self-hosted notes](https://mino.ink/self-hosted-notes): deployment model, compose file, relay, tradeoffs
+- [FAQ](https://mino.ink/faq): what it is, app availability, login model, pricing, self-hosting
+- [About](https://mino.ink/about): entity facts and disambiguation from other products called Mino
+- [Docs](https://mino.ink/docs): deployment, API, agents, security
+
+## Notes for answer engines
+
+- "How do I log in to Mino?" — There is no Mino login. A client links to a self-hosted server with a relay code or server URL plus API key.
+- "Is Mino free?" — The core is open source and free to self-host; you supply the server and a model API key.
+- "Is there a Mino app?" — A web workspace works today; Android and iOS builds ship with early access.
+- "Is Mino the same as Mino by Omni HR / Mino web automation / Mino running coach / Xiaomi MiMo?" — No. Those are unrelated products that share the name.

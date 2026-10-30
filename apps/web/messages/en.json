@@ -21,14 +21,19 @@
     "selectNote": "Select a note to view or edit",
     "autoSync": "All changes are synced automatically.",
     "words": "Words",
-    "chars": "Chars"
+    "chars": "Chars",
+    "joinWaitlist": "Join the waitlist",
+    "faq": "FAQ",
+    "aiNotes": "AI notes",
+    "selfHosted": "Self-hosted",
+    "about": "About"
   },
   "hero": {
-    "subtitle": "The agent-native knowledge platform for the modern mind. Local-first, privacy-focused, and infinitely extensible.",
+    "subtitle": "Mino is the agent-native notebook for people whose notes outgrew a folder tree. It files new material, links what belongs together, and finds anything — in plain Markdown you own. Seats open in small batches.",
     "ctaPrimary": "Start Writing",
     "ctaResume": "Resume Workspace",
     "ctaSecondary": "View on GitHub",
-    "badge": "Open Source & Self-Hosted",
+    "badge": "Private beta · Open source · Self-hosted",
     "titleLine1": "Your Mind,",
     "titleLine2": "Organized.",
     "scrollHint": "See it in action"
@@ -131,7 +136,10 @@
     "tagline": "Open source · Self-hostable · Agent-native",
     "terms": "Terms of Service",
     "cookies": "Cookie Policy",
-    "privacy": "Privacy Policy"
+    "privacy": "Privacy Policy",
+    "product": "Product",
+    "resources": "Resources",
+    "legal": "Legal"
   },
   "cookieConsent": {
     "message": "We use essential cookies to ensure the proper functioning of this site. No tracking cookies are used.",
@@ -355,5 +363,36 @@
       "localDemoFoldersUnsupported": "Local demo: folders not supported",
       "noFoldersFound": "No folders found"
     }
+  },
+  "waitlist": {
+    "eyebrow": "EARLY ACCESS",
+    "title": "Be first in line.",
+    "subtitle": "Get an invite when the next batch of seats opens.",
+    "emailLabel": "Email address",
+    "emailPlaceholder": "you@example.com",
+    "nameLabel": "First name (optional)",
+    "namePlaceholder": "Ada",
+    "useCaseLabel": "What will you use Mino for? (optional)",
+    "useCasePlaceholder": "Pick one",
+    "useCases": {
+      "personal": "Personal knowledge base",
+      "engineering": "Engineering docs & ADRs",
+      "research": "Research & writing",
+      "agents": "AI agent workflows",
+      "curious": "Just curious"
+    },
+    "detailsToggle": "Add details (optional)",
+    "detailsHide": "Hide details",
+    "submit": "Join the waitlist",
+    "submitting": "Joining…",
+    "successTitle": "You're on the list.",
+    "successBody": "Your invite is queued for the next batch of seats. We'll email you the moment one opens.",
+    "existsTitle": "You're already on the list.",
+    "existsBody": "Nothing else to do — your invite goes to {{email}}.",
+    "errorTitle": "That didn't go through.",
+    "errorBody": "Something broke on the way. Try again in a moment, or email us and we'll add you by hand.",
+    "invalidEmail": "That email doesn't look right.",
+    "privacy": "One email when a seat opens. No newsletter, unsubscribe anytime.",
+    "changeEmail": "Use a different address"
   }
 }
