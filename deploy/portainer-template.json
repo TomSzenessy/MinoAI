@@ -1,0 +1,58 @@
+{
+  "version": "3",
+  "templates": [
+    {
+      "type": 3,
+      "title": "Mino",
+      "name": "mino",
+      "description": "A self-hosted Markdown notebook with an AI agent that files, links and retrieves your notes. API and dashboard in one container.",
+      "categories": ["productivity", "notes", "self-hosted"],
+      "platform": "linux",
+      "logo": "https://mino.ink/logo.svg",
+      "note": "Deployed from the repository, so updates are a pull plus a redeploy. The dashboard is served by the same container at port 3000.",
+      "documentation": "https://mino.ink/docs/deployment/from-the-repo",
+      "image": "ghcr.io/tomszenessy/mino-server:main",
+      "repository": {
+        "url": "https://github.com/TomSzenessy/MinoAI",
+        "stackfile": "docker-compose.yml"
+      },
+      "env": [
+        {
+          "name": "MINO_CONNECTION_MODE",
+          "label": "Connection mode",
+          "description": "relay reaches the server through the managed relay without opening a port; open-port exposes it directly.",
+          "default": "relay",
+          "preset": true,
+          "select": [
+            { "text": "relay (recommended)", "value": "relay" },
+            { "text": "open-port", "value": "open-port" }
+          ]
+        },
+        {
+          "name": "MINO_PORT",
+          "label": "Host port",
+          "description": "Port published on the host.",
+          "default": "3000"
+        },
+        {
+          "name": "MINO_PORT_BIND",
+          "label": "Bind address",
+          "description": "127.0.0.1 keeps the container private to this host; 0.0.0.0 publishes it on every interface.",
+          "default": "127.0.0.1"
+        },
+        {
+          "name": "MINO_PUBLIC_SERVER_URL",
+          "label": "Public server URL",
+          "description": "Only for open-port mode: the URL clients use to reach this server, e.g. https://notes.example.com.",
+          "default": ""
+        },
+        {
+          "name": "MINO_RELAY_URL",
+          "label": "Relay URL",
+          "description": "Only for relay mode: the managed relay the server dials out to.",
+          "default": "https://relay.mino.ink"
+        }
+      ]
+    }
+  ]
+}

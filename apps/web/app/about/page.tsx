@@ -5,9 +5,9 @@ import { WaitlistForm } from "@/components/waitlist-form";
 import { JsonLd } from "@/components/structured-data";
 import { REPO_URL, breadcrumbSchema, pageMetadata } from "@/lib/seo";
 
-const TITLE = "About — who builds Mino, and what it is";
+const TITLE = "About Mino: a self-hosted Obsidian alternative";
 const DESCRIPTION =
-  "Mino (mino.ink) is an open-source, self-hosted Markdown notebook with an AI agent that files and retrieves your notes. Who builds it, what it runs on, and what it is not.";
+  "Mino is a self-hosted Obsidian alternative with an AI agent that files, tags and links your notes. Who builds it, what it runs on, and what it is not.";
 
 export const metadata: Metadata = pageMetadata({
   title: TITLE,
@@ -17,21 +17,25 @@ export const metadata: Metadata = pageMetadata({
 
 const FACTS: Array<[string, string]> = [
   ["Name", "Mino — also written Mino AI, or mino.ink"],
-  ["Category", "Note-taking, knowledge management, agent-native tooling"],
+  ["Category", "Note-taking: Obsidian-compatible Markdown vault, self-hosted"],
   [
     "What it is",
-    "A Markdown notebook with an AI agent that imports, files, links and retrieves notes",
+    "An open-source Obsidian alternative: a Markdown vault on your server, with an AI agent that files, links and retrieves notes",
   ],
   ["Where it runs", "Self-hosted: Docker or Portainer on a server you control"],
   [
     "Storage",
-    "Markdown files with YAML front matter, plus a rebuildable SQLite index",
+    "Markdown files with YAML front matter in an Obsidian-compatible vault, plus a rebuildable SQLite index",
+  ],
+  [
+    "Compatibility",
+    "Vault and Markdown: yes. Obsidian plugin compatibility layer: in progress",
   ],
   [
     "AI",
     "Bring your own provider, model and API key; the agent is off until you configure one",
   ],
-  ["Status", "Private beta — early access through the waitlist"],
+  ["Status", "Open source and runnable today; the list announces the launch"],
   ["Author", "Tom Szenessy"],
   ["Source", "github.com/TomSzenessy/MinoAI"],
 ];
@@ -59,12 +63,14 @@ export default function AboutPage() {
       <section className="page-hero">
         <span className="section-label">ABOUT</span>
         <h1>
-          Mino is a <span className="gradient-text">notebook that files</span>.
+          An <span className="gradient-text">Obsidian alternative</span> that
+          files for you.
         </h1>
         <p className="lead">
-          An open-source, self-hosted Markdown notebook with an AI agent that
-          imports, links and retrieves your notes. It runs at{" "}
-          <strong>mino.ink</strong> and on any Docker host you control.
+          An open-source Obsidian alternative you run yourself: a Markdown vault
+          on your server, with an AI agent that files, links and retrieves your
+          notes. It runs at <strong>mino.ink</strong> and on any Docker host you
+          control.
         </p>
       </section>
 
@@ -74,14 +80,14 @@ export default function AboutPage() {
             Mino in one paragraph
           </h2>
           <p className="text-[15px] leading-relaxed text-[var(--text-secondary)]">
-            Mino is a note-taking application for people whose notes outgrew a
-            folder tree. Notes are stored as plain Markdown files on a server
-            you run; an AI agent watches the vault, converts imported material
-            into Markdown, tags it, links it to related notes and answers
-            questions across everything you have written. The same note
-            operations are exposed over an HTTP API and an MCP bridge, so
-            external agents can work with the same vault. It is open source and
-            self-hosted, and it has no central account.
+            Mino is an open-source Obsidian alternative. Your notes are plain
+            Markdown files in a vault on a server you run, so Obsidian or any
+            editor can open the same folder. An AI agent works inside it: filing
+            what you import, tagging it, linking it, writing summaries and
+            answering questions across the vault. The server carries the sync,
+            through the mino.ink relay or your own tunnel, and every note
+            operation is also an HTTP API and an MCP bridge. There is no Mino
+            account and no central login.
           </p>
         </div>
       </section>
@@ -117,17 +123,22 @@ export default function AboutPage() {
               mino.ink. You deploy the server and the client talks to it.
             </li>
             <li>
-              <strong>Not a chatbot bolted onto an editor.</strong> The agent is
-              part of the data model: it operates on the vault through the same
-              API as the interface, on the server, whether a browser is open or
-              not.
+              <strong>Not a chat panel next to the editor.</strong> The agent
+              works on the vault through the same HTTP API as the interface, on
+              the server, whether a browser is open or not.
             </li>
             <li>
               <strong>Not the only product called Mino.</strong> Several
               unrelated tools share the name — an HR assistant, a web-automation
               agent, a running coach, and Xiaomi&apos;s MiMo model among them.
               This page, and everything at mino.ink, refers exclusively to the
-              Markdown notebook described above.
+              Markdown vault described above.
+            </li>
+            <li>
+              <strong>Not affiliated with Obsidian.</strong> Mino reads the same
+              vault format on purpose and stays readable in Obsidian. The plugin
+              compatibility layer is in progress. This is an independent
+              project.
             </li>
           </ul>
 
@@ -142,16 +153,17 @@ export default function AboutPage() {
 
           <h2>How to get it</h2>
           <p>
-            The source, the compose file and the documentation are public. Early
-            access is the guided version: a walkthrough, the mobile builds, and
-            answers from the person who wrote the server.{" "}
-            <Link href="/waitlist">Join the waitlist</Link> or read the{" "}
-            <Link href="/docs">docs</Link> first.
+            The source, the compose file and the documentation are public.
+            Clone the repository and run it today; the Android and iOS builds
+            are still in development.{" "}
+            <Link href="/waitlist">Join the list</Link> if you would rather hear
+            when Mino launches, or read the <Link href="/docs">docs</Link>{" "}
+            first.
           </p>
 
           <div className="cta-panel">
-            <h2>Get an invite when a seat opens</h2>
-            <p>One email, no newsletter. Unsubscribe in one click.</p>
+            <h2>Get one email when Mino launches</h2>
+            <p>One email at launch, and nothing else. One click removes you.</p>
             <div className="mx-auto max-w-xl">
               <WaitlistForm idPrefix="about" />
             </div>

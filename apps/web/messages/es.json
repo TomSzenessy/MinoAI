@@ -1,13 +1,13 @@
 {
   "nav": {
     "home": "Inicio",
-    "features": "Características",
-    "howItWorks": "Cómo Funciona",
-    "agent": "Agente IA",
-    "myRelays": "Mis Relays",
+    "features": "Qué hace",
+    "howItWorks": "Cómo funciona",
+    "agent": "El agente",
+    "myRelays": "Mis servidores",
     "stack": "Stack",
-    "openSource": "Código Abierto",
-    "getStarted": "Empezar",
+    "openSource": "Código abierto",
+    "getStarted": "Unirme a la lista",
     "docs": "Documentación",
     "settings": "Configuración",
     "connectServer": "Conectar Servidor",
@@ -29,95 +29,95 @@
     "about": "Acerca de"
   },
   "hero": {
-    "badge": "Beta privada · Código abierto · Autoalojado",
-    "titleLine1": "Tu Mente,",
-    "titleLine2": "Organizada.",
-    "subtitle": "Mino es el cuaderno nativo para agentes de quienes ya no caben en un árbol de carpetas. Archiva lo nuevo, enlaza lo que va junto y encuentra todo — en Markdown puro que es tuyo. El acceso se abre por tandas.",
-    "ctaPrimary": "✦ Empieza a Escribir",
-    "ctaSecondary": "↗ Ver en GitHub",
-    "scrollHint": "Descúbrelo en acción",
-    "ctaResume": "Continuar en Workspace"
+    "badge": "Código abierto · Autoalojado · Compatible con Obsidian",
+    "titleLine1": "Tu mente,",
+    "titleLine2": "en orden.",
+    "subtitle": "Tus notas viven en una bóveda Markdown en tu servidor, accesibles desde cualquier navegador con sincronización incluida; un agente de IA las archiva, etiqueta y enlaza. Mino es una alternativa open source a Obsidian y la clave del modelo la pones tú. Apúntate a la lista y recibirás un correo cuando Mino se lance.",
+    "ctaPrimary": "Unirme a la lista",
+    "ctaSecondary": "Ver en GitHub",
+    "scrollHint": "Mira el espacio de trabajo",
+    "ctaResume": "Abrir tu espacio"
   },
   "preview": {
     "url": "mino.ink/workspace"
   },
   "features": {
     "label": "QUÉ HACE",
-    "title": "Creado para",
-    "titleHighlight": "Desarrolladores",
-    "subtitle": "Seis pilares que hacen a Mino diferente de cualquier otra app de notas.",
+    "title": "Pensado para quien tiene",
+    "titleHighlight": "demasiadas notas",
+    "subtitle": "Lo que hacen el servidor y el agente, una tarjeta por punto.",
     "smartImport": {
-      "title": "Importación Inteligente",
-      "description": "Importa páginas web, emails, PDFs, notas de voz o vídeos de YouTube. El agente IA los formatea y archiva automáticamente."
+      "title": "Importar que termina en Markdown",
+      "description": "Suelta una página web o un PDF. El agente lo convierte en Markdown, le pone título y lo archiva donde corresponde."
     },
     "aiOrganization": {
-      "title": "Organización con IA",
-      "description": "Tus notas se organizan solas. El agente etiqueta, vincula contenido relacionado y mantiene tu grafo de conocimiento."
+      "title": "El agente mantiene el orden",
+      "description": "Reutiliza las etiquetas que ya tienes, enlaza una nota con las relacionadas, escribe resúmenes y mantiene el árbol de carpetas plano."
     },
     "intelligentRetrieval": {
-      "title": "Recuperación Inteligente",
-      "description": "Búsqueda semántica en toda tu bóveda. Haz preguntas en lenguaje natural y obtén respuestas sintetizadas."
+      "title": "Buscar y responder",
+      "description": "La búsqueda de texto completo funciona sin configurar nada. Con embeddings busca por significado, y las respuestas llegan con las notas de las que salen."
     },
     "selfHosted": {
-      "title": "Autoalojado y Privado",
-      "description": "Tus datos son tuyos. Despliega con un solo comando, conecta cualquier cliente. Control total, sin dependencia de proveedores."
+      "title": "Un contenedor, tus archivos",
+      "description": "La bóveda es una carpeta de archivos .md en un servidor que ejecutas tú, así que Obsidian o cualquier editor también puede abrirla. Sin cuenta y sin paso de exportación."
     },
     "agentNative": {
-      "title": "API Nativa para Agentes",
-      "description": "Diseñada primero para agentes IA. Las herramientas MCP permiten a Antigravity, Cursor o cualquier agente leer y escribir tus notas directamente."
+      "title": "Construido alrededor del agente",
+      "description": "Cada operación es una ruta HTTP con la cabecera X-Mino-Key, más un puente MCP. El agente y tus herramientas trabajan en la misma bóveda."
     },
     "everywhere": {
-      "title": "En Todas Partes, Sin Conexión",
-      "description": "Web, iOS, Android — todo offline-first con sincronización CRDT. Edita donde sea, los conflictos se resuelven automáticamente."
+      "title": "Accesible desde cualquier sitio",
+      "description": "Tu servidor es la sincronización. Abre la bóveda en cualquier navegador mediante el relay o tu propio túnel; las versiones de Android e iOS están en desarrollo."
     }
   },
   "howItWorks": {
     "label": "CÓMO FUNCIONA",
-    "title": "Del",
-    "titleHighlight": "Caos",
-    "titleEnd": "a la Claridad",
-    "subtitle": "Tres pasos para una base de conocimiento perfectamente organizada.",
+    "title": "Sigue una nota",
+    "titleHighlight": "desde que llega hasta que la buscas",
+    "titleEnd": "",
+    "subtitle": "Capturar es el único paso que tienes que dar. El agente se encarga del archivo y la búsqueda del resto.",
     "step1": {
-      "title": "Captura Todo",
-      "description": "Escribe en markdown, importa desde cualquier lugar o dicta por voz. Cada nota es un archivo .md — sin dependencias, nunca."
+      "title": "Captúrala",
+      "description": "Escribe Markdown, suelta una página web o importa un PDF. La nota es un archivo .md normal desde que llega."
     },
     "step2": {
-      "title": "La IA Organiza",
-      "description": "El agente lee tus notas, las etiqueta automáticamente, las archiva en las carpetas correctas y crea enlaces entre ideas relacionadas."
+      "title": "El agente la archiva",
+      "description": "Lee la nota, reutiliza tus etiquetas, la enlaza con notas relacionadas y mueve el archivo donde corresponde."
     },
     "step3": {
-      "title": "Recupera al Instante",
-      "description": "Haz preguntas, busca semánticamente o navega tu grafo de conocimiento autogenerado. Tu segundo cerebro, siempre actualizado."
+      "title": "Volver a encontrarla",
+      "description": "La búsqueda de texto completo viene activada. Con un proveedor configurado se vuelve semántica y el agente responde desde tus notas."
     }
   },
   "agent": {
-    "label": "LA FUNCIÓN ESTRELLA",
-    "title": "Conoce al",
-    "titleHighlight": "Organizador IA",
-    "subtitle": "No es un chatbot — es un administrador de conocimiento que trabaja en segundo plano.",
-    "badge": "BETA",
-    "chatMsg1": "Encontré <strong>3 notas</strong> sobre \"arquitectura\" que no están vinculadas. ¿Quieres que las conecte y cree un Mapa de Contenido?",
-    "chatMsg2": "Sí, y también etiquétalas con #sistemas-core",
-    "chatMsg3": "¡Listo! He:<br>• Vinculado las 3 notas de arquitectura<br>• Creado <code>MOC-Arquitectura.md</code><br>• Añadido <code>#sistemas-core</code> a cada una<br>• Encontrado 2 notas más relacionadas en /Investigación que podrías querer incluir",
-    "capability1Title": "Auto-etiquetado",
-    "capability1Desc": "Lee el contenido y aplica etiquetas relevantes",
-    "capability2Title": "Descubrimiento de Enlaces",
-    "capability2Desc": "Encuentra conexiones que pasaste por alto",
-    "capability3Title": "Resúmenes Inteligentes",
-    "capability3Desc": "Genera MOCs e índices",
-    "capability4Title": "Limpieza de Bóveda",
-    "capability4Desc": "Encuentra duplicados, archiva notas obsoletas"
+    "label": "EL AGENTE",
+    "title": "Lo que el agente",
+    "titleHighlight": "hace de verdad",
+    "subtitle": "Trabaja dentro de la bóveda, propone un sitio para lo que guardas y te cuenta cada cambio que hace.",
+    "badge": "EN DESARROLLO",
+    "chatMsg1": "He encontrado <strong>3 notas</strong> sobre \"arquitectura\" que no están enlazadas. ¿Las conecto y creo una nota índice?",
+    "chatMsg2": "Sí, y etiquétalas también con #core-systems",
+    "chatMsg3": "Hecho:<br>• Las 3 notas de arquitectura enlazadas<br>• <code>MOC-Arquitectura.md</code> creada<br>• <code>#core-systems</code> añadida a cada una<br>• 2 notas relacionadas más en /Research",
+    "capability1Title": "Etiquetas que ya usas",
+    "capability1Desc": "Lee la nota y aplica etiquetas que ya existen en tu bóveda.",
+    "capability2Title": "Enlaces a notas relacionadas",
+    "capability2Desc": "Encuentra las notas con las que encaja una nueva y las enlaza.",
+    "capability3Title": "Notas índice",
+    "capability3Desc": "Escribe una nota índice que enumera lo que contiene un tema.",
+    "capability4Title": "Respuestas con fuentes",
+    "capability4Desc": "Responde una pregunta a partir de muchas notas y enlaza las que usó."
   },
   "tech": {
     "label": "BAJO EL CAPÓ",
-    "title": "Un Stack",
-    "titleHighlight": "Moderno",
-    "subtitle": "Cada elección hecha pensando en rendimiento, experiencia de desarrollo y simplicidad de autoalojamiento.",
+    "title": "El stack,",
+    "titleHighlight": "en ocho piezas",
+    "subtitle": "Qué hace cada pieza y por qué está ahí.",
     "items": {
       "bun": "Runtime del Servidor",
       "hono": "Framework API",
       "nextjs": "App Web",
-      "expo": "Apps Móviles",
+      "expo": "Apps móviles en pruebas",
       "sqlite": "Índice + FTS5",
       "yjs": "Sync CRDT",
       "mcp": "Protocolo de Agente",
@@ -126,14 +126,14 @@
   },
   "openSource": {
     "label": "CÓDIGO ABIERTO",
-    "title": "Construido en Abierto",
-    "subtitle": "Mino es 100% código abierto. Autoaloja con un solo comando, haz fork, extiéndelo o contribuye. Tus notas son tuyas — para siempre.",
-    "installCmd": "curl -fsSL https://mino.ink/install.sh | bash",
-    "ctaPrimary": "✦ Prueba la Demo",
-    "ctaSecondary": "↗ Estrella en GitHub"
+    "title": "Construido en abierto",
+    "subtitle": "El servidor, la web y las apps móviles están en un repositorio público. El despliegue de referencia es un archivo compose que puedes leer antes de ejecutarlo.",
+    "installCmd": "docker compose up -d",
+    "ctaPrimary": "Conectar un servidor",
+    "ctaSecondary": "Ver en GitHub"
   },
   "footer": {
-    "tagline": "Código abierto · Autoalojable · Nativo para agentes",
+    "tagline": "Código abierto · Autoalojado · Compatible con Obsidian",
     "terms": "Términos de Servicio",
     "cookies": "Política de Cookies",
     "privacy": "Política de Privacidad",
@@ -365,9 +365,9 @@
     "onlyEnFallback": "Fallback desde inglés"
   },
   "waitlist": {
-    "eyebrow": "ACCESO ANTICIPADO",
-    "title": "Reserva tu sitio.",
-    "subtitle": "Apúntate y te avisamos en cuanto haya un sitio libre.",
+    "eyebrow": "AVISO DE LANZAMIENTO",
+    "title": "Un correo cuando Mino se lance.",
+    "subtitle": "Sin boletín y sin secuencia: un mensaje en el lanzamiento, y un clic te saca.",
     "emailLabel": "Correo electrónico",
     "emailPlaceholder": "tu@ejemplo.com",
     "nameLabel": "Nombre (opcional)",
@@ -376,23 +376,23 @@
     "useCasePlaceholder": "Elige una opción",
     "useCases": {
       "personal": "Base de conocimiento personal",
-      "engineering": "Ingeniería y documentación",
+      "engineering": "Documentación técnica y ADRs",
       "research": "Investigación y escritura",
       "agents": "Flujos con agentes de IA",
       "curious": "Solo curiosidad"
     },
-    "detailsToggle": "Añadir detalles",
-    "detailsHide": "Ocultar detalles",
+    "detailsToggle": "Añadir nombre y uso",
+    "detailsHide": "Ocultar nombre y uso",
     "submit": "Unirme a la lista",
     "submitting": "Enviando…",
     "successTitle": "Ya estás en la lista.",
-    "successBody": "Tu invitación está reservada para la próxima tanda. Te escribimos en cuanto haya sitio.",
+    "successBody": "La confirmación está en tu correo. El único otro correo llegará cuando Mino se lance. Puedes ejecutar Mino hoy desde el repositorio; el enlace del correo te saca de la lista.",
     "existsTitle": "Ya estabas en la lista.",
-    "existsBody": "No tienes que hacer nada más: tu invitación va a {{email}}.",
+    "existsBody": "No hay nada más que hacer. {{email}} está en la lista y el aviso de lanzamiento irá ahí.",
     "errorTitle": "No se pudo enviar.",
-    "errorBody": "Algo falló por el camino. Inténtalo de nuevo en un momento o escríbenos un correo.",
-    "invalidEmail": "Ese correo no parece correcto.",
-    "privacy": "Un solo correo cuando haya sitio. Sin boletín, baja cuando quieras.",
+    "errorBody": "La petición no llegó al servidor. Inténtalo otra vez en un momento.",
+    "invalidEmail": "Esa dirección parece incompleta. Revisa si hay una errata e inténtalo de nuevo.",
+    "privacy": "Un correo cuando Mino se lance, más la confirmación de que te has apuntado. Nada más, y un clic te saca.",
     "changeEmail": "Usar otra dirección"
   }
 }

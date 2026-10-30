@@ -162,9 +162,9 @@ export function WaitlistForm({
         <>
           <noscript>
             <p className="waitlist-note">
-              JavaScript is disabled.{" "}
+              JavaScript is off.{" "}
               <a href={hostedFormUrl} rel="noreferrer">
-                Join on the plain HTML form
+                Use the plain HTML form
               </a>
               .
             </p>

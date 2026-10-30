@@ -1,6 +1,6 @@
-# Growth — waitlist, search, and what to measure
+# Growth — launch list, search, and what to measure
 
-> How the early-access funnel works, why the site is shaped the way it is, and how
+> How the launch-list funnel works, why the site is shaped the way it is, and how
 > to tell whether the organic traffic is worth the effort.
 
 ---
@@ -58,7 +58,7 @@ Mailspool public form  ──►  submission + contact on list "Mino waitlist"
 
 ### Where the signups go
 
-- **Form:** `mino-early-access-waitlist` on the project's Mailspool instance
+- **Form:** `mino-early-access-waitlist` (slug is historical; the list is the launch announcement) on the project's Mailspool instance
   (`https://mailspool.szenessy.com/f/mino-early-access-waitlist?key=…`).
 - **Fields:** `email` (required), `first_name`, `use_case`, `source`.
   `source` is filled by the browser — `utm_source/utm_medium/utm_campaign`,
@@ -91,8 +91,8 @@ buyers — and the honest move is to spend the effort on distribution instead.
 
 - Waitlist form in the hero of `/`, in a mid-page band (`#waitlist`) and at the
   end of every marketing page; nav CTA points at it.
-- `/waitlist` — dedicated early-access page with what a seat includes, the
-  roadmap and signup FAQs.
+- `/waitlist` — dedicated launch-list page: what you get (one email), what you
+  can do today, the roadmap, and signup FAQs.
 - Success, duplicate and error states are all inline and localised (en/de/es);
   a returning visitor sees "you're on the list" instead of an empty form.
 - Honeypot field (`company`) + no `ms-ts` stamp: bots are absorbed silently.
@@ -167,7 +167,7 @@ fixed field set — if you add or rename a field, update
 `apps/web/components/waitlist-form.tsx` and `buildWaitlistPayload` in
 `apps/web/lib/waitlist.ts` to match.
 
-### When early access opens
+### When the launch email goes out
 
 Create a template and send to the list:
 
@@ -178,7 +178,7 @@ curl -s -X POST -H "Authorization: Bearer $MAILSPOOL_KEY" \
   -d '{
     "listId": 1,
     "subject": "Your Mino invite is ready",
-    "bodyHtml": "<p>Hi {{email}},</p><p>Seat is yours. Details inside.</p><p><a href=\"{{unsubscribe_url}}\">Unsubscribe</a></p>"
+    "bodyHtml": "<p>Hi {{email}},</p><p>Mino is live. Here is what changed and how to run it.</p><p><a href=\"{{unsubscribe_url}}\">Unsubscribe</a></p>"
   }'
 ```
 

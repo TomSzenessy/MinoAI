@@ -1,0 +1,62 @@
+# =============================================================================
+# Mino — root compose file
+#
+# This is the file Portainer reads when you deploy Mino straight from the
+# repository (Stacks → Add stack → Repository → this repo, path
+# `docker-compose.yml`). It is deliberately minimal: one container, one volume,
+# nothing to configure.
+#
+#   docker compose up -d
+#   # or, without cloning:
+#   curl -fsSL https://raw.githubusercontent.com/TomSzenessy/MinoAI/main/docker-compose.yml \
+#     | docker compose -f - up -d
+#
+# The container serves both the API and the dashboard (the built web client is
+# baked into the image at /app/apps/web/out).
+#
+# The fuller variant with Watchtower auto-updates lives in
+# docker/docker-compose.yml.
+# =============================================================================
+
+services:
+  mino:
+    image: ghcr.io/tomszenessy/mino-server:${MINO_IMAGE_TAG:-main}
+    container_name: mino-server
+    restart: unless-stopped
+    ports:
+      # Bound to loopback by default: put a reverse proxy in front of it, or
+      # set MINO_PORT_BIND=0.0.0.0 to expose it directly.
+      - "${MINO_PORT_BIND:-127.0.0.1}:${MINO_PORT:-3000}:3000"
+    volumes:
+      - mino-data:/data
+    environment:
+      - NODE_ENV=production
+      - MINO_DATA_DIR=/data
+      # relay (default): the server dials out to the relay, no open port needed.
+      # open-port: the server is reached directly at MINO_PUBLIC_SERVER_URL.
+      - MINO_CONNECTION_MODE=${MINO_CONNECTION_MODE:-relay}
+      - MINO_RELAY_URL=${MINO_RELAY_URL:-https://relay.mino.ink}
+      - MINO_PUBLIC_SERVER_URL=${MINO_PUBLIC_SERVER_URL:-}
+      # Optional:
+      # - MINO_AGENT_ENABLED=true
+      # - MINO_AGENT_PROVIDER=anthropic
+      # - MINO_AGENT_MODEL=claude-sonnet-4-20250514
+      # - MINO_AGENT_API_KEY=sk-ant-...
+      # - MINO_CORS_ORIGINS=https://mino.ink
+      # - MINO_LOG_LEVEL=info
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "bun",
+          "-e",
+          "fetch('http://127.0.0.1:3000/api/v1/health').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+
+volumes:
+  mino-data:
+    name: mino-data

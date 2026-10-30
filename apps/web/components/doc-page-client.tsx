@@ -70,11 +70,11 @@ export function DocPageClient({ page, siblings }: DocPageClientProps) {
 
           <div className="mt-5 rounded-xl border border-[rgba(187,134,252,0.25)] bg-[rgba(187,134,252,0.08)] p-3">
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--purple-300)]">
-              Early access
+              Run it today
             </p>
             <p className="mt-1 text-xs leading-relaxed text-[var(--text-secondary)]">
-              The desktop and mobile builds ship in batches. Read the code now,
-              join the list for the guided setup.
+              The repository is public and the container runs today. The list is
+              one email when Mino launches, nothing more.
             </p>
             <Link
               href="/waitlist"

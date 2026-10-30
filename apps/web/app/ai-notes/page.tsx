@@ -6,9 +6,9 @@ import { FaqList, JsonLd } from "@/components/structured-data";
 import type { FaqEntry } from "@/components/structured-data";
 import { breadcrumbSchema, pageMetadata, webPageSchema } from "@/lib/seo";
 
-const TITLE = "AI note-taking that files the note for you";
+const TITLE = "AI agent for your Obsidian vault, self-hosted";
 const DESCRIPTION =
-  "Most AI note apps give you a chat box. Mino's agent works on the vault: it imports, tags, links and retrieves your Markdown notes — self-hosted, with your own model key. Join the early access list.";
+  "An Obsidian alternative with an AI agent inside the vault: it imports, tags, links and summarises your Markdown notes. Self-hosted, your own model key.";
 
 export const metadata: Metadata = pageMetadata({
   title: TITLE,
@@ -19,15 +19,15 @@ export const metadata: Metadata = pageMetadata({
 const CAPABILITIES = [
   {
     title: "Import that ends in Markdown",
-    body: "Drop in a web page, a PDF or a long email. The agent converts it to Markdown, pulls out a title, and writes it into the vault where it belongs instead of dumping it in an inbox you will never open again.",
+    body: "Drop in a web page, a PDF or a long email. The agent converts it to Markdown, pulls out a title and files it in the vault instead of an inbox you never open again.",
   },
   {
-    title: "Filing, tagging and links",
-    body: "New material is matched against what you already have: tags get reused rather than re-invented, related notes get linked, and the folder tree stays shallow on purpose.",
+    title: "Filing, tags and links",
+    body: "New material is matched against what you already have: tags get reused instead of reinvented, related notes get linked, and the folder tree stays shallow on purpose.",
   },
   {
     title: "Retrieval across the vault",
-    body: "Full-text search works out of the box; embeddings make it semantic when you configure a provider. Ask a question and the agent answers from your notes, with the source notes attached.",
+    body: "Full-text search works with no setup; embeddings make it semantic once you configure a provider. Ask a question and the answer arrives with the notes it came from.",
   },
 ];
 
@@ -35,22 +35,22 @@ const FAQ: FaqEntry[] = [
   {
     question: "Is the AI included, or do I bring a key?",
     answer:
-      "You bring the key. The agent stays disabled until you configure a provider, model and API key on your own server, which means you choose who sees your notes and you pay that provider directly.",
+      "You bring the key. The agent stays disabled until you configure a provider, model and API key on your server, so you choose which model sees your notes and you pay that provider directly.",
   },
   {
     question: "Does it work with an existing Markdown vault?",
     answer:
-      "Yes. Markdown with YAML front matter is the native format, so a vault from another tool drops in as-is, folders and all. The SQLite index is rebuilt from the files rather than the other way round.",
+      "Yes, including an Obsidian vault. Markdown with YAML front matter is the native format, so it drops in as-is, folders included. The SQLite index is rebuilt from the files, not the other way round.",
   },
   {
     question: "Can my own agent use it?",
     answer:
-      "That is the point of agent-native. Every note operation is available over the same HTTP API the UI uses, and an MCP bridge exposes it to clients like Cursor or Claude Desktop, so an outside agent can search, read, create and move notes in the same vault.",
+      "Yes. Every note operation is exposed over the same HTTP API the UI uses, with an X-Mino-Key header, and an MCP bridge exposes it to clients like Cursor or Claude. An outside agent can search, read, create and move notes in the vault.",
   },
   {
     question: "Will it reorganize my notes without asking?",
     answer:
-      "The agent proposes structure first — where a note should file, which notes it should link — and every action it takes is reported in the conversation instead of being silently applied. The vault stays editable by hand at any time, because it is just files.",
+      "It proposes structure first: where a note should file, which notes it should link. Every action is reported in the conversation rather than applied silently. The vault stays editable by hand, because it is only files.",
   },
 ];
 
@@ -78,14 +78,14 @@ export default function AiNotesPage() {
           <span className="gradient-text">before you do</span>.
         </h1>
         <p className="lead">
-          Every notes app got good at capture and stayed bad at filing. Mino
-          treats organization as the agent&apos;s job: it reads what you drop
-          in, gives it a place, links it to what it already knows, and finds it
-          again two years later.
+          Mino is an Obsidian alternative with the AI built into the app, not a
+          panel added later. It runs on your server, works inside your Markdown
+          vault, and does the filing you keep postponing: imports, tags, links,
+          summaries and retrieval.
         </p>
         <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
           <Link href="/waitlist" className="button-primary px-7 py-3 text-base">
-            Join the early access list
+            Join the launch list
           </Link>
           <Link
             href="/self-hosted-notes"
@@ -104,7 +104,7 @@ export default function AiNotesPage() {
 
       <section className="mx-auto w-full max-w-5xl px-6 pb-20">
         <div className="article">
-          <h2>The pile is the problem</h2>
+          <h2>Capture is solved. Filing is not.</h2>
           <p>
             Capture got solved years ago. A share sheet, a web clipper, a voice
             memo: getting something <em>into</em> the notes app takes a second
@@ -113,19 +113,19 @@ export default function AiNotesPage() {
           </p>
           <p>
             A folder tree asks you to make a classification decision at the
-            worst possible moment — before you know what the note is for. A
+            worst possible moment, before you know what the note is for. A
             search box helps only if you remember the word you used six months
             ago. So the notes pile up, and the pile slowly becomes a graveyard.
           </p>
           <p>
-            Mino inverts the order: capture first, decide never. The agent does
+            Mino inverts the order: capture first, decide later. The agent does
             the filing, and you correct it when it gets something wrong.
           </p>
 
           <h2>What the agent actually does</h2>
           <p>
-            There is no magic here, and no hidden model doing something you
-            cannot inspect. Three operations run on the server, on your files:
+            Nothing happens off your server. Three operations run on your
+            files:
           </p>
         </div>
 
@@ -139,13 +139,13 @@ export default function AiNotesPage() {
         </div>
 
         <div className="article mt-14">
-          <h2>Agent-native, not chatbot-native</h2>
+          <h2>Why the agent is not a chat panel</h2>
           <p>
             A chat panel bolted onto an editor only knows the note you have
-            open. Mino exposes the vault itself over the same API the UI uses,
-            plus an MCP bridge. Point Cursor at it and the agent there can
+            open. Mino exposes the vault itself over the same HTTP API the UI
+            uses, plus an MCP bridge. Point Cursor at it and the agent there can
             search your notes; point a cron job at it and a nightly run can file
-            whatever accumulated in your inbox folder.
+            whatever landed in the inbox folder.
           </p>
           <p>
             Because the notes are plain Markdown, the agent is never the only
@@ -156,8 +156,8 @@ export default function AiNotesPage() {
           <h2>What it will not do</h2>
           <ul>
             <li>
-              It will not invent facts to fill an answer. Retrieval is grounded
-              in your notes, and the notes it used are linked in the reply.
+              It will not leave an answer unattributed. Retrieval runs over your
+              vault, and the reply links the notes it used.
             </li>
             <li>
               It will not hide your data behind an export button. The vault is a
@@ -173,10 +173,10 @@ export default function AiNotesPage() {
 
       <section className="mx-auto w-full max-w-6xl px-6 pb-24">
         <div className="cta-panel">
-          <h2>Get an invite when the next batch opens</h2>
+          <h2>Get one email when Mino launches</h2>
           <p>
-            One email, no newsletter. You can self-host from the repo today;
-            early access adds the guided setup and the mobile builds.
+            One email at launch, nothing else. If you would rather not wait, the
+            repository and the docs are public today.
           </p>
           <div className="mx-auto max-w-xl">
             <WaitlistForm idPrefix="ai-notes" />
@@ -186,7 +186,7 @@ export default function AiNotesPage() {
 
       <section className="mx-auto w-full max-w-5xl px-6 pb-24">
         <h2 className="mb-10 text-center font-display text-3xl font-bold md:text-4xl">
-          AI notes, answered
+          Questions about the agent
         </h2>
         <FaqList items={FAQ} />
       </section>

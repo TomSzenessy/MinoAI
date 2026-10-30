@@ -8,7 +8,7 @@ import { breadcrumbSchema, pageMetadata, webPageSchema } from "@/lib/seo";
 
 const TITLE = "Self-hosted AI notes in plain Markdown";
 const DESCRIPTION =
-  "One container, a folder of Markdown files and your own model key. Mino is a self-hosted notebook you can back up with a copy, audit with grep and reach without opening a port.";
+  "One container, an Obsidian-compatible folder of Markdown files and your own model key. Back it up with a copy, audit it with grep.";
 
 export const metadata: Metadata = pageMetadata({
   title: TITLE,
@@ -41,7 +41,7 @@ const FAQ: FaqEntry[] = [
   {
     question: "Does the server phone home?",
     answer:
-      "In the default relay mode the server makes outbound long-poll requests to relay.mino.ink so a client can reach it without an open port: that tunnel is the only traffic. Switch to open-port mode and the relay is not used at all; the server then listens directly on the port you choose.",
+      "In the default relay mode the server keeps an outbound connection to relay.mino.ink, so a client reaches it without a port being opened. That connection is encrypted and the notes stay in your vault. Open-port mode skips the relay and listens behind your own proxy and TLS.",
   },
   {
     question: "How do I back it up?",
@@ -75,16 +75,17 @@ export default function SelfHostedPage() {
       <section className="page-hero">
         <span className="section-label">SELF-HOSTED</span>
         <h1>
-          A notebook you <span className="gradient-text">actually own</span>.
+          Your notes, on <span className="gradient-text">your server</span>.
         </h1>
         <p className="lead">
-          One container, one volume, your own model key. Mino keeps notes as
-          Markdown files on a machine you control — no account, no upload, no
-          export button you only discover the day you want to leave.
+          One container, one folder of Markdown files, your own model key. The
+          server is the sync: open the same vault from any browser through the
+          mino.ink relay or your own tunnel, without paying for a sync service
+          or parking the folder in someone else&apos;s cloud.
         </p>
         <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
           <Link href="/waitlist" className="button-primary px-7 py-3 text-base">
-            Join the early access list
+            Join the launch list
           </Link>
           <Link
             href="/docs/reference/docker-compose"
@@ -103,13 +104,13 @@ export default function SelfHostedPage() {
 
       <section className="mx-auto w-full max-w-5xl px-6 pb-20">
         <div className="article">
-          <h2>Plain files, not a database you cannot leave</h2>
+          <h2>Plain files, with an index that rebuilds</h2>
           <p>
             The vault is a directory of Markdown files with YAML front matter,
-            plus a SQLite index that exists purely to make search and link
-            lookups fast. Delete the index and it rebuilds from the files; that
-            asymmetry is deliberate. The files are the truth, the index is a
-            convenience.
+            the same shape Obsidian uses, plus a SQLite index that exists purely
+            to make search and link lookups fast. Delete the index and it
+            rebuilds from the files; that asymmetry is deliberate. The files are
+            the truth, the index is a convenience.
           </p>
           <p>
             This is what makes a self-hosted notes app worth running: you can
@@ -140,7 +141,7 @@ export default function SelfHostedPage() {
             behind your own reverse proxy and TLS.
           </p>
 
-          <h2>Agents get a first-class API</h2>
+          <h2>The same API the UI uses</h2>
           <p>
             Every note operation the interface performs is available over the
             HTTP API with an <code>X-Mino-Key</code> header: search, read,
@@ -163,7 +164,7 @@ export default function SelfHostedPage() {
             </li>
             <li>
               You need a model API key for the agent to do anything. Without
-              one, Mino is a fast Markdown notebook with search — which is still
+              one, Mino is a fast Markdown vault with search — which is still
               useful, just not the pitch.
             </li>
             <li>
@@ -172,18 +173,18 @@ export default function SelfHostedPage() {
             </li>
           </ul>
           <p>
-            If that trade sounds wrong, join the waitlist anyway: the list is
-            also how I decide whether a managed option is worth building.
+            If that trade sounds wrong, the list is still there: one email when
+            Mino launches, and you can decide then.
           </p>
         </div>
       </section>
 
       <section className="mx-auto w-full max-w-6xl px-6 pb-24">
         <div className="cta-panel">
-          <h2>Try it with a guided setup</h2>
+          <h2>Get one email when Mino launches</h2>
           <p>
-            Early access ships the compose file, the walkthrough and a reachable
-            human. One email when a seat opens.
+            The compose file, the walkthrough and the code are public today. The
+            list is a launch announcement, nothing else.
           </p>
           <div className="mx-auto max-w-xl">
             <WaitlistForm idPrefix="self-hosted" />

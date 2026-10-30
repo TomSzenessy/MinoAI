@@ -293,23 +293,26 @@ export function LandingPage() {
             What is Mino AI?
           </h2>
           <p className="!text-base">
-            <strong>Mino</strong> (mino.ink) is an open-source, self-hosted
-            Markdown notebook with an AI agent that files your notes. You drop
-            in a web page, a PDF or a thought; the agent converts it to
-            Markdown, tags it, links it to related notes and finds it again
-            later. Notes stay as plain <code>.md</code> files on a server you
-            control, so there is no account to create and no export to fight
-            when you leave.
+            <strong>Mino</strong> (mino.ink) is an open-source alternative to
+            Obsidian that runs on your own server. The vault stays a folder of
+            plain <code>.md</code> files, so Obsidian or any editor can open it.
+            An AI agent works inside the notes: it files what you import, tags
+            it, links it, summarises it and retrieves it. You bring the model
+            key.
           </p>
           <p className="!text-base">
-            It is built for people whose notes outgrew a folder tree — research,
-            engineering documentation, a personal knowledge base — and for agent
-            workflows: the same notes are reachable over an HTTP API and an MCP
-            bridge, so Cursor, Claude or a script can read and write the vault
-            without scraping a UI.
+            The server is the sync. Reach the same vault from any browser through
+            the mino.ink relay or your own tunnel, instead of paying for a sync
+            service or syncing a folder through someone else&apos;s cloud. Both
+            are encrypted connections to your server, and your notes never live
+            on mino.ink.
           </p>
           <p className="!text-base">
-            Mino is unrelated to other products that share the name.{" "}
+            Every note operation is an HTTP route with an <code>X-Mino-Key</code>{" "}
+            header, plus an MCP bridge, so Cursor, Claude or a script works in
+            the same vault. Android and iOS clients wrap the same vault and are
+            in internal testing. Mino is an independent project, not affiliated
+            with Obsidian or with other products that share the name.{" "}
             <Link href="/about" className="text-[var(--purple-300)] underline">
               More about Mino
             </Link>
@@ -416,7 +419,7 @@ export function LandingPage() {
                 </span>
               </div>
               <span className="text-xs font-mono text-mino-purple/40">
-                v0.4.2-beta
+                v0.4.2
               </span>
             </div>
             <div className="agent-chat p-8 min-h-[300px] flex flex-col gap-6 bg-mino-surface/40 backdrop-blur-md">
@@ -483,9 +486,9 @@ export function LandingPage() {
               {t("waitlist.subtitle")}
             </p>
             <p className="mt-4 text-sm text-[var(--text-tertiary)]">
-              Early access includes the working app, the server image and a
-              walkthrough. If the list stays small, the repository and the docs
-              stay public either way.
+              You don&apos;t have to wait for it. The repository, the docs and
+              the web workspace are public today, and the container runs from
+              the compose file.
             </p>
           </div>
           <div className="waitlist-card">
@@ -566,16 +569,16 @@ export function LandingPage() {
         label="FAQ"
         title={
           <>
-            Questions, <span className="gradient-text">answered</span>
+            What people ask <span className="gradient-text">before signing up</span>
           </>
         }
-        subtitle="The short version of what Mino is, what it costs and how early access works."
+        subtitle="What Mino is, what it costs, and what the list is for."
         className="pb-28"
       >
         <FaqList items={HOME_FAQ} />
         <p className="mt-8 text-center text-sm text-[var(--text-tertiary)]">
           <Link href="/faq" className="text-[var(--purple-300)] underline">
-            Every question, including the awkward ones
+            All the questions, including the awkward ones
           </Link>
         </p>
       </LandingSection>

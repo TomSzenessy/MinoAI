@@ -2,14 +2,35 @@
 
 Deploy first, then connect from `mino.ink` / `test.mino.ink` or local UI.
 
-## 1. Portainer Deployment (Copy/Paste Only)
+## 1. Deploy
 
-You do **not** need to clone this repo to deploy.
+### From the repository (nothing to copy)
 
-1. Open Portainer.
-2. Go to `Stacks` -> `Add stack`.
-3. Paste compose from `docs-site/reference/docker-compose.md`.
-4. Deploy.
+Point Portainer at this repository and it reads `docker-compose.yml` itself:
+
+1. `Stacks` -> `Add stack` -> `Repository`
+2. Repository URL: `https://github.com/TomSzenessy/MinoAI`
+3. Compose path: `docker-compose.yml`
+4. Deploy
+
+Or from a shell, without cloning:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/TomSzenessy/MinoAI/main/docker-compose.yml \
+  | docker compose -f - up -d
+```
+
+A one-click Portainer template lives at `deploy/portainer-template.json`; the
+walkthrough is `docs-site/deployment/from-the-repo.md`.
+
+### Copy/paste (older Portainer, or no repository access)
+
+1. `Stacks` -> `Add stack`
+2. Paste compose from `docs-site/reference/docker-compose.md`
+3. Deploy
+
+The single container serves the API **and** the dashboard on port `3000`, and
+keeps notes in the `mino-data` volume.
 
 Default service:
 - `mino-server` on port `3000`

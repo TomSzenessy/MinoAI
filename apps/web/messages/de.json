@@ -1,13 +1,13 @@
 {
   "nav": {
     "home": "Startseite",
-    "features": "Funktionen",
-    "howItWorks": "Wie es funktioniert",
-    "agent": "KI-Agent",
-    "myRelays": "Meine Relays",
+    "features": "Was es macht",
+    "howItWorks": "So funktioniert es",
+    "agent": "Der Agent",
+    "myRelays": "Meine Server",
     "stack": "Stack",
     "openSource": "Open Source",
-    "getStarted": "Loslegen",
+    "getStarted": "Auf die Liste",
     "docs": "Dokumentation",
     "settings": "Einstellungen",
     "connectServer": "Server verbinden",
@@ -29,95 +29,95 @@
     "about": "Über Mino"
   },
   "hero": {
-    "badge": "Private Beta · Open Source · Selbst gehostet",
-    "titleLine1": "Dein Verstand,",
-    "titleLine2": "Organisiert.",
-    "subtitle": "Mino ist das agenten-native Notizbuch für alle, deren Notizen aus jedem Ordnerbaum herausgewachsen sind. Es sortiert neues Material ein, verknüpft Zusammengehöriges und findet alles wieder — in reinem Markdown, das dir gehört. Der Zugang öffnet in kleinen Gruppen.",
-    "ctaPrimary": "✦ Schreib los",
-    "ctaSecondary": "↗ Auf GitHub ansehen",
-    "scrollHint": "In Aktion sehen",
-    "ctaResume": "Workspace fortsetzen"
+    "badge": "Open Source · Selbst gehostet · Obsidian-kompatibel",
+    "titleLine1": "Dein Kopf,",
+    "titleLine2": "aufgeräumt.",
+    "subtitle": "Deine Notizen liegen in einem Markdown-Vault auf deinem eigenen Server, aus jedem Browser erreichbar, Sync inklusive, während ein KI-Agent sie einsortiert, taggt und verlinkt. Mino ist eine Open-Source-Alternative zu Obsidian, den Modellschlüssel bringst du mit. Trag dich in die Liste ein, dann bekommst du eine E-Mail, wenn Mino erscheint.",
+    "ctaPrimary": "Auf die Warteliste",
+    "ctaSecondary": "Auf GitHub ansehen",
+    "scrollHint": "Sieh dir den Workspace an",
+    "ctaResume": "Workspace öffnen"
   },
   "preview": {
     "url": "mino.ink/workspace"
   },
   "features": {
     "label": "WAS ES MACHT",
-    "title": "Gebaut für",
-    "titleHighlight": "Entwickler",
-    "subtitle": "Sechs Säulen, die Mino von jeder anderen Notiz-App unterscheiden.",
+    "title": "Gebaut für Leute mit",
+    "titleHighlight": "zu vielen Notizen",
+    "subtitle": "Was Server und Agent tun, eine Karte pro Punkt.",
     "smartImport": {
-      "title": "Intelligenter Import",
-      "description": "Importiere Webseiten, E-Mails, PDFs, Sprachnotizen oder YouTube-Videos. Der KI-Agent formatiert und archiviert sie automatisch."
+      "title": "Import, der als Markdown endet",
+      "description": "Zieh eine Webseite oder ein PDF hinein. Der Agent macht Markdown daraus, gibt der Notiz einen Titel und legt sie dort ab, wo sie hingehört."
     },
     "aiOrganization": {
-      "title": "KI-Organisation",
-      "description": "Deine Notizen organisieren sich selbst. Der Agent taggt, verknüpft verwandte Inhalte und pflegt deinen Wissensgraphen."
+      "title": "Der Agent hält Ordnung",
+      "description": "Er nutzt deine vorhandenen Tags, verlinkt eine Notiz mit verwandten, schreibt Zusammenfassungen und hält den Ordnerbaum flach."
     },
     "intelligentRetrieval": {
-      "title": "Intelligentes Abrufen",
-      "description": "Semantische Suche in deinem gesamten Vault. Stelle Fragen in natürlicher Sprache und erhalte zusammengefasste Antworten."
+      "title": "Suchen und antworten",
+      "description": "Die Volltextsuche läuft ohne Einrichtung. Mit Embeddings sucht sie nach Bedeutung, und Antworten kommen mit den Notizen, aus denen sie stammen."
     },
     "selfHosted": {
-      "title": "Selbstgehostet & Privat",
-      "description": "Deine Daten gehören dir. Deploye mit einem Befehl, verbinde jeden Client. Volle Kontrolle, kein Vendor Lock-in."
+      "title": "Ein Container, deine Dateien",
+      "description": "Der Vault ist ein Ordner mit einfachen .md-Dateien auf einem Server, den du betreibst, also öffnet ihn auch Obsidian oder jeder andere Editor. Kein Konto, kein Export-Schritt."
     },
     "agentNative": {
-      "title": "Agenten-Native API",
-      "description": "Zuerst für KI-Agenten gebaut. MCP-Tools ermöglichen Antigravity, Cursor oder jedem Agenten, deine Notizen direkt zu lesen und zu schreiben."
+      "title": "Rund um den Agenten gebaut",
+      "description": "Jede Notiz-Operation ist eine HTTP-Route mit X-Mino-Key-Header, dazu eine MCP-Bridge. Agent und eigene Tools arbeiten im selben Vault."
     },
     "everywhere": {
-      "title": "Überall, Offline",
-      "description": "Web, iOS, Android — alles offline-first mit CRDT-Sync. Bearbeite überall, Konflikte werden automatisch gelöst."
+      "title": "Von überall erreichbar",
+      "description": "Dein Server ist der Sync. Öffne den Vault in jedem Browser über das Relay oder deinen eigenen Tunnel; die Android- und iOS-Builds sind in Entwicklung."
     }
   },
   "howItWorks": {
     "label": "WIE ES FUNKTIONIERT",
-    "title": "Vom",
-    "titleHighlight": "Chaos",
-    "titleEnd": "zur Klarheit",
-    "subtitle": "Drei Schritte zu einer perfekt organisierten Wissensbasis.",
+    "title": "Eine Notiz",
+    "titleHighlight": "von der Eingabe bis zur Suche",
+    "titleEnd": "",
+    "subtitle": "Erfassen ist der einzige Schritt, den du machen musst. Der Agent übernimmt die Ablage, die Suche den Rest.",
     "step1": {
-      "title": "Alles Erfassen",
-      "description": "Schreibe in Markdown, importiere von überall oder diktiere per Sprache. Jede Notiz ist eine .md-Datei — kein Lock-in, niemals."
+      "title": "Erfassen",
+      "description": "Schreib Markdown, zieh eine Webseite hinein oder importiere ein PDF. Die Notiz ist eine einfache .md-Datei, sobald sie ankommt."
     },
     "step2": {
-      "title": "KI Organisiert",
-      "description": "Der Agent liest deine Notizen, taggt sie automatisch, sortiert sie in die richtigen Ordner und erstellt Links zwischen verwandten Ideen."
+      "title": "Der Agent legt sie ab",
+      "description": "Er liest die Notiz, nutzt deine vorhandenen Tags, verlinkt sie mit verwandten Notizen und verschiebt die Datei an die richtige Stelle."
     },
     "step3": {
-      "title": "Sofort Abrufen",
-      "description": "Stelle Fragen, suche semantisch oder durchsuche deinen automatisch generierten Wissensgraphen. Dein zweites Gehirn, immer aktuell."
+      "title": "Wiederfinden",
+      "description": "Die Volltextsuche ist standardmäßig an. Mit konfiguriertem Anbieter wird sie semantisch, und der Agent antwortet aus deinen Notizen."
     }
   },
   "agent": {
-    "label": "DAS KILLER-FEATURE",
-    "title": "Triff den",
-    "titleHighlight": "KI-Organizer",
-    "subtitle": "Kein Chatbot — ein Wissensverwalter, der im Hintergrund arbeitet.",
-    "badge": "BETA",
-    "chatMsg1": "Ich habe <strong>3 Notizen</strong> über \"Architektur\" gefunden, die nicht miteinander verknüpft sind. Soll ich sie verbinden und eine Map of Content erstellen?",
-    "chatMsg2": "Ja, und tagge sie auch mit #core-systems",
-    "chatMsg3": "Erledigt! Ich habe:<br>• Alle 3 Architektur-Notizen verknüpft<br>• <code>MOC-Architektur.md</code> erstellt<br>• <code>#core-systems</code> zu jeder hinzugefügt<br>• 2 weitere verwandte Notizen in /Research gefunden, die du einschließen könntest",
-    "capability1Title": "Auto-Tagging",
-    "capability1Desc": "Liest Inhalte und wendet relevante Tags an",
-    "capability2Title": "Link-Erkennung",
-    "capability2Desc": "Findet Verbindungen, die du übersehen hast",
-    "capability3Title": "Intelligente Zusammenfassungen",
-    "capability3Desc": "Generiert MOCs und Indizes",
-    "capability4Title": "Vault-Bereinigung",
-    "capability4Desc": "Findet Duplikate, archiviert veraltete Notizen"
+    "label": "DER AGENT",
+    "title": "Was der Agent",
+    "titleHighlight": "wirklich macht",
+    "subtitle": "Er arbeitet im Vault, schlägt einen Platz für das vor, was du speicherst, und meldet jede Änderung.",
+    "badge": "IN ENTWICKLUNG",
+    "chatMsg1": "Ich habe <strong>3 Notizen</strong> zu \"Architektur\" gefunden, die nicht verlinkt sind. Soll ich sie verbinden und eine Index-Notiz anlegen?",
+    "chatMsg2": "Ja, und tagge sie zusätzlich mit #core-systems",
+    "chatMsg3": "Erledigt:<br>• Alle 3 Architektur-Notizen verlinkt<br>• <code>MOC-Architektur.md</code> angelegt<br>• <code>#core-systems</code> zu jeder hinzugefügt<br>• 2 weitere verwandte Notizen in /Research gefunden",
+    "capability1Title": "Tags, die du schon nutzt",
+    "capability1Desc": "Liest die Notiz und vergibt Tags, die es in deinem Vault schon gibt.",
+    "capability2Title": "Links zu verwandten Notizen",
+    "capability2Desc": "Findet die Notizen, zu denen eine neue gehört, und verlinkt sie.",
+    "capability3Title": "Index-Notizen",
+    "capability3Desc": "Schreibt eine Index-Notiz, die auflistet, was ein Thema enthält.",
+    "capability4Title": "Antworten mit Quellen",
+    "capability4Desc": "Beantwortet eine Frage aus vielen Notizen und verlinkt die verwendeten."
   },
   "tech": {
     "label": "UNTER DER HAUBE",
-    "title": "Ein Moderner",
-    "titleHighlight": "Stack",
-    "subtitle": "Jede Entscheidung getroffen für Performance, Entwicklererfahrung und Einfachheit beim Selbsthosten.",
+    "title": "Der Stack,",
+    "titleHighlight": "in acht Teilen",
+    "subtitle": "Was jedes Teil macht und warum es da ist.",
     "items": {
       "bun": "Server-Runtime",
       "hono": "API-Framework",
       "nextjs": "Web-App",
-      "expo": "Mobile Apps",
+      "expo": "Mobile Builds im Test",
       "sqlite": "Index + FTS5",
       "yjs": "CRDT-Sync",
       "mcp": "Agenten-Protokoll",
@@ -126,14 +126,14 @@
   },
   "openSource": {
     "label": "OPEN SOURCE",
-    "title": "Offen Gebaut",
-    "subtitle": "Mino ist 100% Open-Source. Selbsthoste mit einem Befehl, forke es, erweitere es oder trage bei. Deine Notizen gehören dir — für immer.",
-    "installCmd": "curl -fsSL https://mino.ink/install.sh | bash",
-    "ctaPrimary": "✦ Demo Testen",
-    "ctaSecondary": "↗ Auf GitHub bewerten"
+    "title": "Offen gebaut",
+    "subtitle": "Server, Web-App und mobile Clients liegen in einem öffentlichen Repository. Das Referenz-Deployment ist eine Compose-Datei, die du lesen kannst, bevor du sie startest.",
+    "installCmd": "docker compose up -d",
+    "ctaPrimary": "Server verbinden",
+    "ctaSecondary": "Auf GitHub ansehen"
   },
   "footer": {
-    "tagline": "Open Source · Selbstgehostet · Agenten-nativ",
+    "tagline": "Open Source · Selbst gehostet · Obsidian-kompatibel",
     "terms": "Nutzungsbedingungen",
     "cookies": "Cookie-Richtlinie",
     "privacy": "Datenschutzerklärung",
@@ -365,9 +365,9 @@
     "onlyEnFallback": "Fallback aus Englisch"
   },
   "waitlist": {
-    "eyebrow": "FRÜHER ZUGANG",
-    "title": "Sichere dir einen Platz.",
-    "subtitle": "Trag dich ein und wir melden uns, sobald ein Platz frei wird.",
+    "eyebrow": "LAUNCH-MELDUNG",
+    "title": "Eine E-Mail, wenn Mino erscheint.",
+    "subtitle": "Kein Newsletter und keine Serie: eine Nachricht zum Launch, und ein Klick nimmt dich wieder raus.",
     "emailLabel": "E-Mail-Adresse",
     "emailPlaceholder": "du@beispiel.de",
     "nameLabel": "Vorname (optional)",
@@ -376,23 +376,23 @@
     "useCasePlaceholder": "Bitte wählen",
     "useCases": {
       "personal": "Persönliche Wissensbasis",
-      "engineering": "Engineering & Doku",
+      "engineering": "Engineering-Doku & ADRs",
       "research": "Recherche & Schreiben",
       "agents": "KI-Agenten-Workflows",
       "curious": "Nur neugierig"
     },
-    "detailsToggle": "Details ergänzen",
-    "detailsHide": "Details ausblenden",
+    "detailsToggle": "Name und Nutzung ergänzen",
+    "detailsHide": "Name und Nutzung ausblenden",
     "submit": "Auf die Warteliste",
     "submitting": "Wird eingetragen…",
     "successTitle": "Du bist auf der Liste.",
-    "successBody": "Deine Einladung ist für die nächste Gruppe vorgemerkt. Wir schreiben dir, sobald ein Platz frei wird.",
-    "existsTitle": "Du bist schon auf der Liste.",
-    "existsBody": "Nichts weiter zu tun — deine Einladung geht an {{email}}.",
+    "successBody": "Die Bestätigung liegt in deinem Postfach. Die einzige weitere E-Mail kommt, wenn Mino erscheint. Du kannst Mino schon heute aus dem Repository starten; der Link in der E-Mail nimmt dich wieder von der Liste.",
+    "existsTitle": "Du stehst schon auf der Liste.",
+    "existsBody": "Nichts weiter zu tun. {{email}} steht auf der Liste, und die Launch-Meldung geht dorthin.",
     "errorTitle": "Das hat nicht geklappt.",
-    "errorBody": "Unterwegs ist etwas schiefgelaufen. Versuch es gleich noch einmal oder schreib uns eine E-Mail.",
-    "invalidEmail": "Diese E-Mail-Adresse sieht nicht richtig aus.",
-    "privacy": "Eine E-Mail, wenn ein Platz frei wird. Kein Newsletter, jederzeit abbestellbar.",
+    "errorBody": "Die Anfrage hat den Server nicht erreicht. Versuch es gleich noch einmal.",
+    "invalidEmail": "Die Adresse sieht unvollständig aus. Prüf sie auf Tippfehler und versuch es noch einmal.",
+    "privacy": "Eine E-Mail, wenn Mino erscheint, plus die Bestätigung für die Anmeldung. Sonst nichts, und ein Klick nimmt dich wieder raus.",
     "changeEmail": "Andere Adresse verwenden"
   }
 }

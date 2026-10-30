@@ -1,13 +1,13 @@
 {
   "nav": {
     "home": "Home",
-    "features": "Features",
-    "howItWorks": "How It Works",
-    "agent": "AI Agent",
-    "myRelays": "My Relays",
+    "features": "What it does",
+    "howItWorks": "How it works",
+    "agent": "The agent",
+    "myRelays": "My servers",
     "stack": "Stack",
-    "openSource": "Open Source",
-    "getStarted": "Get Started",
+    "openSource": "Open source",
+    "getStarted": "Join the list",
     "docs": "Docs",
     "settings": "Settings",
     "connectServer": "Connect Server",
@@ -29,95 +29,95 @@
     "about": "About"
   },
   "hero": {
-    "subtitle": "Mino is the agent-native notebook for people whose notes outgrew a folder tree. It files new material, links what belongs together, and finds anything — in plain Markdown you own. Seats open in small batches.",
-    "ctaPrimary": "Start Writing",
-    "ctaResume": "Resume Workspace",
+    "subtitle": "Your notes live in a Markdown vault on your own server, reachable from any browser with sync built in, while an AI agent keeps them filed, tagged and linked. Mino is an open-source Obsidian alternative, and you bring the model key. Join the list and you get one email when it launches.",
+    "ctaPrimary": "Join the waitlist",
+    "ctaResume": "Open your workspace",
     "ctaSecondary": "View on GitHub",
-    "badge": "Private beta · Open source · Self-hosted",
+    "badge": "Open source · Self-hosted · Obsidian-compatible",
     "titleLine1": "Your Mind,",
     "titleLine2": "Organized.",
-    "scrollHint": "See it in action"
+    "scrollHint": "See the workspace"
   },
   "preview": {
     "url": "mino.ink/workspace"
   },
   "features": {
     "label": "WHAT IT DOES",
-    "title": "Built for",
-    "titleHighlight": "Developers",
-    "subtitle": "Six pillars that make Mino different from every other notes app.",
+    "title": "Built for people with",
+    "titleHighlight": "too many notes",
+    "subtitle": "What the server and the agent do, one card each.",
     "smartImport": {
-      "title": "Smart Import",
-      "description": "Drop in web pages, emails, PDFs, voice memos, or YouTube videos. The AI agent formats and files them automatically."
+      "title": "Import that ends in Markdown",
+      "description": "Drop in a web page or a PDF. The agent converts it to Markdown, gives it a title and files it where it belongs."
     },
     "aiOrganization": {
-      "title": "AI Organization",
-      "description": "Your notes organize themselves. The agent auto-tags, links related content, and maintains your knowledge graph."
+      "title": "The agent keeps it sorted",
+      "description": "It reuses the tags you already have, links a note to related ones, writes summaries and keeps the folder tree shallow."
     },
     "intelligentRetrieval": {
-      "title": "Intelligent Retrieval",
-      "description": "Semantic search across your entire vault. Ask questions in natural language and get synthesized answers."
+      "title": "Search, then answers",
+      "description": "Full-text search works with no setup. Add embeddings and it searches by meaning; answers arrive with the notes they came from."
     },
     "selfHosted": {
-      "title": "Self-Hosted & Private",
-      "description": "Your data stays yours. Deploy with one command, connect any client. Full control, zero vendor lock-in."
+      "title": "One container, your files",
+      "description": "The vault is a folder of plain .md files on a server you run, so Obsidian or any editor can open it too. No account and no export step."
     },
     "agentNative": {
-      "title": "Agent-Native API",
-      "description": "Built for AI agents first. MCP tools let Antigravity, Cursor, or any agent read and write your notes directly."
+      "title": "Built around the agent",
+      "description": "Every note operation is an HTTP route with an X-Mino-Key header, plus an MCP bridge, so the agent and your own tools work in the same vault."
     },
     "everywhere": {
-      "title": "Everywhere, Offline",
-      "description": "Web, iOS, Android — all offline-first with CRDT sync. Edit anywhere, conflicts resolve automatically."
+      "title": "Reach it from anywhere",
+      "description": "Your server is the sync. Open the vault from any browser through the relay or your own tunnel; the Android and iOS builds are in development."
     }
   },
   "howItWorks": {
     "label": "HOW IT WORKS",
-    "title": "From",
-    "titleHighlight": "Chaos",
-    "titleEnd": "to Clarity",
-    "subtitle": "Three steps to a perfectly organized knowledge base.",
+    "title": "Follow one note",
+    "titleHighlight": "from capture to search",
+    "titleEnd": "",
+    "subtitle": "Capture is the only step you have to do. The agent handles the filing; search handles the rest.",
     "step1": {
-      "title": "Capture Everything",
-      "description": "Write in markdown, import from anywhere, or dictate with voice. Every note is a plain .md file — no lock-in, ever."
+      "title": "Capture it",
+      "description": "Write Markdown, drop in a web page, import a PDF. The note is a plain .md file from the moment it lands."
     },
     "step2": {
-      "title": "AI Organizes",
-      "description": "The agent reads your notes, auto-tags them, files them into the right folders, and creates links between related ideas."
+      "title": "The agent files it",
+      "description": "It reads the note, reuses your existing tags, links it to related notes and moves the file where it belongs."
     },
     "step3": {
-      "title": "Retrieve Instantly",
-      "description": "Ask questions, search semantically, or browse your auto-generated knowledge graph. Your second brain, always up to date."
+      "title": "Find it again",
+      "description": "Full-text search is on by default. With a provider configured it turns semantic, and the agent answers from your notes."
     }
   },
   "agent": {
-    "label": "THE KILLER FEATURE",
-    "title": "Meet the",
-    "titleHighlight": "AI Organizer",
-    "subtitle": "Not a chatbot — a knowledge steward that works in the background.",
-    "badge": "BETA",
-    "chatMsg1": "I found <strong>3 notes</strong> about \"architecture\" that aren't linked together. Want me to connect them and create a Map of Content?",
-    "chatMsg2": "Yes, and also tag them with #core-systems",
-    "chatMsg3": "Done! I've:<br>• Linked all 3 architecture notes<br>• Created <code>MOC-Architecture.md</code><br>• Added <code>#core-systems</code> to each<br>• Found 2 more related notes in /Research you might want to include",
-    "capability1Title": "Auto-tagging",
-    "capability1Desc": "Reads content and applies relevant tags",
-    "capability2Title": "Link Discovery",
-    "capability2Desc": "Finds connections you missed",
-    "capability3Title": "Smart Summaries",
-    "capability3Desc": "Generates MOCs and indexes",
-    "capability4Title": "Vault Cleanup",
-    "capability4Desc": "Finds duplicates, archives stale notes"
+    "label": "THE AGENT",
+    "title": "What the agent",
+    "titleHighlight": "actually does",
+    "subtitle": "It works inside the vault, proposes a place for what you save, and reports every change it makes.",
+    "badge": "IN DEVELOPMENT",
+    "chatMsg1": "I found <strong>3 notes</strong> about \"architecture\" that aren't linked. Want me to connect them and write an index note?",
+    "chatMsg2": "Yes, and tag them with #core-systems too",
+    "chatMsg3": "Done:<br>• Linked all 3 architecture notes<br>• Created <code>MOC-Architecture.md</code><br>• Added <code>#core-systems</code> to each<br>• Found 2 more related notes in /Research",
+    "capability1Title": "Tags you already use",
+    "capability1Desc": "Reads the note and applies tags that exist in your vault.",
+    "capability2Title": "Links to related notes",
+    "capability2Desc": "Finds the notes a new one belongs with and links them.",
+    "capability3Title": "Index notes",
+    "capability3Desc": "Writes an index note that lists what a topic contains.",
+    "capability4Title": "Answers with sources",
+    "capability4Desc": "Answers a question from many notes and links the ones it used."
   },
   "tech": {
     "label": "UNDER THE HOOD",
-    "title": "A Modern",
-    "titleHighlight": "Stack",
-    "subtitle": "Every choice made for performance, developer experience, and self-hosting simplicity.",
+    "title": "The stack,",
+    "titleHighlight": "in eight parts",
+    "subtitle": "What each piece does, and why it is there.",
     "items": {
       "bun": "Server Runtime",
       "hono": "API Framework",
       "nextjs": "Web App",
-      "expo": "Mobile Apps",
+      "expo": "Mobile builds in testing",
       "sqlite": "Index + FTS5",
       "yjs": "CRDT Sync",
       "mcp": "Agent Protocol",
@@ -126,14 +126,14 @@
   },
   "openSource": {
     "label": "OPEN SOURCE",
-    "title": "Built in the Open",
-    "subtitle": "Mino is 100% open-source. Self-host with one command, fork it, extend it, or contribute. Your notes are yours — forever.",
-    "installCmd": "curl -fsSL https://mino.ink/install.sh | bash",
-    "ctaPrimary": "✦ Try the Demo",
-    "ctaSecondary": "↗ Star on GitHub"
+    "title": "Built in the open",
+    "subtitle": "The server, the web app and the mobile clients are in one public repository. The reference deployment is a compose file you can read before you run it.",
+    "installCmd": "docker compose up -d",
+    "ctaPrimary": "Connect a server",
+    "ctaSecondary": "Star on GitHub"
   },
   "footer": {
-    "tagline": "Open source · Self-hostable · Agent-native",
+    "tagline": "Open source · Self-hosted · Obsidian-compatible",
     "terms": "Terms of Service",
     "cookies": "Cookie Policy",
     "privacy": "Privacy Policy",
@@ -365,15 +365,15 @@
     }
   },
   "waitlist": {
-    "eyebrow": "EARLY ACCESS",
-    "title": "Be first in line.",
-    "subtitle": "Get an invite when the next batch of seats opens.",
+    "eyebrow": "LAUNCH ANNOUNCEMENT",
+    "title": "Get one email when Mino launches.",
+    "subtitle": "No newsletter and no sequence: one message at launch, and one click removes you.",
     "emailLabel": "Email address",
     "emailPlaceholder": "you@example.com",
     "nameLabel": "First name (optional)",
     "namePlaceholder": "Ada",
     "useCaseLabel": "What will you use Mino for? (optional)",
-    "useCasePlaceholder": "Pick one",
+    "useCasePlaceholder": "Choose one",
     "useCases": {
       "personal": "Personal knowledge base",
       "engineering": "Engineering docs & ADRs",
@@ -381,18 +381,18 @@
       "agents": "AI agent workflows",
       "curious": "Just curious"
     },
-    "detailsToggle": "Add details",
-    "detailsHide": "Hide details",
+    "detailsToggle": "Add name and use case",
+    "detailsHide": "Hide name and use case",
     "submit": "Join the waitlist",
     "submitting": "Joining…",
     "successTitle": "You're on the list.",
-    "successBody": "Your invite is queued for the next batch of seats. We'll email you the moment one opens.",
+    "successBody": "A confirmation is in your inbox. The only other email is one message when Mino launches. You can run Mino from the repository today; the link in that email removes you.",
     "existsTitle": "You're already on the list.",
-    "existsBody": "Nothing else to do — your invite goes to {{email}}.",
+    "existsBody": "Nothing more to do. {{email}} is on the list, and the launch email will go there.",
     "errorTitle": "That didn't go through.",
-    "errorBody": "Something broke on the way. Try again in a moment, or email us and we'll add you by hand.",
-    "invalidEmail": "That email doesn't look right.",
-    "privacy": "One email when a seat opens. No newsletter, unsubscribe anytime.",
+    "errorBody": "The request did not reach the server. Try again in a moment.",
+    "invalidEmail": "That address looks incomplete. Check for a typo and try again.",
+    "privacy": "One email when Mino launches, plus the confirmation for joining. Nothing else, and one click removes you.",
     "changeEmail": "Use a different address"
   }
 }

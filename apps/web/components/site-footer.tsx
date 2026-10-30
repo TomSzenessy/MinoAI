@@ -56,7 +56,7 @@ export function SiteFooter() {
             {t("nav.workspace")} →
           </Link>
           <p className="text-[12px] text-[var(--text-tertiary)] opacity-60">
-            © 2026 Mino. All rights reserved.
+            © 2026 Mino · built in the open
           </p>
         </div>
 

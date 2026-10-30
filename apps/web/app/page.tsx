@@ -3,9 +3,9 @@ import { LandingPage } from "@/components/landing-page";
 import { JsonLd } from "@/components/structured-data";
 import { SITE_DESCRIPTION, softwareApplicationSchema } from "@/lib/seo";
 
-const TITLE = "Mino AI — AI notes that organize themselves";
+const TITLE = "Mino AI — an open-source Obsidian alternative";
 const DESCRIPTION =
-  "Mino AI is an agent-native, Markdown-first notebook: an AI that imports, tags and links your notes, plain .md files you own, and a self-hosted server in one container. Private beta — join the waitlist.";
+  "Mino AI is an open-source Obsidian alternative you host yourself: your Markdown vault on your server, with an AI agent that files, tags and links notes.";
 
 export const metadata: Metadata = {
   title: { absolute: TITLE },

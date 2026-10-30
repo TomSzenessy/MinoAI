@@ -11,9 +11,9 @@ import {
   webPageSchema,
 } from "@/lib/seo";
 
-const TITLE = "What is Mino AI? App, login, pricing and self-hosting";
+const TITLE = "What is Mino AI? Login, pricing, self-hosting";
 const DESCRIPTION =
-  "What Mino AI is, where the app lives, why there is no Mino login page, what it costs and how the self-hosted server works. Straight answers, no marketing fog.";
+  "What Mino AI is, why there is no login page, what it costs, and how the self-hosted server works. Straight answers, including the parts still unfinished.";
 
 export const metadata: Metadata = pageMetadata({
   title: TITLE,
@@ -45,9 +45,9 @@ export default function FaqPage() {
           Mino, <span className="gradient-text">explained</span>.
         </h1>
         <p className="lead">
-          The questions that show up in search — what Mino AI is, where the app
-          is, why there is no login page, and what it costs. Answered plainly,
-          including the parts that are still in progress.
+          The questions that show up in search: what Mino AI is, which clients
+          exist, why there is no login page, and what it costs. Answered
+          plainly, including the parts that are still unfinished.
         </p>
       </section>
 
@@ -57,10 +57,10 @@ export default function FaqPage() {
 
       <section className="mx-auto w-full max-w-6xl px-6 pb-24">
         <div className="cta-panel">
-          <h2>Still curious? Try it.</h2>
+          <h2>Still curious? Join the list.</h2>
           <p>
-            Early access opens in batches. One email when a seat is free — the
-            working app, the server image and a walkthrough.
+            Mino is on GitHub now, and you can run it today. The list is a launch
+            announcement: one email when it launches, nothing else.
           </p>
           <div className="mx-auto max-w-xl">
             <WaitlistForm idPrefix="faq" />

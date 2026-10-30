@@ -26,6 +26,7 @@ import { pluginRoutes } from './routes/plugins';
 import { agentRoutes } from './routes/agent';
 import { channelRoutes, channelWebhookRoutes } from './routes/channels';
 import { securityRoutes } from './routes/security';
+import { vaultRoutes } from './routes/vault';
 import type { AppContext } from './types';
 
 export interface AppDependencies {
@@ -136,6 +137,7 @@ export function createApp(deps: AppDependencies): Hono<AppContext> {
 	protectedApi.route('/folders', folderRoutes());
 	protectedApi.route('/search', searchRoutes());
 	protectedApi.route('/plugins', pluginRoutes());
+	protectedApi.route('/vault', vaultRoutes());
 	protectedApi.route('/agent', agentRoutes());
 	protectedApi.route('/channels', channelRoutes());
 	protectedApi.route('/security', securityRoutes());

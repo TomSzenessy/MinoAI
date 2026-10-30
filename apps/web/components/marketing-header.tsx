@@ -22,7 +22,7 @@ export function MarketingHeader() {
         <BrandLogo withWordmark />
       </Link>
 
-      <nav className="hidden items-center gap-1 md:flex" aria-label="Main">
+      <nav className="hidden items-center gap-1 lg:flex" aria-label="Main">
         {links.map((link) => (
           <Link key={link.href} href={link.href} className="navbar-link">
             {link.label}

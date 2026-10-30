@@ -1,43 +1,48 @@
 import type { FaqEntry } from "@/components/structured-data";
 
 /**
- * FAQ copy shared by the landing page and /faq.
+ * FAQ copy shared by the landing page, /faq and /waitlist.
  *
- * The answers are the ones people actually search for ("mino ai", "mino app",
- * "mino login") and they stay honest about what is shipped today versus what
- * early access opens up.
+ * The questions are the ones people actually search for ("mino ai", "mino app",
+ * "mino login", "mino note"). Answers stay under 60 words and say what is
+ * runs today versus what is still in development.
  */
 
 export const HOME_FAQ: FaqEntry[] = [
   {
     question: "What is Mino AI?",
     answer:
-      "Mino is a Markdown notebook with an AI agent attached. Your notes stay as plain .md files, and the agent imports new material, tags it, links it to related notes and finds it again months later. It runs on a server you own instead of a vendor cloud.",
+      "Mino is an open-source Obsidian alternative that runs on your own server. Your notes are plain .md files in a vault, and an AI agent files, tags, links and retrieves them. There is no Mino account.",
+  },
+  {
+    question: "Can I run Mino today?",
+    answer:
+      "Yes. The repository is public: clone it, run the container with the compose file, and connect a client. The list is only a launch announcement, for people who would rather not run a server yet.",
   },
   {
     question: "How is it different from a Markdown editor with a chat panel?",
     answer:
-      "A chat panel answers questions about the note in front of you. Mino's agent works on the vault itself: it files what you drop in, keeps the links between notes coherent, and answers across everything you have written. The same API is exposed to outside agents over HTTP and MCP, so Cursor or Claude can read and write the vault directly.",
+      "A chat panel only knows the note you have open. Mino's agent works on the whole vault: it files what you save, keeps links between notes coherent, and answers across everything. The same operations are an HTTP API and an MCP bridge, so Cursor or Claude can read and write the vault.",
   },
   {
     question: "Do I need to create an account?",
     answer:
-      "No. There is no central Mino account and no Mino cloud login. You deploy the server yourself with Docker or a Portainer stack, then link a client with a relay code or server URL. That is also why there is no 'mino login' page — there is no shared account to log into.",
+      "No. There is no Mino account and no central login. You deploy the server with Docker or a Portainer stack, then link a client with a relay code or a server URL plus API key. That is also why there is no 'mino login' page.",
   },
   {
     question: "What happens after I join the waitlist?",
     answer:
-      "You get one email when a seat opens, containing the invite and the build links. There is no newsletter, and unsubscribing takes one click — every email carries the link.",
+      "You get one email when Mino launches, and nothing else. No newsletter, no sequence. The confirmation you receive now carries a one-click unsubscribe if you change your mind.",
   },
   {
     question: "Is Mino free?",
     answer:
-      "The core is open source and self-hostable at no cost: you supply the server and your own model API key. The AI agent stays disabled until you configure a provider, so nothing is metered by us and no note leaves your machine unless you point it at a model.",
+      "The core is open source and free to self-host. You supply the server and your own model API key, so you pay that provider directly. The agent stays disabled until you configure a provider, model and key; search works without one.",
   },
   {
-    question: "Does it work offline and on mobile?",
+    question: "Is there a mobile app?",
     answer:
-      "Yes, at different stages. The web client is local-first, and the mobile clients are built with Expo — Android and iOS builds are in internal testing and go out with early access. Sync runs over CRDTs, so edits made offline merge instead of overwriting each other.",
+      "The web workspace runs today from the repository. Android and iOS builds are in development and will wrap the same vault; the list is only a launch announcement.",
   },
 ];
 
@@ -45,54 +50,79 @@ export const FULL_FAQ: FaqEntry[] = [
   {
     question: "What is Mino AI?",
     answer:
-      "Mino is an agent-native, Markdown-first notebook. Notes live as plain .md files on a server you run; an AI agent watches the vault, imports new material, tags it, links it to related notes and answers questions across everything you have written. It is open source, self-hostable, and has no central account.",
+      "Mino is an open-source Obsidian alternative: a self-hosted Markdown vault with an AI agent that files, tags, links and retrieves your notes. Obsidian or any editor can open the same folder. There is no central account.",
     link: { label: "See how the agent works", href: "/ai-notes" },
   },
   {
-    question: "What does 'agent-native' actually mean?",
+    question: "Is Mino an Obsidian alternative?",
     answer:
-      "It means the agent is part of the data model rather than a chat box bolted onto the side. Every note operation — search, read, create, move — is available over the same HTTP API the UI uses, and through an MCP bridge, so Cursor, Claude Desktop, or your own scripts can work with the same vault. The agent also runs on the server, so it can react to imported material when no browser is open.",
+      "For the vault, yes. Mino reads a folder of Markdown files with YAML front matter, so an Obsidian vault opens as-is and stays readable in Obsidian. Plugin compatibility is in progress, not finished. Mino is an independent project, not affiliated with Obsidian.",
+  },
+  {
+    question: "Can I run Mino today?",
+    answer:
+      "Yes. The repository is public: clone it, run the container with the compose file, and connect a client. The list is only a launch announcement, for people who would rather not run a server yet.",
+  },
+  {
+    question: "How is the AI part of the app?",
+    answer:
+      "The agent runs on your server, inside the vault: it files imports, tags, links, summarises and retrieves. Every note operation is also an HTTP route and an MCP bridge, so the interface and the agent use the same API instead of a chat panel on the side.",
   },
   {
     question: "Do I have to bring my own AI key?",
     answer:
-      "Today, yes: the agent is disabled until you configure a provider, model and API key, and search falls back to full-text until embeddings are configured. That is deliberate for a self-hosted tool — you decide which model sees your notes, and you pay that provider directly rather than a subscription to us.",
+      "Yes. The agent is disabled until you configure a provider, model and API key, and search falls back to full text until embeddings are configured. That is deliberate for a self-hosted tool: you decide which model sees your notes and you pay that provider directly.",
   },
   {
     question: "Where exactly are my notes stored?",
     answer:
-      "As Markdown files inside the server's data directory, which is a Docker volume in the reference deployment. A SQLite index sits next to them for full-text search and links; it can be rebuilt from the files. Backing up Mino means backing up one folder, and leaving means copying that folder somewhere else.",
+      "As Markdown files in an Obsidian-compatible vault inside the server's data directory, which is a Docker volume in the reference deployment. A SQLite index sits next to them for search and link lookups; it rebuilds from the files. Backing up Mino means copying one folder.",
     link: { label: "Self-hosting details", href: "/self-hosted-notes" },
   },
   {
     question: "Can I import an existing Markdown vault?",
     answer:
-      "Yes. Markdown with YAML front matter is the native format, so a vault exported from another tool drops in as-is, folders and all. Non-Markdown imports such as web pages, PDFs and voice memos go through the agent, which converts them to Markdown before filing them.",
+      "Yes. Markdown with YAML front matter is the native format, so an Obsidian vault or a vault from another tool drops in as-is, folders included. Web pages, PDFs and long emails go through the agent, which converts them to Markdown before filing.",
+  },
+  {
+    question: "Does the mino.ink relay see my notes?",
+    answer:
+      "The relay forwards requests between your client and your server over an encrypted connection, and it does not store your notes. Open-port mode skips the relay behind your own proxy, and your own tunnel works too.",
   },
   {
     question: "Is there a Mino app for Android or iOS?",
     answer:
-      "The clients exist and are built with Expo: the web workspace runs today, while the Android and iOS builds are in internal testing and are handed out with early access. Joining the waitlist is how you get the install link, rather than a public store listing with an unfinished app in it.",
+      "The web workspace runs today from the repository. Android and iOS builds are in development and will wrap the same vault; the list is only a launch announcement.",
+  },
+  {
+    question: "What happens after I join the waitlist?",
+    answer:
+      "You get one email when Mino launches, and nothing else. No newsletter, no sequence. The confirmation you receive now carries a one-click unsubscribe if you change your mind.",
   },
   {
     question: "How do I log in to Mino?",
     answer:
-      "There is no Mino login page and no Mino account, by design. You open the workspace, link it to your own server with a relay code (when the server has no public port) or a server URL plus API key, and the credentials are stored in that browser. Nothing authenticates against mino.ink itself.",
+      "There is no Mino login page and no Mino account. You open the workspace, link it to your own server with a relay code or a server URL plus API key, and the credentials stay in that browser. Nothing authenticates against mino.ink.",
+  },
+  {
+    question: "Is Mino free?",
+    answer:
+      "The core is open source and free to self-host. You supply the server and your own model API key, so you pay that provider directly. The agent stays disabled until you configure a provider, model and key; search works without one.",
   },
   {
     question: "How much will Mino cost?",
     answer:
-      "The core is open source and free to self-host, and that will not change. Early access is free as well. If a hosted option ever ships, people on the waitlist hear the details first — and self-hosting stays available.",
+      "Mino is open source and free to self-host, and that will not change. You pay your model provider directly for the API key the agent uses. There is no subscription and no Mino account.",
   },
   {
     question: "Why is there a waitlist at all?",
     answer:
-      "Mino is built by one person and opened in small batches so the first users get a working product and real support instead of a demo. The list is also an honest signal: if enough people want it, Mino becomes the main focus. If not, the repository stays public either way.",
+      "Because not everyone wants to run a server today. Mino is open source and on GitHub now; the list is for people who would rather hear when it launches. One email at launch, no newsletter.",
   },
   {
     question: "Who is building Mino?",
     answer:
-      "Mino is built in the open by Tom Szenessy. The source, the issue tracker and the deployment files are all public, and the docs cover the architecture rather than hiding it behind a marketing page.",
+      "Tom Szenessy builds Mino in the open. The source, the issue tracker and the deployment files are public, and the docs describe the architecture rather than hiding it behind a marketing page.",
     link: {
       label: "Browse the repository",
       href: "https://github.com/TomSzenessy/MinoAI",
