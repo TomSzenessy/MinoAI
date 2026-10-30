@@ -55,3 +55,25 @@ Required env values include signing credentials, e.g.:
 
 - `ANDROID_SIGNING_PASSWORD`
 - `ANDROID_KEY_ALIAS`
+
+### Release signing
+
+`apps/mobile/scripts/build-android-apk.sh` generates a release keystore at build
+time and writes the `MYAPP_UPLOAD_*` gradle properties into
+`android/gradle.properties`. Neither the keystore nor those properties are
+committed: both are gitignored, because a signing key in a public repository is
+a compromised signing key.
+
+For a build you intend to distribute through a store, do not let the script
+generate a throwaway key. Supply a stable keystore instead:
+
+1. Generate it once, offline, and keep it out of the repository.
+2. Put `MYAPP_UPLOAD_STORE_FILE`, `MYAPP_UPLOAD_KEY_ALIAS`,
+   `MYAPP_UPLOAD_STORE_PASSWORD` and `MYAPP_UPLOAD_KEY_PASSWORD` in
+   `~/.gradle/gradle.properties` (or as CI secrets), not in the project.
+3. Keep the keystore and its password in two different places, and back the
+   keystore up — losing it means a new package identity.
+
+If a key was ever committed, rotate it: generate a new keystore, update the
+secret, and rebuild. On Google Play, reset the upload key for the app rather
+than reusing the exposed one.

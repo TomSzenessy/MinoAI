@@ -95,3 +95,8 @@ vendor/
 .mcp.local.json
 test-results/
 playwright-report/
+
+# Android signing material is generated per build and never committed.
+apps/mobile/android/app/*.keystore
+!apps/mobile/android/app/debug.keystore
+apps/mobile/android/app/signing-config.gradle
