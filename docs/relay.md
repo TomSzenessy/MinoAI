@@ -1,5 +1,9 @@
 # Relay
 
+<!-- index: design | Relay | Working on relay. -->
+
+<!-- covers: apps/relay/** -->
+
 > Managed relay deployment for seamless `mino.ink` connectivity without requiring user-owned domains or open inbound ports.
 
 [← Back to docs](./README.md)

@@ -1,5 +1,7 @@
 # AI Agent ("The Organizer")
 
+<!-- index: design | AI Agent ("The Organizer") | Working on ai agent ("the organizer"). -->
+
 > Server-hosted organizer runtime for search/read/create/move workflows, with planned expansion to full LLM-powered orchestration.
 
 [← Back to docs](./README.md)

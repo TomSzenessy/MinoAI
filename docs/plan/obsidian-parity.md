@@ -1,5 +1,7 @@
 # Obsidian parity
 
+<!-- index: design | Obsidian parity | Working on obsidian parity. -->
+
 > Open an existing Obsidian vault — notes, configuration, community plugins — inside Mino, without Obsidian installed.
 
 Status: written against `cd5ec0a`. A server-side first slice is **already uncommitted in the working tree** (`apps/server/src/services/obsidian-vault.ts`, `routes/vault.ts`, `tests/obsidian-vault.test.ts`, mounted at `apps/server/src/server.ts:140`), so §6 is "finish and verify", not "start". Nothing here authorises executing third-party plugin code: §2 designs that, §5 schedules it as P3.

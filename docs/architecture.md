@@ -1,5 +1,7 @@
 # Architecture
 
+<!-- index: design | Architecture | Working on architecture. -->
+
 > Tech stack, three-layer model, deployment, hosting, Docker, and CI/CD pipeline.
 
 [← Back to docs](./README.md)

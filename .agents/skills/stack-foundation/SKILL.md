@@ -1,0 +1,76 @@
+---
+name: stack-foundation
+description: "Sets up a new surface so it is clean, observable, and shippable from day one: official generator, strict types, lint and format, unit and end-to-end tests, CI wiring, environment config, preview deploys, error tracking, and rot finders. Use right after product-kickoff confirms the stack, or when adding a new surface."
+pack: product
+---
+
+# Stack foundation
+
+Outcome: a walking skeleton (the thinnest end-to-end path, deployed to a
+preview) whose quality gates run in `make done` and CI before any feature work.
+Cleanliness is cheapest on day one; retrofitting it costs ten times more.
+Scale the setup to the kickoff tier: a `prototype` needs steps 1 to 5; a
+`product` needs all steps; a `platform` also applies "Built to scale" in
+`docs/engineering.md` from the start.
+
+## Steps
+
+1. **Scaffold with the official generator** at a pinned version (for example
+   `create-next-app`, `create-expo-app`, `flutter create`, the Xcode or Android
+   Studio template). Verify the current command and version with Context7 or the
+   `researcher` role first. Keep generated defaults unless the decision record
+   says otherwise.
+2. **Strictness on:** strict type checking (TypeScript `strict`, Dart analysis,
+   Swift warnings as errors), one formatter, one linter, no warnings in CI.
+3. **Tests at three levels:** a unit test runner, one end-to-end smoke test of
+   the walking skeleton (Playwright for web, Maestro or Detox for mobile, XCUITest
+   for native), and the screenshot review from `ux-quality`.
+4. **Declare the surface** in `project.toml`: `verification` runs typecheck,
+   lint, and tests from the surface's `path` (so `Streak.xcodeproj`, not
+   `Streak/Streak.xcodeproj`), and must pass under `make verify`; `garden` runs a dead-code finder (knip for JS/TS, vulture for
+   Python, or the stack's analyzer); add a `[budgets]` glob so files stay agent-sized.
+   Bind the surface's architecture doc with `<!-- covers: -->`. When the generator
+   writes an entry file outside the app directory — Vite keeps `index.html` at the
+   root beside `src/` — list it in that surface's `extra_paths`, so one declaration
+   owns the whole surface.
+5. **Preview for review (web UIs):** add a `[surfaces.preview]` table with the
+   dev command and URL using a `{port}` placeholder, every route, and seeded
+   storage `states` for filled screens, then run `make ui-review`. Native apps
+   use simulator or emulator screenshots instead.
+6. **Configuration and secrets:** commit `.env.example` with every variable and
+   a comment, never real values; validate configuration at startup and fail fast.
+7. **Observability:** write 2 to 4 questions on-call will ask first (is it
+   succeeding, why does it fail, is a dependency slow); every signal answers one.
+   Structured JSON logs with stable event names, a request ID on every line, and
+   an `entryPoint` field when a scheduler, webhook, or CLI share a sink; never
+   log secrets or whole bodies. Rate, errors, and duration histograms (read
+   p95/p99, never averages) per endpoint and external call, with labels from
+   small fixed sets (route template, status class), never user ids or URLs.
+   Error tracking (Sentry or platform crash reporting), a health endpoint, and
+   OpenTelemetry traces once more than one service exists. Alert only on user
+   symptoms (error rate, p99, queue age), each with a three-line runbook
+   (means, first check, escalate to) in `docs/runbooks/`; at most two severities,
+   page and ticket. Prove it: force one error, find it by request ID, and
+   test-fire each alert once. Record any personal data they touch in
+   `docs/legal/data-inventory.md`.
+8. **Delivery:** CI runs `make verify` (the test half of `make done`; agents
+   run `make done` locally); every pull request gets a preview
+   deployment or build when the platform supports it; document rollback in
+   `docs/production.md`.
+9. **Web reach, if web:** semantic HTML, metadata and social cards, sitemap,
+   performance budget (Core Web Vitals), and i18n-ready strings when more than
+   one language is plausible.
+
+## Done when
+
+The walking skeleton is deployed to a preview (or runs locally when the owner
+has no host yet), `make done` runs every gate above and passes, and a fresh
+agent can find the surface with `make where`. `make check` enforces the owning
+doc and, in UI projects, the `ux-quality` review in the quality oracle; lint and
+the end-to-end smoke test are on you, so list them in `verification`.
+
+## Never
+
+Hand-roll what the official generator provides, add a dependency beyond the
+generator's defaults without a reason in the issue, or commit secrets,
+generated build output, or caches.

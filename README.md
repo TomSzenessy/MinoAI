@@ -183,3 +183,6 @@ Docs governance is defined in `DOCS_POLICY.md`:
 ## 8. Canonical Repository
 
 - `https://github.com/TomSzenessy/MinoAI`
+
+<!-- repoctl:project-readme -->
+> Project initialized: **Mino** (`web`). Agents start with [`AGENTS.md`](./AGENTS.md): `make start`, `make next`, `make done`.

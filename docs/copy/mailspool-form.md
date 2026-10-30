@@ -1,5 +1,7 @@
 # Mailspool form copy — Mino launch list
 
+<!-- index: design | Mailspool form copy — Mino launch list | Working on mailspool form copy — mino launch list. -->
+
 Exact strings for the public form on Mailspool
 (`https://mailspool.szenessy.com`, form `mino-early-access-waitlist`, id `4`).
 The form slug is historical; the copy below never calls it early access.

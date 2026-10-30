@@ -1,5 +1,7 @@
 # Plan — Mino as a self-hosted Obsidian alternative with an agent inside
 
+<!-- index: design | Plan — Mino as a self-hosted Obsidian alternative with an agent inside | Working on plan — mino as a self-hosted obsidian alternative with an agent inside. -->
+
 > This is the working plan. `MASTER_PLAN.md` remains the long-form blueprint;
 > `docs/plan/obsidian-parity.md` is the deep design for vault and plugin
 > compatibility. This file sequences the work and says what "done" means.

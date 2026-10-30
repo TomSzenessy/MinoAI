@@ -1,5 +1,9 @@
 # The Mino Server
 
+<!-- index: design | The Mino Server | Working on the mino server. -->
+
+<!-- covers: apps/server/** -->
+
 > Core responsibilities, auto-bootstrap, REST API, built-in UI, plugin host, and resource detection.
 
 [← Back to docs](./README.md)

@@ -1,0 +1,77 @@
+# Privacy engineering
+
+<!-- index: launch | Privacy-by-design engineering and rights workflow | Personal data, telemetry, cookies, retention, or user rights exist. -->
+
+Privacy is a data-lifecycle property. This document starts the engineering
+process; it is not legal advice or a GDPR conformity certificate.
+
+## Data minimization by default
+
+- Do not collect a field because it is convenient. Record purpose, source,
+  subject, recipient, retention, access, and deletion path first.
+- Keep anonymous, pseudonymous, and personal data distinct. A hash or opaque ID
+  can still be personal data when linkable.
+- Separate optional analytics/consent from necessary service operation. Never
+  infer consent from account creation or bundle use.
+- Minimize logs, traces, error payloads, uploads, backups, and support exports;
+  redact at the boundary and bound retention.
+- Treat free-form content, names, IDs, IP addresses, device data, payment
+  metadata, and user-generated media as potentially sensitive.
+
+## Rights and lifecycle
+
+For every personal-data class, define a testable path for access/export,
+correction, restriction, objection, consent withdrawal where applicable, and
+erasure. Track the actual stores, replicas, backups, providers, and delayed jobs;
+a database row deletion or HTTP success is not physical deletion evidence.
+Record exceptions, owner, trigger, maximum period, and release condition.
+
+### Semantic code search cache and consent
+
+`make similar ... CODE=1` writes its local vector index under the ignored
+`.agent/` cache: vectors, paths, line/byte ranges, source hashes, model,
+endpoint, scope, and schema — never code or keys. That cache is private to the
+resolved root: a physical root change — even a clone of the same origin and
+branch at a different path — requires a fresh confirmation. The cache is
+sent nowhere except the consent-gated embeddings call; a query export
+confirms the same consent. A stored consent is withdrawn automatically
+when the endpoint, model, eligible-file inventory, or any budget changes.
+The confirmation record stores the canonical scope fields — the sorted
+eligible paths, the file and chunk counts, and the policy — never code,
+keys, or HMACs. A code edit that preserves the eligible path set and the
+chunk count does not re-prompt; it only makes cached vectors stale by
+content hash, so future eligible code is indexed under the stated policy
+while changed chunks are re-embedded on the next explicit index build. Any
+other inventory change — a file added, removed, renamed, or a chunk-count
+change — requires a fresh confirmation. Similarity never authorizes
+deleting or rewriting code, and nothing here is legal advice.
+Consent binds the file scope (paths, counts, budgets, endpoint, model), not file
+content: confirming a scope means "these files may be indexed", and every send
+is an explicit `make similar CODE_INDEX=1` run that prints that scope. A file
+edited while an index build runs is skipped as stale rather than recorded under
+a mismatched hash.
+See [`security.md`](./security.md#semantic-code-search-115) and
+[`capabilities.md`](./capabilities.md).
+
+## Cookies and browser storage
+
+Inventory every cookie, local/session storage key, pixel, SDK, and third-party
+embed by purpose, provider, duration, and whether it is strictly necessary.
+Apply the applicable consent/terminal-device rule before optional access or
+storage; provide a real withdrawal path. A source search does not prove runtime
+behavior—test an authenticated production-like browser.
+
+## Launch gate
+
+Before public launch, the operator and qualified counsel must validate the
+actual jurisdiction, controller/operator identity, lawful bases, notices,
+provider roles and transfers, retention, rights process, age/minor policy,
+cookie behavior, security measures, and any DPIA/DPO/imprint requirements. Mark
+each as `pending`, `implemented`, `verified`, or `approved`; do not turn a
+source-level default into a legal conclusion.
+
+Use [`legal/data-inventory.md`](./legal/data-inventory.md) for factual inventory,
+including prompts/transcripts, issues, CI artifacts, memory, and skills, and
+[`legal/README.md`](./legal/README.md) for the jurisdiction/counsel gate.
+External research and source links live in
+[`research/agentic-repository-baselines.md`](https://github.com/TomSzenessy/AI_TEMPLATE/blob/main/docs/research/agentic-repository-baselines.md).

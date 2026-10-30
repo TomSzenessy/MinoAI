@@ -1,5 +1,7 @@
 # Agent Integrations
 
+<!-- index: design | Agent Integrations | Working on agent integrations. -->
+
 > Connect external coding agents to your Mino server through MCP, with ready-to-use examples for Cursor and Antigravity.
 
 [← Back to docs](./README.md)

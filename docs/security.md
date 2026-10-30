@@ -1,5 +1,7 @@
 # Security & Code Quality
 
+<!-- index: design | Security & Code Quality | Working on security & code quality. -->
+
 > Current security model and hardening posture for this repository.
 
 [← Back to docs](./README.md)

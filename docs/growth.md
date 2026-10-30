@@ -1,5 +1,7 @@
 # Growth — launch list, search, and what to measure
 
+<!-- index: design | Growth — launch list, search, and what to measure | Working on growth — launch list, search, and what to measure. -->
+
 > How the launch-list funnel works, why the site is shaped the way it is, and how
 > to tell whether the organic traffic is worth the effort.
 

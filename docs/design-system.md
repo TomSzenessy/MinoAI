@@ -1,5 +1,7 @@
 # Design System
 
+<!-- index: design | Design System | Working on design system. -->
+
 > All visual and interaction guidelines for Mino. The logo (`logo.svg`) is the source of truth for brand colors.
 
 [← Back to docs](./README.md)

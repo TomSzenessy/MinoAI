@@ -1,5 +1,7 @@
 # Roadmap
 
+<!-- index: design | Roadmap | Working on roadmap. -->
+
 > Deployment priorities, phased implementation, risk analysis, and open questions.
 
 [← Back to docs](./README.md)

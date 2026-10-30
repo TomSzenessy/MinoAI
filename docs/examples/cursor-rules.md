@@ -1,5 +1,7 @@
 # Cursor Rules (Mino MCP)
 
+<!-- index: design | Cursor Rules (Mino MCP) | Working on cursor rules (mino mcp). -->
+
 [← Back to docs](../README.md)
 
 Use this as a starting point for Cursor project rules.

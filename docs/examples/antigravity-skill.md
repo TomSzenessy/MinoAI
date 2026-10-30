@@ -1,5 +1,7 @@
 # Antigravity Skill Example (Mino)
 
+<!-- index: design | Antigravity Skill Example (Mino) | Working on antigravity skill example (mino). -->
+
 [← Back to docs](../README.md)
 
 Use this as a seed skill prompt for Antigravity-based workflows connected to Mino MCP.

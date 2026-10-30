@@ -1,5 +1,9 @@
 # Frontend
 
+<!-- index: design | Frontend | Working on frontend. -->
+
+<!-- covers: apps/web/** apps/mobile/** packages/** -->
+
 > mino.ink (Cloudflare Pages), built-in server UI, hybrid auth, and mobile apps.
 
 [← Back to docs](./README.md)
