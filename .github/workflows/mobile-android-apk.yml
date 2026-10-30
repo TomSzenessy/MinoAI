@@ -29,6 +29,7 @@ jobs:
     timeout-minutes: 90
     env:
       ANDROID_SIGNING_PASSWORD: ${{ secrets.ANDROID_SIGNING_PASSWORD }}
+      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
       ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
       ANDROID_KOTLIN_VERSION: "1.9.24"
 
@@ -66,13 +67,6 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-
-      - name: Validate signing secrets
-        run: |
-          if [ -z "${ANDROID_SIGNING_PASSWORD}" ]; then
-            echo "Missing required secret: ANDROID_SIGNING_PASSWORD"
-            exit 1
-          fi
 
       - name: Build workspace deps for mobile
         run: |

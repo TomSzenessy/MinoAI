@@ -217,4 +217,6 @@ Planned:
 The Android release keystore is generated at build time by
 `apps/mobile/scripts/build-android-apk.sh` and is never committed; the keystore
 and the generated `signing-config.gradle` are gitignored. A stable store key
-lives in `~/.gradle/gradle.properties` or CI secrets, never in this repository.
+lives in `~/.gradle/gradle.properties` or CI secrets (`ANDROID_KEYSTORE_BASE64`,
+restored by the build script after `expo prebuild --clean`), never in this
+repository.

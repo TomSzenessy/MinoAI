@@ -71,18 +71,31 @@ echo "Resolved Kotlin pins:"
 grep -E '^(android\.kotlinVersion|kotlinVersion)=' "${GRADLE_PROPERTIES_FILE}" || true
 grep -n "kotlinVersion = findProperty\\('android\\.kotlinVersion'\\)" android/build.gradle || true
 
-echo "Generating release signing keystore..."
-keytool -genkeypair -v \
-  -storetype PKCS12 \
-  -keystore "${KEYSTORE_PATH}" \
-  -alias "${ANDROID_KEY_ALIAS}" \
-  -keyalg RSA \
-  -keysize 2048 \
-  -validity 10000 \
-  -storepass "${ANDROID_SIGNING_PASSWORD}" \
-  -keypass "${ANDROID_SIGNING_PASSWORD}" \
-  -dname "CN=Mino, OU=Mobile, O=Mino, L=Budapest, S=Budapest, C=HU" \
-  >/dev/null 2>&1
+if [ -n "${ANDROID_KEYSTORE_BASE64:-}" ]; then
+  echo "Restoring the release keystore from ANDROID_KEYSTORE_BASE64..."
+  printf '%s' "${ANDROID_KEYSTORE_BASE64}" | base64 -d > "${KEYSTORE_PATH}"
+fi
+
+# A keystore supplied by the caller (CI secret, ~/.gradle, a local file) wins:
+# regenerating one per build gives every APK a different signing identity, so an
+# installed build can never be updated in place.
+if [ -f "${KEYSTORE_PATH}" ]; then
+  echo "Using the supplied release keystore at ${KEYSTORE_PATH}."
+else
+  echo "Generating a throwaway release keystore (development builds only)."
+  echo "For anything distributed, provide a stable keystore and set ANDROID_KEY_ALIAS."
+  keytool -genkeypair -v \
+    -storetype PKCS12 \
+    -keystore "${KEYSTORE_PATH}" \
+    -alias "${ANDROID_KEY_ALIAS}" \
+    -keyalg RSA \
+    -keysize 2048 \
+    -validity 10000 \
+    -storepass "${ANDROID_SIGNING_PASSWORD}" \
+    -keypass "${ANDROID_SIGNING_PASSWORD}" \
+    -dname "CN=Mino, OU=Mobile, O=Mino, L=Budapest, S=Budapest, C=HU" \
+    >/dev/null 2>&1
+fi
 
 upsert_gradle_property "MYAPP_UPLOAD_STORE_FILE" "mino-upload.keystore"
 upsert_gradle_property "MYAPP_UPLOAD_KEY_ALIAS" "${ANDROID_KEY_ALIAS}"

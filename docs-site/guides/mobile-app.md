@@ -64,8 +64,9 @@ time and writes the `MYAPP_UPLOAD_*` gradle properties into
 committed: both are gitignored, because a signing key in a public repository is
 a compromised signing key.
 
-For a build you intend to distribute through a store, do not let the script
-generate a throwaway key. Supply a stable keystore instead:
+Every generated key is a different signing identity, so a build signed with one
+cannot be installed as an update over a build signed with another. For anything
+you distribute, supply a stable keystore instead:
 
 1. Generate it once, offline, and keep it out of the repository.
 2. Put `MYAPP_UPLOAD_STORE_FILE`, `MYAPP_UPLOAD_KEY_ALIAS`,
@@ -73,6 +74,9 @@ generate a throwaway key. Supply a stable keystore instead:
    `~/.gradle/gradle.properties` (or as CI secrets), not in the project.
 3. Keep the keystore and its password in two different places, and back the
    keystore up — losing it means a new package identity.
+4. In CI, store it base64-encoded as `ANDROID_KEYSTORE_BASE64` next to
+   `ANDROID_SIGNING_PASSWORD`; the build script restores it after
+   `expo prebuild --clean` and reuses it instead of generating a new one.
 
 If a key was ever committed, rotate it: generate a new keystore, update the
 secret, and rebuild. On Google Play, reset the upload key for the app rather
