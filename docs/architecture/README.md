@@ -26,6 +26,10 @@ table is the map an agent reads first.
 4. An existing Obsidian vault is read in place: `.obsidian/` configuration is
    inspected by `apps/server/src/services/obsidian-vault.ts`, and nothing in it
    is executed.
+5. The mobile client is built by `apps/mobile/scripts/build-android-apk.sh`,
+   which restores the release keystore from `ANDROID_KEYSTORE_BASE64` after
+   `expo prebuild --clean` and generates a throwaway key only when none was
+   supplied.
 
 ## When the map is not enough
 
