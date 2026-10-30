@@ -1,0 +1,21 @@
+# Gitleaks configuration.
+#
+# The agent kit ships tests that deliberately contain fake credentials (they
+# exercise the hygiene scanner), and the kit lockfile stores content digests
+# that match generic-api-key entropy. Neither is a secret; everything else is
+# scanned with the default rules.
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Fake credentials in test fixtures and the kit lockfile digests."
+paths = [
+  # Tests that must contain example credentials to test the scanner.
+  '''tools/tests/.*''',
+  '''apps/.*/tests/.*''',
+  # Content digests, not keys.
+  '''tools/kit-lock\.json''',
+  # Build output, never committed.
+  '''apps/web/(\.next|out)/.*''',
+]
