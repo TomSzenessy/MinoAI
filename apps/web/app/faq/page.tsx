@@ -62,7 +62,7 @@ export default function FaqPage() {
             Early access opens in batches. One email when a seat is free — the
             working app, the server image and a walkthrough.
           </p>
-          <div className="waitlist mx-auto max-w-xl">
+          <div className="mx-auto max-w-xl">
             <WaitlistForm idPrefix="faq" />
           </div>
           <p className="mt-6 text-sm text-[var(--text-tertiary)]">

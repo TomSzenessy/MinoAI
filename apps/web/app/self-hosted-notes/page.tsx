@@ -185,7 +185,7 @@ export default function SelfHostedPage() {
             Early access ships the compose file, the walkthrough and a reachable
             human. One email when a seat opens.
           </p>
-          <div className="waitlist mx-auto max-w-xl">
+          <div className="mx-auto max-w-xl">
             <WaitlistForm idPrefix="self-hosted" />
           </div>
         </div>

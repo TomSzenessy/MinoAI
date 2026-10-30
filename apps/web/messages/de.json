@@ -381,7 +381,7 @@
       "agents": "KI-Agenten-Workflows",
       "curious": "Nur neugierig"
     },
-    "detailsToggle": "Details ergänzen (optional)",
+    "detailsToggle": "Details ergänzen",
     "detailsHide": "Details ausblenden",
     "submit": "Auf die Warteliste",
     "submitting": "Wird eingetragen…",

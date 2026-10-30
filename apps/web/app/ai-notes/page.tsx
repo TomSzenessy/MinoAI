@@ -178,7 +178,7 @@ export default function AiNotesPage() {
             One email, no newsletter. You can self-host from the repo today;
             early access adds the guided setup and the mobile builds.
           </p>
-          <div className="waitlist mx-auto max-w-xl">
+          <div className="mx-auto max-w-xl">
             <WaitlistForm idPrefix="ai-notes" />
           </div>
         </div>

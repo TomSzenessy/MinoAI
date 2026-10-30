@@ -152,7 +152,7 @@ export default function AboutPage() {
           <div className="cta-panel">
             <h2>Get an invite when a seat opens</h2>
             <p>One email, no newsletter. Unsubscribe in one click.</p>
-            <div className="waitlist mx-auto max-w-xl">
+            <div className="mx-auto max-w-xl">
               <WaitlistForm idPrefix="about" />
             </div>
             <p className="mt-6 text-sm text-[var(--text-tertiary)]">

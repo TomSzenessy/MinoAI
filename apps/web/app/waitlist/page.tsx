@@ -86,9 +86,11 @@ export default function WaitlistPage() {
           one email the moment a seat is free.
         </p>
 
-        <div className="waitlist waitlist-hero mx-auto mt-9 max-w-xl">
-          <WaitlistForm variant="hero" idPrefix="waitlist-page" />
-        </div>
+        <WaitlistForm
+          variant="hero"
+          idPrefix="waitlist-page"
+          className="mt-9"
+        />
 
         <div className="pill-row">
           <span className="pill">No newsletter</span>

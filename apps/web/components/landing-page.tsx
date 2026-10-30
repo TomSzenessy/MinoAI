@@ -203,7 +203,7 @@ export function LandingPage() {
 
       <LandingSection id="hero" className="pt-32 pb-24 md:pt-36">
         <div className="mx-auto max-w-4xl text-center">
-          <div className="hero-badge mx-auto mb-8 animate-fade-up">
+          <div className="hero-badge mx-auto mb-7 animate-fade-up">
             <span className="dot" />
             {t("hero.badge")}
           </div>
@@ -213,15 +213,15 @@ export function LandingPage() {
             <span className="gradient-text">{t("hero.titleLine2")}</span>
           </h1>
 
-          <p className="mx-auto mt-6 max-w-3xl text-base text-[var(--text-secondary)] md:text-lg animate-fade-up [animation-delay:400ms]">
+          <p className="mx-auto mt-5 max-w-3xl text-base text-[var(--text-secondary)] md:text-lg animate-fade-up [animation-delay:400ms]">
             {t("hero.subtitle")}
           </p>
 
-          <div className="mx-auto mt-10 max-w-xl animate-fade-up [animation-delay:600ms]">
+          <div className="mx-auto mt-9 animate-fade-up [animation-delay:600ms]">
             <WaitlistForm variant="hero" idPrefix="landing-hero" />
           </div>
 
-          <div className="mt-7 flex flex-wrap items-center justify-center gap-3 animate-fade-up [animation-delay:700ms]">
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3 animate-fade-up [animation-delay:700ms]">
             {activeProfileId ? (
               <Link
                 href={`/workspace?profile=${encodeURIComponent(activeProfileId)}`}
@@ -244,7 +244,7 @@ export function LandingPage() {
           </div>
 
           <button
-            className="scroll-hint mx-auto mt-16 animate-fade-up [animation-delay:800ms]"
+            className="scroll-hint mx-auto mt-12 animate-fade-up [animation-delay:800ms]"
             onClick={() => navigateTo("preview")}
           >
             <span className="text-sm font-medium tracking-wide">
