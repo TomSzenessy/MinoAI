@@ -37,6 +37,14 @@ latin-ext only, so no page blocks on a font CDN.
 6. **Every state is designed**, including empty, loading, duplicate signup,
    error and offline. A green success panel is a real component, not a toast.
 
+## Theme parity
+
+Every surface is designed in both themes at once. A component that hard-codes a
+dark background is a bug: the launch-list panel did exactly that and turned
+near-black in light mode while its input turned white. Panel and field colours
+now come from `--waitlist-panel-*` and `--waitlist-field-*`, which are defined
+per theme next to the other tokens.
+
 ## Accessibility floor
 
 - Text contrast ≥ 4.5:1 on its surface; the accent is never the only signal.

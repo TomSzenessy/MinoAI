@@ -210,3 +210,11 @@ Planned:
 
 - Multi-server picker and unified cross-server views.
 - Account-backed server discovery.
+
+
+## Release signing
+
+The Android release keystore is generated at build time by
+`apps/mobile/scripts/build-android-apk.sh` and is never committed; the keystore
+and the generated `signing-config.gradle` are gitignored. A stable store key
+lives in `~/.gradle/gradle.properties` or CI secrets, never in this repository.

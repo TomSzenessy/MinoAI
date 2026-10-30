@@ -12,7 +12,7 @@ table is the map an agent reads first.
 | `web` | `apps/web` | web | The static Next.js client: marketing pages, docs renderer, workspace | [frontend](../frontend.md) |
 | `server` | `apps/server` | api | Bun + Hono API, Markdown vault, SQLite index, relay connector, agent runtime | [server](../server.md) |
 | `relay` | `apps/relay` | service | The managed relay that forwards client requests to a server with no open port | [relay](../relay.md) |
-| `mobile` | `apps/mobile` | mobile | The Expo client for Android and iOS | [frontend](../frontend.md) |
+| `mobile` | `apps/mobile` | mobile | The Expo client for Android and iOS; release signing keys stay outside the repository | [frontend](../frontend.md) |
 | `packages` | `packages` | code | Shared types, API client, design tokens and the plugin SDK | [frontend](../frontend.md) |
 
 ## How a request moves
