@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { DocPageClient } from "@/components/doc-page-client";
+import { JsonLd } from "@/components/structured-data";
 import { getAllDocPages, getDocPage, toDocHref } from "@/lib/docs";
 import { absoluteUrl } from "@/lib/seo";
 
@@ -68,15 +69,33 @@ export default async function DocPage({ params }: DocPageProps) {
     href: toDocHref(entry),
   }));
 
+  const description =
+    page.description ||
+    `${page.title} — Mino documentation and operator guides.`;
+
   return (
-    <DocPageClient
-      page={{
-        title: page.title,
-        relativePath: page.relativePath,
-        content: page.content,
-        href: toDocHref(page),
-      }}
-      siblings={siblings}
-    />
+    <>
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "TechArticle",
+          headline: page.title,
+          description,
+          url: absoluteUrl(toDocHref(page)),
+          inLanguage: "en",
+          isPartOf: { "@id": "https://mino.ink/#website" },
+          publisher: { "@id": "https://mino.ink/#organization" },
+        }}
+      />
+      <DocPageClient
+        page={{
+          title: page.title,
+          relativePath: page.relativePath,
+          content: page.content,
+          href: toDocHref(page),
+        }}
+        siblings={siblings}
+      />
+    </>
   );
 }

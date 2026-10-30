@@ -67,10 +67,28 @@ export function DocPageClient({ page, siblings }: DocPageClientProps) {
               );
             })}
           </ul>
+
+          <div className="mt-5 rounded-xl border border-[rgba(187,134,252,0.25)] bg-[rgba(187,134,252,0.08)] p-3">
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--purple-300)]">
+              Early access
+            </p>
+            <p className="mt-1 text-xs leading-relaxed text-[var(--text-secondary)]">
+              The desktop and mobile builds ship in batches. Read the code now,
+              join the list for the guided setup.
+            </p>
+            <Link
+              href="/waitlist"
+              className="mt-2 inline-block text-xs font-semibold text-[var(--purple-300)] underline underline-offset-2"
+            >
+              {t("nav.joinWaitlist")} →
+            </Link>
+          </div>
         </aside>
 
         <article className="glass-card rounded-mino-2xl p-6 md:p-8">
-          <p className="mb-2 text-xs uppercase tracking-wide text-[var(--text-tertiary)]">{page.relativePath}</p>
+          <p className="mb-2 text-xs uppercase tracking-wide text-[var(--text-tertiary)]">
+            {page.relativePath}
+          </p>
           <div className="docs-content">
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
