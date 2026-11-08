@@ -153,6 +153,27 @@ curl -s -X POST -H "Authorization: Bearer $MAILSPOOL_KEY" \
 not delivered: check the inbox, then `GET /api/v1/sends/{id}` if you need the
 report.
 
+### One transport, many senders
+
+The local part is arbitrary and an account-owned Cloudflare token reaches every
+domain onboarded for Email Sending, so one set of credentials can send as
+`hello@mino.ink`, `billing@szenessy.com` or `welcome@worldfolder.com`.
+
+Each *sender* is still its own Mailspool SMTP account, because `fromEmail` lives
+on the account. Use **Duplicate** on the existing row: it copies host, port,
+TLS mode, username and the stored password, and asks only for the new name and
+from address — the token is never displayed again. The same thing from a script:
+
+```bash
+curl -s -X POST -H "Authorization: Bearer $MAILSPOOL_KEY" \
+  -H "Content-Type: application/json" \
+  https://mailspool.szenessy.com/api/v1/smtp/1/duplicate \
+  -d '{"name":"Cloudflare — worldfolder","fromEmail":"hello@worldfolder.com"}'
+```
+
+Promote one account to default and every form, automation and campaign uses it
+unless a send names another.
+
 ## Troubleshooting
 
 | Symptom | Cause |
