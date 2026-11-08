@@ -98,9 +98,10 @@ In the Mailspool dashboard: **Project → SMTP → Add account**, or the API.
 
 > **Implicit TLS is required.** Cloudflare serves SMTP only on port `465` with
 > TLS from the first byte; `587`/STARTTLS and `25` are not available for
-> submission. If the dashboard form does not let you set `secure: true`, create
-> the account through the API instead — it accepts the flag and is what the
-> dashboard writes to anyway. A `587` account will fail to connect.
+> submission. Mailspool derives the mode from the port: `465` performs the TLS
+> handshake before the greeting, `587` negotiates STARTTLS. Keep **Encrypt the
+> connection** ticked for either. A plaintext connect to `465` is closed by the
+> server immediately — the runtime reports that as `Stream was cancelled`.
 
 
 ```bash
