@@ -42,3 +42,12 @@ For a large or unfamiliar tree, two pinned upstream skills are worth pulling
 - `make upstream ID=understand-anything-graph` — codebase knowledge graph,
   file explainer and diff-impact. Pull it when reviewing a change whose blast
   radius is not obvious from the diff, or when onboarding to a subsystem.
+
+## Copy and support channels
+
+Visible strings are part of the `web` surface and live in
+`apps/web/messages/{en,de,es}.json`, which must stay key-for-key identical. The
+shared footer is the only navigation that reaches the public problem-report form
+(Mailspool project form `mino-complaints-and-problem-reports`), so a complaint
+does not require a GitHub account. Neither changes a surface boundary; both are
+documented here so a reader of the map knows where the words come from.
