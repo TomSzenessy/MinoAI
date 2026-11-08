@@ -54,6 +54,15 @@ top band. A nav click that lands with a heading under the chrome is a bug; so is
 an active state that highlights the tallest section instead of the one at the
 top of the reading area.
 
+## Forms
+
+One renderer, one set of rules: a visible uppercase label per field, errors in
+place under the field they belong to, a single primary action, and a receipt
+that replaces the form instead of a toast. Success, duplicate and failure are
+designed states, not alerts. The optional honeypot field is visually removed but
+not `display:none` on the wrapper, and it never receives focus or an accessible
+name.
+
 ## Accessibility floor
 
 - Text contrast ≥ 4.5:1 on its surface; the accent is never the only signal.

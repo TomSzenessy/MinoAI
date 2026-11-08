@@ -231,6 +231,13 @@ hosted on Mailspool (`mino-complaints-and-problem-reports`). It is the only
 place that links the report form, so a complaint does not depend on finding the
 repository's issue tracker.
 
+Forms are modular: `apps/web/lib/forms.ts` holds `FormDefinition` data (fields,
+target slug, protection tier, speed gate), `apps/web/components/mino-form.tsx`
+renders any definition, and `apps/web/app/complaints/page.tsx` is the first
+instance. A new form is a definition plus one `<MinoForm>` call — see
+[`docs/forms.md`](./forms.md). Submissions go to Mailspool's public endpoint with
+the project's public key; nothing navigates to the provider.
+
 Visible strings live in `apps/web/messages/{en,de,es}.json`. The three files must
 carry identical key sets — `tests/i18n-coverage.test.ts` fails otherwise — so a
 new label is added in all three at once, never in English only.
