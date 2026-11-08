@@ -41,11 +41,54 @@ Source: [Cloudflare Email Service — SMTP](https://developers.cloudflare.com/em
 
 ### 1. Onboard the domain
 
-Cloudflare dashboard → **Email Service → Email Sending** → onboard `mino.ink`.
+Cloudflare dashboard → **Compute → Email Service → Email Sending → Onboard
+Domain** → choose `mino.ink`. Cloudflare then manages these records for you:
 
-Because the zone's DNS is already on Cloudflare, the SPF, DKIM and DMARC
-records are added for you. Verify the domain before sending; an unverified
-`MAIL FROM` domain is refused with `550 5.7.1`.
+| Record | Name | Value |
+| --- | --- | --- |
+| MX | `cf-bounce` | Cloudflare bounce MX hosts |
+| TXT (SPF) | `cf-bounce` | `v=spf1 include:_spf.mx.cloudflare.net ~all` |
+| TXT (DKIM) | `cf-bounce._domainkey` | `v=DKIM1; h=sha256; k=rsa; p=…` |
+| TXT (DMARC) | `_dmarc` | `v=DMARC1; p=none; rua=mailto:…` |
+
+**The sending SPF is on `cf-bounce.mino.ink`, not on the root.** That is
+deliberate: Cloudflare uses `cf-bounce` as the envelope sender and authenticates
+on that name. A deliverability checker that reads the root domain will report
+"No SPF record" even when everything is set up correctly.
+
+Two ways to make such a checker happy:
+
+1. Pass the selector it asks for: the sending DKIM selector is **`cf-bounce`**,
+   so `dkimSelector=cf-bounce` (not `cf2024-1`, which is Email *Routing*).
+2. Publish a root SPF as well — harmless, and it satisfies tools that look at
+   the `From:` domain:
+
+   ```txt
+   mino.ink              TXT  "v=spf1 include:_spf.mx.cloudflare.net ~all"
+   _dmarc.mino.ink       TXT  "v=DMARC1; p=none; rua=mailto:hello@mino.ink"
+   ```
+
+   Only one `v=spf1` record may exist per name. If another provider already
+   sends for the domain, merge the includes:
+   `v=spf1 include:_spf.mx.cloudflare.net include:_spf.google.com ~all`.
+
+Verify what is actually published before changing anything:
+
+```bash
+dig +short TXT cf-bounce.mino.ink
+dig +short TXT mino.ink
+dig +short TXT cf-bounce._domainkey.mino.ink
+dig +short TXT _dmarc.mino.ink
+```
+
+An unverified `MAIL FROM` domain is refused with `550 5.7.1`; DNS changes
+usually land in 5–15 minutes on Cloudflare DNS.
+
+> **Do not start on `p=reject`.** Cloudflare onboards new domains with
+> `v=DMARC1; p=reject;` in some flows; while the first send is being tested, a
+> single alignment miss is refused outright and looks exactly like "no email
+> arrived". Use `p=none` until a real message passes both SPF and DKIM, then
+> move to `quarantine`, then `reject`.
 
 Any address on an onboarded domain may be the sender — `hello@mino.ink`,
 `notifications@mino.ink`, whatever you use. There is no per-address allowlist to
@@ -61,7 +104,14 @@ it can send from every onboarded domain on that account.
 
 ### 3. Add the SMTP account to Mailspool
 
-In the Mailspool dashboard: **Project → SMTP → Add account**, or the API:
+In the Mailspool dashboard: **Project → SMTP → Add account**, or the API.
+
+> **Implicit TLS is required.** Cloudflare serves SMTP only on port `465` with
+> TLS from the first byte; `587`/STARTTLS and `25` are not available for
+> submission. If the dashboard form does not let you set `secure: true`, create
+> the account through the API instead — it accepts the flag and is what the
+> dashboard writes to anyway. A `587` account will fail to connect.
+
 
 ```bash
 curl -s -X POST -H "Authorization: Bearer $MAILSPOOL_KEY" \
