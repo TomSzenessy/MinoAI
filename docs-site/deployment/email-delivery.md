@@ -58,7 +58,13 @@ a handshake bug. Mailspool therefore sends Cloudflare accounts over HTTPS.
 ### Configure it in Mailspool
 
 Use the **REST** transport: host `cloudflare-rest`, the Cloudflare **account id**
-as the username, and an API token with **Email Sending: Edit** as the password.
+in the account-id field, and an API token with **Email Sending: Edit** as the
+password. Sending accounts live on the project's **Send** page, not in Settings.
+
+The account id is stored in the account's `settings` JSON. That column arrives
+with migration `0019_smtp_settings.sql`; until an operator applies it
+(`npx wrangler d1 migrations apply mailspool --remote`), the adapter falls back
+to reading it from `username`, and everything keeps working.
 
 | Field | Value |
 | --- | --- |
@@ -102,6 +108,19 @@ includes if another provider already sends for the domain.
 > **Do not stay on `p=reject` while verifying.** A single alignment miss is then
 > refused outright and looks like "no email arrived". Use `p=none` until one real
 > message passes SPF and DKIM, then tighten.
+
+### Transports
+
+Mailspool sends through a registry of adapters, one per provider family:
+
+| Adapter | Chosen by | Needs |
+| --- | --- | --- |
+| `smtp` | anything that is not another adapter | host, port, TLS mode, username, password |
+| `cloudflare` | host `cloudflare-rest`, or `settings.transport = "cloudflare"` | `settings.accountId`, API token as password |
+
+Adding a provider is one file under `src/lib/transports/` implementing
+`matches` / `open` / `verify`, plus one line in the registry — the send loop,
+retries, bounces and suppression never learn the provider exists.
 
 ### One transport, many senders
 
