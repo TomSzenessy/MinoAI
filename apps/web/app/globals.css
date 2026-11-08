@@ -1848,3 +1848,80 @@ section[id],
   margin: 0;
   font-size: 0.92rem;
 }
+
+/* =========================================================================
+   Modular forms
+   ========================================================================= */
+
+.mino-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.05rem;
+  width: 100%;
+  max-width: 640px;
+  text-align: left;
+}
+
+.mino-form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.mino-form-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
+.mino-form-required {
+  color: var(--purple-300);
+}
+
+.mino-form-textarea {
+  min-height: 8.5rem;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.mino-form-hint {
+  font-size: 0.74rem;
+  color: var(--text-tertiary);
+}
+
+.mino-form-error {
+  font-size: 0.78rem;
+  color: #f87171;
+}
+
+.mino-form-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.mino-form-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.2rem;
+}
+
+.mino-form-actions .button-primary {
+  padding: 0.7rem 1.5rem;
+}
+
+@media (max-width: 520px) {
+  .mino-form-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .mino-form-actions .button-primary {
+    width: 100%;
+  }
+}

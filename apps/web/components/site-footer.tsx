@@ -26,10 +26,7 @@ export function SiteFooter() {
         { label: t("nav.docs"), href: "/docs" },
         { label: t("nav.faq"), href: "/faq" },
         { label: t("nav.about"), href: "/about" },
-        {
-          label: t("nav.complaints"),
-          href: "https://mailspool.szenessy.com/f/mino-complaints-and-problem-reports?key=pk_live_DnAu3BtVDmGnqzFsgUMxb2hIlpX8wcOPsqWptCDeSiU",
-        },
+        { label: t("nav.complaints"), href: "/complaints" },
         { label: "GitHub", href: "https://github.com/TomSzenessy/MinoAI" },
       ],
     },

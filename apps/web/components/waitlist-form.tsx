@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { useTranslation } from "@/components/i18n-provider";
-import { getMailspoolConfig } from "@/lib/config";
 import {
   describeWaitlistSource,
   isValidEmail,
@@ -122,9 +121,6 @@ export function WaitlistForm({
   const errorText =
     message ?? (status === "error" ? t("waitlist.errorBody") : null);
 
-  const mailspool = getMailspoolConfig();
-  const hostedFormUrl = `${mailspool.baseUrl}/f/${mailspool.formSlug}?key=${mailspool.publicKey}`;
-
   return (
     <div
       className={`waitlist ${variant === "hero" ? "waitlist-hero" : ""} ${className ?? ""}`}
@@ -162,11 +158,8 @@ export function WaitlistForm({
         <>
           <noscript>
             <p className="waitlist-note">
-              JavaScript is off.{" "}
-              <a href={hostedFormUrl} rel="noreferrer">
-                Use the plain HTML form
-              </a>
-              .
+              This form needs JavaScript. Enable it and reload the page to join
+              the list.
             </p>
           </noscript>
           <form className="waitlist-form" onSubmit={handleSubmit} noValidate>

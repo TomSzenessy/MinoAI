@@ -105,6 +105,7 @@ Most note-taking apps treat AI as a feature. **Mino treats the AI agent as a fir
 | [`design-system.md`](./design-system.md) | Design System | Working on design system. |
 | [`design.md`](./design.md) | Visual direction, tokens and UX principles | Before any UI work. |
 | [`engineering.md`](./engineering.md) | Modular design, single source of truth, dependency, cleanup rules | Code changed, refactored, or reviewed; deep modules. |
+| [`forms.md`](./forms.md) | Modular forms: definitions, renderer, bot-protection tiers | Adding a form, changing fields, or hardening against bots. |
 | [`frontend.md`](./frontend.md) | Frontend | Working on frontend. |
 | [`growth.md`](./growth.md) | Growth — launch list, search, and what to measure | Working on growth — launch list, search, and what to measure. |
 | [`integrations.md`](./integrations.md) | Agent Integrations | Working on agent integrations. |
