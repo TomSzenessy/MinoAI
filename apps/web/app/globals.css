@@ -68,6 +68,9 @@
   --waitlist-field-bg: var(--bg-surface);
   --waitlist-field-border: var(--glass-border);
 
+  /* Height of the floating navbar plus its top gap: anchors must land below it. */
+  --navbar-offset: 88px;
+
   /* Ease & Duration */
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
   --duration-fast: 150ms;
@@ -350,6 +353,18 @@ body {
 .field:focus {
   border-color: rgba(187, 134, 252, 0.45);
   box-shadow: 0 0 0 3px rgba(187, 134, 252, 0.14);
+}
+
+/* Every in-page anchor clears the fixed navbar instead of hiding under it. */
+section[id],
+[id="hero"] {
+  scroll-margin-top: var(--navbar-offset);
+}
+
+@media (max-width: 768px) {
+  :root {
+    --navbar-offset: 72px;
+  }
 }
 
 /* ── Floating Navbar ──────────────────────────────────────────────────── */

@@ -62,6 +62,7 @@
       "group": "Deployment",
       "pages": [
         "deployment/from-the-repo",
+        "deployment/email-delivery",
         "deployment/docker",
         "deployment/portainer-stack",
         "deployment/cloudflare-tunnel",

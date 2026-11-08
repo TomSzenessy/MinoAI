@@ -220,3 +220,17 @@ and the generated `signing-config.gradle` are gitignored. A stable store key
 lives in `~/.gradle/gradle.properties` or CI secrets (`ANDROID_KEYSTORE_BASE64`,
 restored by the build script after `expo prebuild --clean`), never in this
 repository.
+
+
+## Footer, messages and support channels
+
+The shared footer (`apps/web/components/site-footer.tsx`) is the internal-link
+hub for every indexable page: features, AI notes, self-hosting, the launch list,
+docs, FAQ, about, the three legal pages, and the public problem-report form
+hosted on Mailspool (`mino-complaints-and-problem-reports`). It is the only
+place that links the report form, so a complaint does not depend on finding the
+repository's issue tracker.
+
+Visible strings live in `apps/web/messages/{en,de,es}.json`. The three files must
+carry identical key sets — `tests/i18n-coverage.test.ts` fails otherwise — so a
+new label is added in all three at once, never in English only.

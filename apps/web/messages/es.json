@@ -26,7 +26,8 @@
     "faq": "FAQ",
     "aiNotes": "Notas con IA",
     "selfHosted": "Autoalojado",
-    "about": "Acerca de"
+    "about": "Acerca de",
+    "complaints": "Reportar un problema"
   },
   "hero": {
     "badge": "Código abierto · Autoalojado · Compatible con Obsidian",

@@ -58,11 +58,13 @@ export function LandingPage() {
 
     if (nodes.length === 0) return;
 
+    // The active item is whichever section occupies the band just under the
+    // navbar, not whichever section happens to be tallest on screen.
     const observer = new IntersectionObserver(
       (entries) => {
         const visible = entries
           .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
 
         if (
           visible?.target.id &&
@@ -72,8 +74,8 @@ export function LandingPage() {
         }
       },
       {
-        threshold: [0.2, 0.4, 0.7],
-        rootMargin: "-30% 0px -30% 0px",
+        threshold: 0,
+        rootMargin: "-88px 0px -55% 0px",
       },
     );
 

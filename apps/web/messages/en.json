@@ -26,7 +26,8 @@
     "faq": "FAQ",
     "aiNotes": "AI notes",
     "selfHosted": "Self-hosted",
-    "about": "About"
+    "about": "About",
+    "complaints": "Report a problem"
   },
   "hero": {
     "subtitle": "Your notes live in a Markdown vault on your own server, reachable from any browser with sync built in, while an AI agent keeps them filed, tagged and linked. Mino is an open-source Obsidian alternative, and you bring the model key. Join the list and you get one email when it launches.",

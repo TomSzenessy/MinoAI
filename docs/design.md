@@ -45,6 +45,15 @@ near-black in light mode while its input turned white. Panel and field colours
 now come from `--waitlist-panel-*` and `--waitlist-field-*`, which are defined
 per theme next to the other tokens.
 
+## Anchors and fixed chrome
+
+The navbar floats above the page, so it must not swallow the thing it navigates
+to. Every section anchor carries `scroll-margin-top: var(--navbar-offset)` (88px
+on desktop, 72px on mobile) and the active-section observer uses the same 88px
+top band. A nav click that lands with a heading under the chrome is a bug; so is
+an active state that highlights the tallest section instead of the one at the
+top of the reading area.
+
 ## Accessibility floor
 
 - Text contrast ≥ 4.5:1 on its surface; the accent is never the only signal.
