@@ -46,8 +46,11 @@ For a large or unfamiliar tree, two pinned upstream skills are worth pulling
 ## Copy and support channels
 
 Visible strings are part of the `web` surface and live in
-`apps/web/messages/{en,de,es}.json`, which must stay key-for-key identical. The
-shared footer is the only navigation that reaches the public problem-report form
-(Mailspool project form `mino-complaints-and-problem-reports`), so a complaint
-does not require a GitHub account. Neither changes a surface boundary; both are
-documented here so a reader of the map knows where the words come from.
+`apps/web/messages/{en,de,es}.json`, which must stay key-for-key identical.
+
+The footer links the in-site problem-report page `/complaints`. It renders a
+form definition from `apps/web/lib/forms.ts` and posts to Mailspool's *public*
+form API, so a report never redirects to a provider page and never needs a
+GitHub account. Neither the strings nor the form change a surface boundary; both
+are recorded here so a reader of the map knows where the words and the forms
+come from.
