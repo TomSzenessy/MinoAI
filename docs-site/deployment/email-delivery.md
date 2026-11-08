@@ -30,19 +30,58 @@ curl -s -X POST -H "Authorization: Bearer $MAILSPOOL_KEY" \
 Add one SMTP account to the project and every form email starts working:
 owner notifications, auto-replies, automations and campaigns all use it.
 
-## Cloudflare Email Service over SMTP
+## Cloudflare Email Service
 
-Cloudflare's Email Service (Beta) sends transactional mail and also accepts
-authenticated SMTP submission, so an existing mail client or platform like
-Mailspool can send through it. It requires the **Workers Paid** plan and at
-least one domain onboarded for Email Sending.
+Cloudflare sends transactional mail and offers three ways in. Which one works
+depends on **where the sender runs**:
 
-Source: [Cloudflare Email Service — SMTP](https://developers.cloudflare.com/email-service/api/send-emails/smtp/).
+| Path | From a Cloudflare Worker | From anywhere else |
+| --- | --- | --- |
+| SMTP, `smtp.mx.cloudflare.net:465` | **Impossible** — see below | Works |
+| REST API, `POST /accounts/{id}/email/sending/send` | Works | Works |
+| Workers `send_email` binding | Works | Not applicable |
 
-### 1. Onboard the domain
+### Why SMTP cannot work from a Worker
 
-Cloudflare dashboard → **Compute → Email Service → Email Sending → Onboard
-Domain** → choose `mino.ink`. Cloudflare then manages these records for you:
+Cloudflare's Workers runtime blocks outbound TCP to **Cloudflare IP ranges**,
+and `smtp.mx.cloudflare.net` resolves into them:
+
+```bash
+dig +short smtp.mx.cloudflare.net      # 162.159.205.26 …
+dig +short smtp.mx.cloudflare.net AAAA # 2606:4700:f5::14 …
+```
+
+The connection is closed before the SMTP greeting, which the runtime reports as
+`Stream was cancelled`. No TLS option changes that — it is a network policy, not
+a handshake bug. Mailspool therefore sends Cloudflare accounts over HTTPS.
+
+### Configure it in Mailspool
+
+Use the **REST** transport: host `cloudflare-rest`, the Cloudflare **account id**
+as the username, and an API token with **Email Sending: Edit** as the password.
+
+| Field | Value |
+| --- | --- |
+| name | Cloudflare Email Sending |
+| host | `cloudflare-rest` |
+| port | any (unused) |
+| username | your Cloudflare account id |
+| password | API token with Email Sending: Edit |
+| from email | any address on an onboarded domain |
+
+The account id is in the dashboard URL: `dash.cloudflare.com/<account_id>/…`.
+"Test connection" verifies the token against `/user/tokens/verify`; "Test
+message" performs a real send.
+
+The REST path returns per-recipient status (`delivered`, `queued`,
+`permanent_bounces`), and Mailspool maps Cloudflare's error codes
+(`email.sending.error.authentication.forbidden`, `…not_entitled`) to the message
+it shows.
+
+### Prerequisites and DNS
+
+Onboard the domain under **Compute → Email Service → Email Sending**. Cloudflare
+then manages these records:
 
 | Record | Name | Value |
 | --- | --- | --- |
@@ -51,109 +90,24 @@ Domain** → choose `mino.ink`. Cloudflare then manages these records for you:
 | TXT (DKIM) | `cf-bounce._domainkey` | `v=DKIM1; h=sha256; k=rsa; p=…` |
 | TXT (DMARC) | `_dmarc` | `v=DMARC1; p=none; rua=mailto:…` |
 
-**The sending SPF is on `cf-bounce.mino.ink`, not on the root** — and that is
-correct, not a missing record. Cloudflare uses `cf-bounce` as the envelope
-sender, so receivers evaluate SPF there. A checker that only reads the root
-domain reports "No SPF record" for a setup that is fully authenticated.
+**The sending SPF is on `cf-bounce.mino.ink`, not on the root** — that is where
+the envelope sender lives, and receivers evaluate SPF there. A checker that only
+reads the root reports "No SPF record" for a correctly authenticated setup;
+Mailspool reads the envelope name first and infers the `cf-bounce` DKIM selector.
 
-Mailspool's checker resolves this: it reads `cf-bounce.<domain>` first and, when
-that record exists, reports SPF from it and infers the `cf-bounce` DKIM selector.
-Nothing has to be published on the root for Cloudflare sending to work.
+Publishing a root SPF is optional, and only for third-party tools that insist on
+reading the `From:` domain. Only one `v=spf1` record may exist per name; merge
+includes if another provider already sends for the domain.
 
-Publishing a root SPF is optional, and useful only for third-party tools that
-insist on reading the `From:` domain:
-
-```txt
-mino.ink              TXT  "v=spf1 include:_spf.mx.cloudflare.net ~all"
-_dmarc.mino.ink       TXT  "v=DMARC1; p=none; rua=mailto:hello@mino.ink"
-```
-
-Only one `v=spf1` record may exist per name. If another provider already sends
-for the domain, merge the includes:
-`v=spf1 include:_spf.mx.cloudflare.net include:_spf.google.com ~all`.
-
-Verify what is actually published before changing anything:
-
-```bash
-dig +short TXT cf-bounce.mino.ink
-dig +short TXT cf-bounce._domainkey.mino.ink
-dig +short TXT _dmarc.mino.ink
-```
-
-Any address on an onboarded domain may be the sender — `hello@mino.ink`,
-`notifications@mino.ink`, whatever you use. There is no per-address allowlist to
-sync: onboarding a second domain is what adds its addresses.
-
-### 2. Mint an API token
-
-Cloudflare dashboard → **My Profile → API Tokens → Create Token**, with a single
-permission: **Account → Email Sending → Edit**.
-
-Use an account-owned token. The token is the SMTP password, and anyone holding
-it can send from every onboarded domain on that account.
-
-### 3. Add the SMTP account to Mailspool
-
-In the Mailspool dashboard: **Project → SMTP → Add account**, or the API.
-
-> **Implicit TLS is required.** Cloudflare serves SMTP only on port `465` with
-> TLS from the first byte; `587`/STARTTLS and `25` are not available for
-> submission. Mailspool derives the mode from the port: `465` performs the TLS
-> handshake before the greeting, `587` negotiates STARTTLS. Keep **Encrypt the
-> connection** ticked for either. A plaintext connect to `465` is closed by the
-> server immediately — the runtime reports that as `Stream was cancelled`.
-
-
-```bash
-curl -s -X POST -H "Authorization: Bearer $MAILSPOOL_KEY" \
-  -H "Content-Type: application/json" \
-  https://mailspool.szenessy.com/api/v1/smtp \
-  -d '{
-    "name": "Cloudflare Email Service",
-    "host": "smtp.mx.cloudflare.net",
-    "port": 465,
-    "secure": true,
-    "username": "api_token",
-    "password": "<cloudflare api token>",
-    "fromEmail": "hello@mino.ink",
-    "fromName": "Mino",
-    "isDefault": true,
-    "maxPerMinute": 30
-  }'
-```
-
-| Field | Value |
-| --- | --- |
-| host | `smtp.mx.cloudflare.net` |
-| port | `465` |
-| secure | `true` (implicit TLS — port 587 and STARTTLS are **not** supported) |
-| username | `api_token` (the literal string) |
-| password | the Cloudflare API token |
-| fromEmail | any address on the onboarded domain |
-
-Then confirm delivery:
-
-```bash
-curl -s -X POST -H "Authorization: Bearer $MAILSPOOL_KEY" \
-  -H "Content-Type: application/json" \
-  https://mailspool.szenessy.com/api/v1/send/test \
-  -d '{"to":"you@example.com","subject":"Delivery test","bodyHtml":"<p>it works</p>"}'
-```
-
-`{"ok":true}` means the message was accepted by the transport. It is **queued**,
-not delivered: check the inbox, then `GET /api/v1/sends/{id}` if you need the
-report.
+> **Do not stay on `p=reject` while verifying.** A single alignment miss is then
+> refused outright and looks like "no email arrived". Use `p=none` until one real
+> message passes SPF and DKIM, then tighten.
 
 ### One transport, many senders
 
-The local part is arbitrary and an account-owned Cloudflare token reaches every
-domain onboarded for Email Sending, so one set of credentials can send as
-`hello@mino.ink`, `billing@szenessy.com` or `welcome@worldfolder.com`.
-
-Each *sender* is still its own Mailspool SMTP account, because `fromEmail` lives
-on the account. Use **Duplicate** on the existing row: it copies host, port,
-TLS mode, username and the stored password, and asks only for the new name and
-from address — the token is never displayed again. The same thing from a script:
+Each sender is its own Mailspool account because `fromEmail` lives on the
+account. **Duplicate** copies host, username, TLS settings and the stored
+credentials, and asks only for the new name and address:
 
 ```bash
 curl -s -X POST -H "Authorization: Bearer $MAILSPOOL_KEY" \
@@ -161,9 +115,6 @@ curl -s -X POST -H "Authorization: Bearer $MAILSPOOL_KEY" \
   https://mailspool.szenessy.com/api/v1/smtp/1/duplicate \
   -d '{"name":"Cloudflare — worldfolder","fromEmail":"hello@worldfolder.com"}'
 ```
-
-Promote one account to default and every form, automation and campaign uses it
-unless a send names another.
 
 ## Troubleshooting
 
