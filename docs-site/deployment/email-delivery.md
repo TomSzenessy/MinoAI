@@ -51,44 +51,34 @@ Domain** → choose `mino.ink`. Cloudflare then manages these records for you:
 | TXT (DKIM) | `cf-bounce._domainkey` | `v=DKIM1; h=sha256; k=rsa; p=…` |
 | TXT (DMARC) | `_dmarc` | `v=DMARC1; p=none; rua=mailto:…` |
 
-**The sending SPF is on `cf-bounce.mino.ink`, not on the root.** That is
-deliberate: Cloudflare uses `cf-bounce` as the envelope sender and authenticates
-on that name. A deliverability checker that reads the root domain will report
-"No SPF record" even when everything is set up correctly.
+**The sending SPF is on `cf-bounce.mino.ink`, not on the root** — and that is
+correct, not a missing record. Cloudflare uses `cf-bounce` as the envelope
+sender, so receivers evaluate SPF there. A checker that only reads the root
+domain reports "No SPF record" for a setup that is fully authenticated.
 
-Two ways to make such a checker happy:
+Mailspool's checker resolves this: it reads `cf-bounce.<domain>` first and, when
+that record exists, reports SPF from it and infers the `cf-bounce` DKIM selector.
+Nothing has to be published on the root for Cloudflare sending to work.
 
-1. Pass the selector it asks for: the sending DKIM selector is **`cf-bounce`**,
-   so `dkimSelector=cf-bounce` (not `cf2024-1`, which is Email *Routing*).
-2. Publish a root SPF as well — harmless, and it satisfies tools that look at
-   the `From:` domain:
+Publishing a root SPF is optional, and useful only for third-party tools that
+insist on reading the `From:` domain:
 
-   ```txt
-   mino.ink              TXT  "v=spf1 include:_spf.mx.cloudflare.net ~all"
-   _dmarc.mino.ink       TXT  "v=DMARC1; p=none; rua=mailto:hello@mino.ink"
-   ```
+```txt
+mino.ink              TXT  "v=spf1 include:_spf.mx.cloudflare.net ~all"
+_dmarc.mino.ink       TXT  "v=DMARC1; p=none; rua=mailto:hello@mino.ink"
+```
 
-   Only one `v=spf1` record may exist per name. If another provider already
-   sends for the domain, merge the includes:
-   `v=spf1 include:_spf.mx.cloudflare.net include:_spf.google.com ~all`.
+Only one `v=spf1` record may exist per name. If another provider already sends
+for the domain, merge the includes:
+`v=spf1 include:_spf.mx.cloudflare.net include:_spf.google.com ~all`.
 
 Verify what is actually published before changing anything:
 
 ```bash
 dig +short TXT cf-bounce.mino.ink
-dig +short TXT mino.ink
 dig +short TXT cf-bounce._domainkey.mino.ink
 dig +short TXT _dmarc.mino.ink
 ```
-
-An unverified `MAIL FROM` domain is refused with `550 5.7.1`; DNS changes
-usually land in 5–15 minutes on Cloudflare DNS.
-
-> **Do not start on `p=reject`.** Cloudflare onboards new domains with
-> `v=DMARC1; p=reject;` in some flows; while the first send is being tested, a
-> single alignment miss is refused outright and looks exactly like "no email
-> arrived". Use `p=none` until a real message passes both SPF and DKIM, then
-> move to `quarantine`, then `reject`.
 
 Any address on an onboarded domain may be the sender — `hello@mino.ink`,
 `notifications@mino.ink`, whatever you use. There is no per-address allowlist to
