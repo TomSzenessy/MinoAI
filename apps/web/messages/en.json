@@ -386,13 +386,13 @@
     "submit": "Join the waitlist",
     "submitting": "Joining…",
     "successTitle": "You're on the list.",
-    "successBody": "A confirmation is in your inbox. The only other email is one message when Mino launches. You can run Mino from the repository today; the link in that email removes you.",
+    "successBody": "You're on the list. You'll get one email when Mino launches — nothing else, and one click removes you.",
     "existsTitle": "You're already on the list.",
     "existsBody": "Nothing more to do. {{email}} is on the list, and the launch email will go there.",
     "errorTitle": "That didn't go through.",
     "errorBody": "The request did not reach the server. Try again in a moment.",
     "invalidEmail": "That address looks incomplete. Check for a typo and try again.",
-    "privacy": "One email when Mino launches, plus the confirmation for joining. Nothing else, and one click removes you.",
+    "privacy": "One email when Mino launches. No newsletter, no sequence.",
     "changeEmail": "Use a different address"
   }
 }

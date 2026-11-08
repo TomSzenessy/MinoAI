@@ -386,13 +386,13 @@
     "submit": "Unirme a la lista",
     "submitting": "Enviando…",
     "successTitle": "Ya estás en la lista.",
-    "successBody": "La confirmación está en tu correo. El único otro correo llegará cuando Mino se lance. Puedes ejecutar Mino hoy desde el repositorio; el enlace del correo te saca de la lista.",
+    "successBody": "Ya estás en la lista. Recibirás un solo correo cuando Mino se lance, y nada más; con un clic te das de baja.",
     "existsTitle": "Ya estabas en la lista.",
     "existsBody": "No hay nada más que hacer. {{email}} está en la lista y el aviso de lanzamiento irá ahí.",
     "errorTitle": "No se pudo enviar.",
     "errorBody": "La petición no llegó al servidor. Inténtalo otra vez en un momento.",
     "invalidEmail": "Esa dirección parece incompleta. Revisa si hay una errata e inténtalo de nuevo.",
-    "privacy": "Un correo cuando Mino se lance, más la confirmación de que te has apuntado. Nada más, y un clic te saca.",
+    "privacy": "Un solo correo cuando Mino se lance. Sin boletín, sin secuencia.",
     "changeEmail": "Usar otra dirección"
   }
 }

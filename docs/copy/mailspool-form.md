@@ -20,7 +20,7 @@ confirmation email answers four things: what the list is for, what happens next
   "title": "Join the Mino launch list",
   "description": "Mino is an open-source Obsidian alternative you can run today. Join the list for one email when Mino launches, and nothing else.",
   "submitLabel": "Join the waitlist",
-  "successMessage": "You're on the list. The only other email is one message when Mino launches. You can run Mino from the repository today; the link in that email removes you.",
+  "successMessage": "You are on the list. You will get one email when Mino launches, and nothing else.",
   "replySubject": "You're on the list for Mino's launch",
   "replyBody": "<p>You're on the list. Mino is open source and on GitHub now, so you can run it today. This list is for people who would rather hear when it launches, and this email confirms that <strong>{{email}}</strong> is on it.</p>\n<p><strong>What happens next.</strong> One email when Mino launches. No newsletter, no sequence, and no other messages from this list.</p>\n<p><strong>Meanwhile.</strong> The repository is at <a href=\"https://github.com/TomSzenessy/MinoAI\">github.com/TomSzenessy/MinoAI</a> and the docs at <a href=\"https://mino.ink/docs\">mino.ink/docs</a>: clone it, run the container with the compose file, connect a client.</p>\n<p>That is the whole list: this confirmation and the launch email. If you would rather not wait for it, <a href=\"{{unsubscribe_url}}\">unsubscribe here</a> and you are removed immediately.</p>\n<p>— Tom Szenessy, mino.ink</p>",
   "notifySubject": "New Mino launch-list signup",

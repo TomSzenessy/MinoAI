@@ -386,13 +386,13 @@
     "submit": "Auf die Warteliste",
     "submitting": "Wird eingetragen…",
     "successTitle": "Du bist auf der Liste.",
-    "successBody": "Die Bestätigung liegt in deinem Postfach. Die einzige weitere E-Mail kommt, wenn Mino erscheint. Du kannst Mino schon heute aus dem Repository starten; der Link in der E-Mail nimmt dich wieder von der Liste.",
+    "successBody": "Du bist auf der Liste. Du bekommst eine E-Mail, wenn Mino startet — sonst nichts, und ein Klick entfernt dich.",
     "existsTitle": "Du stehst schon auf der Liste.",
     "existsBody": "Nichts weiter zu tun. {{email}} steht auf der Liste, und die Launch-Meldung geht dorthin.",
     "errorTitle": "Das hat nicht geklappt.",
     "errorBody": "Die Anfrage hat den Server nicht erreicht. Versuch es gleich noch einmal.",
     "invalidEmail": "Die Adresse sieht unvollständig aus. Prüf sie auf Tippfehler und versuch es noch einmal.",
-    "privacy": "Eine E-Mail, wenn Mino erscheint, plus die Bestätigung für die Anmeldung. Sonst nichts, und ein Klick nimmt dich wieder raus.",
+    "privacy": "Eine E-Mail zum Start von Mino. Kein Newsletter, keine Serie.",
     "changeEmail": "Andere Adresse verwenden"
   }
 }
