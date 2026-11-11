@@ -31,6 +31,15 @@ table is the map an agent reads first.
    `expo prebuild --clean` and generates a throwaway key only when none was
    supplied.
 
+## Static assets
+
+`apps/web/public/` ships images that are part of the web surface, not of any
+build: `email/` holds the raster mark (`mino-mark.png`, 160×160 for a 34 px
+logo, because Gmail and Outlook strip inline SVG) and the vector source
+(`mino-logo.svg`). They are referenced by the launch-list confirmation email
+([copy](../copy/launch-confirmation-email.md)) and by the site, so a change to
+either file is a change to what users receive, not only to a page.
+
 ## When the map is not enough
 
 For a large or unfamiliar tree, two pinned upstream skills are worth pulling
