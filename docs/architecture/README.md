@@ -63,3 +63,17 @@ form API, so a report never redirects to a provider page and never needs a
 GitHub account. Neither the strings nor the form change a surface boundary; both
 are recorded here so a reader of the map knows where the words and the forms
 come from.
+
+## The agent kit (`tools/kit`)
+
+The checks, gates and generators that keep this repository coherent are
+themselves code, and `make help` lists the commands they back. Grouped by job:
+
+| Job | Modules | What they do |
+| --- | --- | --- |
+| Primitives | `core`, `config`, `names`, `commands`, `helptext`, `registry`, `adapters` | Manifest, path safety, tunables, one declaration per command and capability, `make help`, and the host adapter files those declarations generate |
+| Checks | `checks`, `checkrun`, `gatechecks`, `risk`, `hygiene`, `structure`, `surfaces` | What blocks and why, the context a check sees, change-set rules, risk tiers, rot detectors, and the manifest and surface inventory |
+| Docs | `docmeta`, `docs`, `docsync`, `coupling`, `reachability`, `derive` | The `index`/`covers` carrier, link and index checks, doc-to-code bindings, co-change signal, the reference graph, and every derived block |
+| Lifecycle | `session`, `gitsync`, `bootstrap`, `adopt`, `guided`, `launch`, `product`, `trial`, `evals`, `uireview`, `ci`, `cistatus` | Start and stop hooks, fetch and push discipline, project init and adoption, launch evidence, product state, build trials, cold-agent evals, screenshot review, and the runs behind `make ci-status` |
+| Support | `gitinfo`, `github`, `issues`, `garden`, `signatures`, `navigate` | Read-only git queries, issue filing and duplicate search, issue contracts, the gardener report, known failure signatures, and `make where` |
+| Capabilities | `capabilities`, `skills`, `scaffold`, `kitlock`, `kitreport`, `kitupdate`, `upstream`, `semantic`, `semantic_inventory`, `semantic_transport` | What this machine can do, skill provenance, `make new`, what the kit ships into a project, template reports and updates, pinned upstream records, and consent-gated semantic similarity |
