@@ -10,6 +10,7 @@ import { WaitlistForm } from "@/components/waitlist-form";
 import { FaqList } from "@/components/structured-data";
 import { useTranslation } from "@/components/i18n-provider";
 import { HOME_FAQ } from "@/lib/faq";
+import { REPO_URL } from "@/lib/seo";
 import type { TranslationKey } from "@/lib/i18n";
 import { getFallbackProfile } from "@/lib/storage";
 
@@ -555,7 +556,7 @@ export function LandingPage() {
               ✦ {t("openSource.ctaPrimary")}
             </Link>
             <a
-              href="https://github.com/mino-ink"
+              href={REPO_URL}
               target="_blank"
               rel="noreferrer"
               className="button-secondary px-10 py-4 text-lg"

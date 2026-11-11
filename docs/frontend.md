@@ -127,6 +127,22 @@ Keep the existing mino.ink design language, updated with logo-derived brand colo
 - Feature cards with glass effect and purple-tinted borders
 - The Mino logo (three vertical pills + "ino" text) from `logo.svg`
 
+### Canonical external links
+
+Every outbound project link points at the repository,
+`https://github.com/TomSzenessy/MinoAI`: the landing-page open-source CTA, the
+footer, the Settings → About "GitHub" button, the FAQ, the waitlist page, the
+`/complaints` issue link, and the `Organization` structured data. The account is
+`TomSzenessy`; there is no `mino-ink` GitHub org, and `@mino-ink/*` is only the
+npm scope for the workspace packages, never a URL.
+
+The URL lives in one place, `apps/web/lib/seo.ts`: `REPO_URL` for the repo and
+`ORG_URL` for the maintainer's account. Components import those constants
+instead of hardcoding a link, so a future move changes one line. The docs site
+carries the same URL in `docs-site/mint.json` (`topbarLinks`,
+`footerSocials`), and the container image path is
+`ghcr.io/tomszenessy/mino-server` in `docker-compose.yml`.
+
 ---
 
 ## Mobile Apps (iOS & Android)

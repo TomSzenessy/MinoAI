@@ -12,7 +12,7 @@ export const SITE_URL = "https://mino.ink";
 export const SITE_NAME = "Mino";
 export const SITE_ALT_NAMES = ["Mino AI", "Mino app", "mino.ink"] as const;
 export const REPO_URL = "https://github.com/TomSzenessy/MinoAI";
-export const ORG_URL = "https://github.com/mino-ink";
+export const ORG_URL = "https://github.com/TomSzenessy";
 
 export const SITE_TAGLINE = "Your notes, on your server, with AI that files them";
 export const SITE_DESCRIPTION =

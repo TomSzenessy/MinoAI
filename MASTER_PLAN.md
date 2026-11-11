@@ -1076,7 +1076,7 @@ For the rare case of irreconcilable conflicts (e.g., one device deleted a note w
 version: "3.8"
 services:
   mino:
-    image: ghcr.io/mino-ink/mino-server:latest
+    image: ghcr.io/tomszenessy/mino-server:latest
     ports:
       - "3000:3000"
     volumes:

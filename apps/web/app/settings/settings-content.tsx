@@ -38,6 +38,7 @@ import {
 	type PluginManifest
 } from '@/lib/api';
 import { isPluginEnabled, PLUGIN_REGISTRY, togglePlugin } from '@/lib/plugins';
+import { REPO_URL } from '@/lib/seo';
 import {
 	readSettings,
 	writeSettings,
@@ -1138,7 +1139,7 @@ export default function SettingsContent() {
 
 					<div className="grid gap-2 sm:grid-cols-2">
 						<a
-							href="https://github.com/mino-ink"
+							href={REPO_URL}
 							target="_blank"
 							rel="noreferrer"
 							className="button-secondary text-sm"
