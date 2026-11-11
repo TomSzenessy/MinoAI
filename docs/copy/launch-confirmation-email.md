@@ -1,5 +1,7 @@
 # Launch-list confirmation email
 
+<!-- index: design | Launch-list confirmation email — Mailspool copy and markup | Editing the signup email or its Mailspool transport. -->
+
 The email a signup receives. It lives in Mailspool twice, because the form
 auto-reply takes inline HTML rather than a template id:
 

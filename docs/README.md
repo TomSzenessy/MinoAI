@@ -115,6 +115,7 @@ Most note-taking apps treat AI as a feature. **Mino treats the AI agent as a fir
 | [`security.md`](./security.md) | Security & Code Quality | Working on security & code quality. |
 | [`server.md`](./server.md) | The Mino Server | Working on the mino server. |
 | [`architecture/README.md`](./architecture/README.md) | Architecture map | How the parts of Mino fit together. |
+| [`copy/launch-confirmation-email.md`](./copy/launch-confirmation-email.md) | Launch-list confirmation email — Mailspool copy and markup | Editing the signup email or its Mailspool transport. |
 | [`copy/mailspool-form.md`](./copy/mailspool-form.md) | Mailspool form copy — Mino launch list | Working on mailspool form copy — mino launch list. |
 | [`examples/antigravity-skill.md`](./examples/antigravity-skill.md) | Antigravity Skill Example (Mino) | Working on antigravity skill example (mino). |
 | [`examples/cursor-rules.md`](./examples/cursor-rules.md) | Cursor Rules (Mino MCP) | Working on cursor rules (mino mcp). |
